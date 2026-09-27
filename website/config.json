@@ -56,6 +56,14 @@
       "eligible_tasks": 184
     }
   },
+  "default_variants": [
+    "Normal I/O",
+    "Batched tool calls"
+  ],
+  "ablation_variants": [
+    "Single action",
+    "Single tool call"
+  ],
   "race": {
     "subset": "osworld-energy50-representative",
     "speed": 40,
@@ -68,12 +76,12 @@
       {
         "model": "GPT-6 Astra",
         "effort": "medium",
-        "variant": "Normal I/O"
+        "variant": ""
       },
       {
         "model": "Kimi K3",
         "effort": "max",
-        "variant": "Batched tool calls"
+        "variant": ""
       },
       {
         "model": "GPT-5.6 Luna",

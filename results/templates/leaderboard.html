@@ -3,7 +3,7 @@
   {% if result.cost_usd is not none %}
     ${{ "%.4f" | format(result.cost_usd) }}
     {% if static_catalog %}
-      {% if public_layout %}<small class="cost-basis">{{ 'Recorded' if result.cost_kind == 'recorded' else 'Estimate' }}</small>{% else %}<small class="cost-basis"><a href="{{ result.cost_source_url }}">{{ result.cost_label }}</a></small>{% endif %}
+      {% if not public_layout %}<small class="cost-basis"><a href="{{ result.cost_source_url }}">{{ result.cost_label }}</a></small>{% endif %}
       {% if result.cost_range_min_usd is not none and not public_layout %}<small class="cost-basis">Cache range: ${{ "%.4f" | format(result.cost_range_min_usd) }}–${{ "%.4f" | format(result.cost_range_max_usd) }}</small>{% endif %}
     {% endif %}
   {% elif static_catalog and result.cost_unit_prices and not public_layout %}
@@ -32,15 +32,16 @@
 <nav class="dataset-switcher" aria-label="{{ 'Benchmark task sets' if public_layout else 'Datasets' }}">
   {% for option in dataset_options %}
   <a class="dataset-tab" href="{{ option.href }}" {% if option.active %}aria-current="true"{% endif %}>
-    <span>{{ option.label }}</span><small>{{ option.entry_count }}</small>
+    <span>{{ option.label }}</span>{% if not public_layout %}<small>{{ option.entry_count }}</small>{% endif %}
   </a>
   {% endfor %}
 </nav>
-{% if public_layout %}{% include "results-records.html" %}{% endif %}
+{% if public_layout %}{% include "results-records.html" %}{% else %}
 <section class="dataset-summary" aria-label="Selected dataset">
   <div><span class="results-kicker">Dataset</span><h2>{{ selected_dataset.label }}</h2></div>
   <p><strong>{{ entry_count }}</strong> results{% if selected_dataset.task_counts %} · {{ selected_dataset.task_counts | join(' / ') }} tasks per result{% endif %}{% if selected_dataset.excluded_evaluations and not public_layout %} · <a href="#excluded-evaluations">{{ selected_dataset.excluded_evaluations | length }} excluded evaluations</a>{% endif %}</p>
 </section>
+{% endif %}
 {% elif tracks %}
 <nav class="track-switcher" aria-label="Evaluation tracks">
   {% for option in tracks %}
@@ -116,26 +117,34 @@
 {% if not public_layout %}{{ snapshot_note }}{% endif %}
 
 {% if current %}
-<section class="results-dashboard" data-results-dashboard {% if public_layout %}data-default-view="leaderboard"{% endif %} data-static="{{ 'true' if static_export else 'false' }}">
+<section class="results-dashboard" data-results-dashboard {% if public_layout %}data-default-view="curves"{% endif %} data-static="{{ 'true' if static_export else 'false' }}">
   <script type="application/json" data-results-data>{{ dashboard_entries | tojson }}</script>
   <script type="application/json" data-results-baseline>{{ dashboard_baseline | default(none) | tojson }}</script>
 
   <div class="dashboard-topbar">
-    <div class="view-tabs" role="tablist" aria-label="Results view">
-      <button class="view-tab active" type="button" role="tab" aria-selected="true" data-view-button="leaderboard">
+    {#- The public site opens on the curves; the evaluator dashboard opens on its table. -#}
+    {% set first_view = 'curves' if public_layout else 'leaderboard' %}
+    {% set table_tab %}
+      <button class="view-tab{% if first_view == 'leaderboard' %} active{% endif %}" type="button" role="tab" aria-selected="{{ 'true' if first_view == 'leaderboard' else 'false' }}" data-view-button="leaderboard">
         <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 4h12M3 9h12M3 14h12"/><circle cx="5" cy="4" r="1"/><circle cx="9" cy="9" r="1"/><circle cx="13" cy="14" r="1"/></svg>
         {{ 'Table' if public_layout else ('Results' if static_export else 'Leaderboard') }}
       </button>
-      <button class="view-tab" type="button" role="tab" aria-selected="false" data-view-button="curves">
+    {% endset %}
+    {% set curves_tab %}
+      <button class="view-tab{% if first_view == 'curves' %} active{% endif %}" type="button" role="tab" aria-selected="{{ 'true' if first_view == 'curves' else 'false' }}" data-view-button="curves">
         <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 14.5h13M3.5 13l3-4 3 2 4.5-7"/><circle cx="6.5" cy="9" r="1"/><circle cx="9.5" cy="11" r="1"/><circle cx="14" cy="4" r="1"/></svg>
-        {{ 'Plots' if public_layout else 'Curves' }}
+        Curves
       </button>
+    {% endset %}
+    <div class="view-tabs" role="tablist" aria-label="Results view">
+      {% if first_view == 'curves' %}{{ curves_tab }}{{ table_tab }}{% else %}{{ table_tab }}{{ curves_tab }}{% endif %}
       <button class="view-tab" type="button" role="tab" aria-selected="false" data-view-button="frontier3d">
         <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 5.5 9 2l6 3.5v7L9 16l-6-3.5zM3 5.5 9 9m6-3.5L9 9m0 7V9"/><circle cx="9" cy="9" r="1"/></svg>
         {{ '3D' if public_layout else '3D frontier' }}
       </button>
     </div>
-    <div class="result-count"><strong data-visible-count>{{ entry_count }}</strong><span>of {{ entry_count }} results</span></div>
+    {% if public_layout %}<label class="results-search"><span class="sr-only">Search models or developers</span><input type="search" placeholder="Search models or developers, e.g. GPT" autocomplete="off" spellcheck="false" data-results-search></label>{% endif %}
+    <div class="result-count"><strong data-visible-count>{{ entry_count }}</strong><span>of <span data-total-count>{{ entry_count }}</span> results</span></div>
   </div>
 
   <div class="dashboard-layout">
@@ -146,6 +155,7 @@
         <button class="text-button" type="button" data-reset-filters>Reset</button>
       </div>
 
+      {% if public_layout %}<div class="filter-column">{% endif %}
       <fieldset class="filter-group access-filter">
         <legend>Model type</legend>
         <div class="mini-segments" data-access-filter>
@@ -155,6 +165,16 @@
           <button type="button" data-access="unclassified" title="Published without model-access metadata">Other</button>
         </div>
       </fieldset>
+      {% if public_layout and selected_dataset.has_ablations %}
+      <fieldset class="filter-group track-filter">
+        <legend>Track</legend>
+        <div class="mini-segments" data-track-toggle>
+          <button type="button" class="active" aria-pressed="true" data-track="main">Main track</button>
+          <button type="button" aria-pressed="false" data-track="all">Include ablations</button>
+        </div>
+      </fieldset>
+      {% endif %}
+      {% if public_layout %}</div>{% endif %}
 
       <fieldset class="filter-group">
         <legend>{{ 'Model / variant' if static_catalog else 'Model family' }}</legend>
@@ -177,7 +197,7 @@
     {% if public_layout %}</details>{% endif %}
 
     <div class="dashboard-stage">
-      <section class="dashboard-view active" role="tabpanel" data-view-panel="leaderboard" aria-labelledby="leaderboard-title">
+      <section class="dashboard-view{% if first_view == 'leaderboard' %} active{% endif %}" role="tabpanel" data-view-panel="leaderboard" aria-labelledby="leaderboard-title"{% if first_view != 'leaderboard' %} hidden{% endif %}>
         <header class="stage-header">
           <div>
             <span class="stage-eyebrow">{{ 'All models' if static_export else 'Rankings' }}</span>
@@ -230,7 +250,7 @@
         </{% if static_export %}div{% else %}form{% endif %}>
       </section>
 
-      <section class="dashboard-view" role="tabpanel" data-view-panel="curves" aria-labelledby="curves-title" hidden>
+      <section class="dashboard-view{% if first_view == 'curves' %} active{% endif %}" role="tabpanel" data-view-panel="curves" aria-labelledby="curves-title"{% if first_view != 'curves' %} hidden{% endif %}>
         <header class="stage-header chart-header">
           <div>
             <span class="stage-eyebrow">Trade-offs</span>

@@ -22,7 +22,7 @@ from build_results_dashboard import build_site, REPOSITORY, DATASET_URL
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = ROOT / "data/all-hf-model-trajectory-metrics-2026-09-13.csv"
 NAV = [("home", "Overview", "index.html"), ("paper", "Research", "paper.html"),
-       ("results", "Results", "results.html"), ("docs", "Documentation", "docs.html"),
+       ("results", "Leaderboard", "results.html"), ("docs", "Documentation", "docs.html"),
        ("run", "Run", "submit")]
 
 
@@ -116,6 +116,8 @@ def build_public_site(output: Path, config_path: Path, paper: Path | None = None
                                      for p in config["providers"]]}
     build_site(
         DEFAULT_INPUT, output, dataset_scope=config["paper_subsets"],
+        default_variants=tuple(config.get("default_variants", ())),
+        ablation_variants=tuple(config.get("ablation_variants", ())),
         public_context={k: v for k, v in context.items()
                         if k not in {"repository", "dataset_url"}},
     )
