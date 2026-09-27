@@ -1,0 +1,327 @@
+{% extends public_layout | default("layout.html") %}
+{% macro cost_content(result) %}
+  {% if result.cost_usd is not none %}
+    ${{ "%.4f" | format(result.cost_usd) }}
+    {% if static_catalog %}
+      {% if public_layout %}<small class="cost-basis">{{ 'Recorded' if result.cost_kind == 'recorded' else 'Estimate' }}</small>{% else %}<small class="cost-basis"><a href="{{ result.cost_source_url }}">{{ result.cost_label }}</a></small>{% endif %}
+      {% if result.cost_range_min_usd is not none and not public_layout %}<small class="cost-basis">Cache range: ${{ "%.4f" | format(result.cost_range_min_usd) }}–${{ "%.4f" | format(result.cost_range_max_usd) }}</small>{% endif %}
+    {% endif %}
+  {% elif static_catalog and result.cost_unit_prices and not public_layout %}
+    <span class="missing-value">Usage not logged</span>
+    <small class="cost-basis"><a href="{{ result.cost_source_url }}">API ${{ "%.2f" | format(result.cost_unit_prices.input) }} in / ${{ "%.2f" | format(result.cost_unit_prices.output) }} out</a></small>
+    <small class="cost-basis">per 1M tokens{% if result.cost_unit_prices.unit_note %} · {{ result.cost_unit_prices.unit_note }}{% endif %}</small>
+  {% else %}<span class="missing-value">—</span>{% endif %}
+{% endmacro %}
+{% block title %}{{ 'Leaderboard · CUA-Speedrun' if public_layout else 'Results · cua-speedrun' }}{% endblock %}
+{% block content %}
+<header class="results-header">
+  <div>
+    <span class="results-kicker">Published evaluations</span>
+    <h1>{{ "Leaderboard" if public_layout else "Results explorer" }}</h1>
+    <p>{% if public_layout %}Every configuration we measured on the paper's four task sets, ranked by score, time, or cost.{% elif static_export %}Explore model performance, time, and cost by dataset.{% else %}Compare model performance, time, and cost within one exact evaluation contract.{% endif %}</p>
+  </div>
+  {% if not static_export %}
+  <div class="page-actions">
+    <a class="btn secondary" href="/methodology">Methodology</a>
+    <a class="btn" href="/submit{% if track %}?track={{ track.name | urlencode }}{% if benchmark_name %}&amp;benchmark={{ benchmark_name | urlencode }}{% endif %}{% endif %}">New evaluation</a>
+  </div>
+  {% endif %}
+</header>
+
+{% if static_export %}
+<nav class="dataset-switcher" aria-label="{{ 'Benchmark task sets' if public_layout else 'Datasets' }}">
+  {% for option in dataset_options %}
+  <a class="dataset-tab" href="{{ option.href }}" {% if option.active %}aria-current="true"{% endif %}>
+    <span>{{ option.label }}</span><small>{{ option.entry_count }}</small>
+  </a>
+  {% endfor %}
+</nav>
+{% if public_layout %}{% include "results-records.html" %}{% endif %}
+<section class="dataset-summary" aria-label="Selected dataset">
+  <div><span class="results-kicker">Dataset</span><h2>{{ selected_dataset.label }}</h2></div>
+  <p><strong>{{ entry_count }}</strong> results{% if selected_dataset.task_counts %} · {{ selected_dataset.task_counts | join(' / ') }} tasks per result{% endif %}{% if selected_dataset.excluded_evaluations and not public_layout %} · <a href="#excluded-evaluations">{{ selected_dataset.excluded_evaluations | length }} excluded evaluations</a>{% endif %}</p>
+</section>
+{% elif tracks %}
+<nav class="track-switcher" aria-label="Evaluation tracks">
+  {% for option in tracks %}
+  <a class="track-tab" href="/?track={{ option.name | urlencode }}" {% if option.active %}aria-current="true"{% endif %}>
+    <span>{{ option.label }}</span><small>{{ option.entry_count }}</small>
+  </a>
+  {% endfor %}
+</nav>
+{% endif %}
+
+{% if not static_export and track %}
+<section class="scope-bar" aria-label="Result scope">
+  <div class="scope-primary">
+    <span class="scope-label">Track</span>
+    <strong>{{ track.label }}</strong>
+    <small>{{ track.name }}{% if track.gpu %} · {{ track.gpu }}{% endif %}</small>
+  </div>
+  <div class="scope-season">
+    <label for="season-select">Evaluation contract</label>
+    {% if seasons %}
+    <form method="get" action="{{ './' if static_export else '/' }}">
+      <input type="hidden" name="track" value="{{ track.name }}">
+      <select id="season-select" name="season" onchange="this.form.submit()">
+        {% for option in seasons %}
+        <option value="{{ option.key }}" {% if option.active %}selected{% endif %}>{{ option.label }} · {{ option.entry_count }} {{ "result" if option.entry_count == 1 else "results" }}</option>
+        {% endfor %}
+      </select>
+    </form>
+    {% else %}<span>No published contract</span>{% endif %}
+  </div>
+  {% if season %}
+  <div class="scope-facts">
+    {% if season.benchmark %}<span><b>Benchmark</b>{{ season.benchmark }}</span>{% endif %}
+    {% if season.hardware %}<span><b>Hardware</b>{{ season.hardware }}</span>{% endif %}
+    {% if season.algorithm %}<span><b>Algorithm</b>{{ season.algorithm }}</span>{% endif %}
+    <span><b>Status</b>{{ season.status }}</span>
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+
+{% set snapshot_note %}
+{% if static_catalog %}
+<section class="snapshot-note" aria-label="Snapshot coverage">
+  <p>All included results for this dataset are shown together. Execution settings can differ; source details are preserved with each run.</p>
+  <details class="snapshot-details">
+    <summary>Data sources &amp; metric definitions</summary>
+    <p>Latest source inventory: {{ static_catalog.inventory_utc }}.
+      <a href="trajectory-metrics.csv" download>Download all {{ static_catalog.source_rows }} source rows</a> ·
+      <a href="display-costs.csv" download>Download displayed costs &amp; assumptions</a> ·
+      <a href="results-catalog.json">View dataset catalog</a></p>
+    <p>Times use the task clock, excluding setup and final verification. Costs are recorded usage or labeled estimates, not invoices.
+      API estimates identify their pricing and cache assumptions in each result's source details. Where shown, the cache range runs from all input cached to none.
+      Standard-price proxies do not claim the archived tier or version price. Partial-coverage estimates show their task counts.
+      <a href="results-pricing.json">Additional pricing sources &amp; assumptions</a> are preserved alongside the original CSV references.
+      Runs without token usage show unit prices but stay out of per-task cost plots.
+      The full-OSWorld human baseline is not transferred to these dataset views.</p>
+    <p>{{ selected_dataset.supporting_rows }} retry-attempt or overlapping summary rows for this dataset remain in the CSV, not counted as independent evaluations. Excluded evaluations are listed below the results.</p>
+    <p>Model labels use <a href="model-metadata.json">publisher-sourced model metadata and explicit aliases</a>, verified {{ static_catalog.model_metadata_verified_on }}.
+      Open means downloadable weights, not necessarily an open-source license. Release dates mean first public availability of the identified model version.
+      Unversioned archives with an unverified release date are labeled explicitly and omitted only from the release-date curve.</p>
+    <p>
+      Steps count action batches sent to the environment: one step call counts once, regardless of the number of actions in its batch.
+      Tool calls count individual recorded environment actions within those batches, including waits; a batch of five actions counts as five, not one.
+      This is an environment-action count, not a count of model API tool-call wrappers. Separate observation and task-completion requests are not included.
+      Observations and model responses are separate counts; steps are not observation count minus one.
+      Output tokens per model response divide total generated tokens (including reasoning) by recorded responses, only when both cover every task and the usage/response counts agree.</p>
+  </details>
+</section>
+{% endif %}
+
+{% endset %}
+{% if not public_layout %}{{ snapshot_note }}{% endif %}
+
+{% if current %}
+<section class="results-dashboard" data-results-dashboard {% if public_layout %}data-default-view="leaderboard"{% endif %} data-static="{{ 'true' if static_export else 'false' }}">
+  <script type="application/json" data-results-data>{{ dashboard_entries | tojson }}</script>
+  <script type="application/json" data-results-baseline>{{ dashboard_baseline | default(none) | tojson }}</script>
+
+  <div class="dashboard-topbar">
+    <div class="view-tabs" role="tablist" aria-label="Results view">
+      <button class="view-tab active" type="button" role="tab" aria-selected="true" data-view-button="leaderboard">
+        <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 4h12M3 9h12M3 14h12"/><circle cx="5" cy="4" r="1"/><circle cx="9" cy="9" r="1"/><circle cx="13" cy="14" r="1"/></svg>
+        {{ 'Table' if public_layout else ('Results' if static_export else 'Leaderboard') }}
+      </button>
+      <button class="view-tab" type="button" role="tab" aria-selected="false" data-view-button="curves">
+        <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 14.5h13M3.5 13l3-4 3 2 4.5-7"/><circle cx="6.5" cy="9" r="1"/><circle cx="9.5" cy="11" r="1"/><circle cx="14" cy="4" r="1"/></svg>
+        {{ 'Plots' if public_layout else 'Curves' }}
+      </button>
+      <button class="view-tab" type="button" role="tab" aria-selected="false" data-view-button="frontier3d">
+        <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 5.5 9 2l6 3.5v7L9 16l-6-3.5zM3 5.5 9 9m6-3.5L9 9m0 7V9"/><circle cx="9" cy="9" r="1"/></svg>
+        {{ '3D' if public_layout else '3D frontier' }}
+      </button>
+    </div>
+    <div class="result-count"><strong data-visible-count>{{ entry_count }}</strong><span>of {{ entry_count }} results</span></div>
+  </div>
+
+  <div class="dashboard-layout">
+    {% if public_layout %}<details class="results-filters"><summary>Filter models and reasoning effort</summary>{% endif %}
+    <aside class="filter-rail" aria-label="Result filters">
+      <div class="filter-rail-head">
+        <div><span>Refine</span><strong>Models</strong></div>
+        <button class="text-button" type="button" data-reset-filters>Reset</button>
+      </div>
+
+      <fieldset class="filter-group access-filter">
+        <legend>Model type</legend>
+        <div class="mini-segments" data-access-filter>
+          <button type="button" class="active" data-access="all">All</button>
+          <button type="button" data-access="open">Open</button>
+          <button type="button" data-access="closed">Closed</button>
+          <button type="button" data-access="unclassified" title="Published without model-access metadata">Other</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="filter-group">
+        <legend>{{ 'Model / variant' if static_catalog else 'Model family' }}</legend>
+        <div class="check-list" data-family-filters></div>
+      </fieldset>
+
+      <fieldset class="filter-group">
+        <legend>Thinking effort</legend>
+        <div class="check-list compact" data-effort-filters></div>
+      </fieldset>
+
+      <div class="filter-group effort-mode">
+        <div><strong>Show all efforts</strong><small>Turn off to keep only the highest effort for each {{ 'model variant' if static_catalog else 'model' }}.</small></div>
+        <label class="switch" aria-label="Show all thinking efforts">
+          <input type="checkbox" checked data-show-all-efforts>
+          <span></span>
+        </label>
+      </div>
+    </aside>
+    {% if public_layout %}</details>{% endif %}
+
+    <div class="dashboard-stage">
+      <section class="dashboard-view active" role="tabpanel" data-view-panel="leaderboard" aria-labelledby="leaderboard-title">
+        <header class="stage-header">
+          <div>
+            <span class="stage-eyebrow">{{ 'All models' if static_export else 'Rankings' }}</span>
+            <h2 id="leaderboard-title">{{ 'Results' if static_export else 'Leaderboard' }}</h2>
+            <p data-ranking-description>All included results, ordered by average performance.</p>
+          </div>
+          <div class="metric-switch" aria-label="Leaderboard ranking">
+            <button type="button" class="active" data-ranking="performance"><span>Performance</span><small>Highest first</small></button>
+            <button type="button" data-ranking="time"><span>Time</span><small>{{ 'Lowest first' if static_export else '>80% performance' }}</small></button>
+            <button type="button" data-ranking="cost"><span>Cost</span><small>{{ 'Known costs first' if static_export else '>80% performance' }}</small></button>
+          </div>
+        </header>
+
+        <{% if static_export %}div{% else %}form{% endif %} class="results-table-wrap{% if not static_export %} compare-picker{% endif %}"{% if not static_export %} id="compare-picker" action="/compare" method="get"{% endif %}>
+          <table class="results-table">
+            <thead>
+              <tr><th class="select-col">{% if not static_export %}<span class="sr-only">Compare</span>{% endif %}</th><th class="rank-col">{{ '#' if static_export else 'Rank' }}</th><th>Model</th><th>Effort</th><th class="num">Performance</th><th class="num">Time / task</th><th class="num">Cost / task</th>{% if not static_export %}<th>Status</th>{% endif %}</tr>
+            </thead>
+            <tbody data-results-body>
+              {% for result in dashboard_entries %}
+              <tr data-entry-id="{{ result.entry_id }}" data-model="{{ result.model }}" data-effort="{{ result.effort }}" data-effort-rank="{{ result.effort_rank }}" data-model-type="{{ result.model_type }}" data-performance="{{ result.performance }}" data-time="{{ result.time_per_task_sec }}" data-cost="{{ result.cost_usd if result.cost_usd is not none else '' }}">
+                <td class="select-col">{% if not static_export %}<input class="compare-check" type="checkbox" name="entry" value="{{ result.entry_id }}" aria-label="Select {{ result.entry_name }}">{% endif %}</td>
+                <td class="rank-col ranking-position" data-rank>{{ loop.index }}</td>
+                <td class="model-cell"><i class="model-swatch" aria-hidden="true"></i><span>
+                  {% if static_catalog and public_layout %}<b>{{ result.series }}</b>{% if result.model_type == 'open' %}<span class="open-chip">Open weights</span>{% endif %}{% elif static_catalog %}<a href="{{ result.source_archive_urls[0] }}" title="Source evidence">{{ result.series }}</a><small>{{ result.run_id }}</small>{% elif static_export %}<b>{{ result.model }}</b>{% else %}<a href="/entries/{{ result.entry_id }}">{{ result.model }}</a>{% endif %}
+                  {% if not static_catalog and result.entry_name != result.model %}<small>{{ result.entry_name }}</small>{% endif %}
+                  {% if not public_layout %}{% if static_export and result.model_metadata %}<small class="model-metadata" title="{{ result.model_metadata.notes }}">
+                    <a href="{{ result.model_metadata.access_source }}">{{ 'Open weights' if result.model_type == 'open' else 'Closed weights' }}</a> ·
+                    {% if result.release_date %}<a href="{{ result.model_metadata.release_source }}">Released {{ result.release_date }}</a>{% else %}Release unverified (version unknown){% endif %}
+                  </small>{% endif %}{% endif %}
+                  {% if static_catalog %}<span class="mobile-cost"{% if not public_layout %} title="{{ result.cost_note }}"{% endif %}>Cost / task: {{ cost_content(result) }}</span>{% endif %}
+                  {% if static_catalog and not public_layout and (result.notes or result.cost_note or result.quality_flags != '{}') %}<details class="row-provenance"><summary>{{ 'Source details' if public_layout else 'Source & cost caveats' }}</summary>{% if public_layout %}<p>Run: {{ result.run_id }}</p>{% if static_export and result.model_metadata %}<small class="model-metadata" title="{{ result.model_metadata.notes }}">
+                    <a href="{{ result.model_metadata.access_source }}">{{ 'Open weights' if result.model_type == 'open' else 'Closed weights' }}</a> ·
+                    {% if result.release_date %}<a href="{{ result.model_metadata.release_source }}">Released {{ result.release_date }}</a>{% else %}Release unverified (version unknown){% endif %}
+                  </small>{% endif %}{% endif %}{% if not public_layout %}<p>{{ result.notes }}</p><p>{{ result.cost_note }}</p>{% endif %}{% if result.source_archive_urls | length > 1 %}<p>{% for url in result.source_archive_urls %}<a href="{{ url }}">{{ result.source_run_ids[loop.index0] }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</p>{% endif %}{% if result.quality_flags != '{}' and not public_layout %}<p>{{ result.quality_flags }}</p>{% endif %}</details>{% endif %}
+                </span></td>
+                <td><span class="effort-chip">{{ result.effort }}</span></td>
+                <td class="num performance-cell">{{ "%.2f" | format(result.performance * 100) }}%</td>
+                <td class="num time-cell">{{ "%.1f" | format(result.time_per_task_sec) }}s</td>
+                <td class="num cost-cell"{% if static_catalog and not public_layout %} title="{{ result.cost_note }}"{% endif %}>
+                  {{ cost_content(result) }}
+                </td>
+                {% if not static_export %}<td class="status-cell">{% if not result.qualification_known %}<span class="chip muted">Score only</span>{% elif result.reference %}<span class="chip muted">Reference</span>{% elif result.qualifying %}<span class="chip pass">Qualifies</span>{% else %}<span class="chip fail">Below bar</span>{% endif %}{% if result.qualification_known and result.frontier %}<span class="chip frontier">Frontier</span>{% endif %}{% if result.provisional %}<span class="chip warn">Provisional</span>{% endif %}</td>{% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="no-results" hidden data-no-results><strong>No matching results</strong><span>Adjust the model or effort filters.</span></div>
+          {% if not static_export %}<div class="compare-dock" data-compare-dock><span><b data-compare-count>0</b> selected <small data-compare-status>Select two results</small></span><button type="submit" data-compare-submit>Compare</button></div>{% endif %}
+        </{% if static_export %}div{% else %}form{% endif %}>
+      </section>
+
+      <section class="dashboard-view" role="tabpanel" data-view-panel="curves" aria-labelledby="curves-title" hidden>
+        <header class="stage-header chart-header">
+          <div>
+            <span class="stage-eyebrow">Trade-offs</span>
+            <h2 id="curves-title">{{ "Task performance" if public_layout else "Performance curves" }}</h2>
+            <p>{% if public_layout %}Select a measure to compare. Tap a point for its model, score, and timing.{% else %}Each color is one model family. Solid lines join its thinking efforts; select the horizontal metric to compare.{% endif %}</p>
+          </div>
+          <div class="metric-switch curve-switch metric-rail" aria-label="Horizontal curve metric">
+            <button type="button" class="active" aria-pressed="true" data-curve="average_time">Avg time</button>
+            <button type="button" aria-pressed="false" data-curve="median_time">Median time</button>
+            <button type="button" aria-pressed="false" data-curve="cost">Cost</button>
+            {% if static_catalog %}
+            <button type="button" aria-pressed="false" data-curve="steps" title="One step is one action batch sent to the environment">Steps</button>
+            <button type="button" aria-pressed="false" data-curve="tool_calls" title="Average individual environment actions per task; each action within a batch counts separately, including waits">Tool calls</button>
+            {% else %}<button type="button" aria-pressed="false" data-curve="turns">Turns</button>{% endif %}
+            <button type="button" aria-pressed="false" data-curve="release_date">Release</button>
+            <button type="button" aria-pressed="false" data-curve="output_tokens" title="Average output length in tokens">Output tokens</button>
+          </div>
+        </header>
+        <div class="curve-summary">
+          <span class="curve-keys">
+            <span data-frontier-summary><i class="frontier-key"></i>Pareto frontier</span>
+            <span data-baseline-summary hidden><i class="baseline-key"></i><b data-baseline-label></b></span>
+          </span>
+          <span data-curve-note>Higher performance and lower time are better.</span>
+        </div>
+        <div class="chart-frame">
+          <svg class="results-chart" data-results-chart viewBox="0 0 1080 620" role="img" aria-labelledby="curves-title curve-description"></svg>
+          <p id="curve-description" class="sr-only">Scatter plot comparing model performance with the selected horizontal metric.</p>
+          <div class="chart-tooltip" hidden data-chart-tooltip></div>
+        </div>
+        <div class="model-legend" data-model-legend></div>
+      </section>
+
+      <section class="dashboard-view" role="tabpanel" data-view-panel="frontier3d" aria-labelledby="frontier3d-title" hidden>
+        <header class="stage-header volume-header">
+          <div>
+            <span class="stage-eyebrow">Three objectives</span>
+            <h2 id="frontier3d-title">{{ "Performance, time, and cost" if public_layout else "Pareto volume" }}</h2>
+            <p>{% if public_layout %}Drag to rotate; select a point to inspect it. Only results with known costs appear here.{% else %}Cost and time recede across the floor; performance rises vertically. Drag to rotate. Compare interpolations without moving the points or camera.{% endif %}</p>
+          </div>
+          <div class="camera-switch" aria-label="Three-dimensional camera">
+            <button type="button" class="active" data-camera-preset="perspective">Perspective</button>
+            <button type="button" data-camera-preset="cost-performance">Cost × performance</button>
+            <button type="button" data-camera-preset="time-performance">Time × performance</button>
+            <button type="button" data-camera-preset="cost-time">Cost × time</button>
+          </div>
+        </header>
+        {% if public_layout %}<details class="surface-options"><summary>Surface display options</summary>{% endif %}
+        <div class="surface-controls" aria-label="Surface interpolation comparison">
+          <span class="surface-controls-label">Interpolation</span>
+          <div class="surface-switch" role="group" aria-label="Surface interpolation">
+            <button type="button" class="active" aria-pressed="true" data-surface-mode="smooth">{{ 'Smooth surface' if public_layout else 'Original smooth' }}</button>
+            <button type="button" aria-pressed="false" data-surface-mode="dominance">{{ 'Triangulated surface' if public_layout else 'Triangle interpolation' }}{% if not public_layout %} <small>New</small>{% endif %}</button>
+          </div>
+          <span class="surface-comparison-hint">Same measurements · same camera</span>
+        </div>
+        <div class="volume-summary">
+          <span><i class="volume-frontier-key"></i><b data-frontier3d-count>0</b> non-dominated</span>
+          <span><b data-cost3d-count>0</b> cost-known results</span>
+          <span><i class="surface-key"></i><span data-surface-label>Original smooth interpolation</span></span>
+          <span class="volume-note" data-volume-note>Original inverse-distance smoothing; switch to triangle interpolation to compare.</span>
+        </div>
+        {% if public_layout %}</details>{% endif %}
+        <div class="volume-frame" data-volume-frame>
+          <svg class="results-volume" data-results-volume viewBox="0 0 1080 700" role="img" aria-labelledby="frontier3d-title frontier3d-description"></svg>
+          <p id="frontier3d-description" class="sr-only">Rotatable three-dimensional scatter plot comparing cost, time, and performance.</p>
+          <div class="chart-tooltip volume-tooltip" hidden data-volume-tooltip></div>
+        </div>
+        <div class="model-legend" data-volume-legend></div>
+      </section>
+    </div>
+  </div>
+</section>
+{% elif static_export %}
+<section class="empty-state"><h2>No included results</h2><p>See the excluded evaluations and source data below.</p></section>
+{% else %}
+<section class="empty-state"><h2>No published results</h2><p>Run and publish an evaluation to create this track’s first result.</p><a class="btn" href="/submit{% if track %}?track={{ track.name | urlencode }}{% endif %}">New evaluation</a></section>
+{% endif %}
+{% if public_layout %}{% include "results-note.html" %}{% endif %}
+{% if static_catalog and selected_dataset.excluded_evaluations and not public_layout %}
+{% if public_layout %}<details class="excluded-disclosure"><summary>Excluded evaluations ({{ selected_dataset.excluded_evaluations | length }})</summary>{% endif %}
+<section id="excluded-evaluations" class="excluded-evaluations" aria-label="Excluded evaluations">
+  <header><span class="stage-eyebrow">Source coverage</span><h2>Excluded evaluations <small>{{ selected_dataset.excluded_evaluations | length }}</small></h2><p>These runs remain available for inspection but are not included in the results or plots above.</p></header>
+  <ul>
+  {% for result in selected_dataset.excluded_evaluations %}
+    <li data-excluded-run="{{ result.run_id }}"><div><a href="{{ result.source_archive_url }}">{{ result.series }} · {{ result.effort }}</a><small>{{ result.run_id }}</small><small class="model-metadata" title="{{ result.model_metadata.notes }}">{{ 'Open weights' if result.model_type == 'open' else 'Closed weights' }} · {% if result.release_date %}Released {{ result.release_date }}{% else %}Release unverified (version unknown){% endif %}</small></div><span>{{ result.reason }}</span></li>
+  {% endfor %}
+  </ul>
+</section>
+{% if public_layout %}</details>{% endif %}
+{% endif %}
+<script src="{{ 'static/' if static_export else '/static/' }}pareto-surface.js" defer></script>
+<script src="{{ 'static/' if static_export else '/static/' }}leaderboard.js{% if static_asset_versions %}?v={{ static_asset_versions['leaderboard.js'] }}{% endif %}" defer></script>
+{% endblock %}

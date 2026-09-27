@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CUA-Speedrun · Computer-use agent benchmarks{% endblock %}</title>
+  <meta name="description" content="Run and compare computer-use agents across benchmarks. CUA-Speedrun manages evaluation environments and records task scores, timings, trajectories, and reported model costs.">
+  <meta property="og:title" content="CUA-Speedrun">
+  <meta property="og:description" content="Standardized benchmarking of the speed of computer-use agents.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#75bb20">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/fonts/Barlow-Regular.woff" as="font" type="font/woff" crossorigin>
+  {% block styles %}{% endblock %}
+  <link rel="stylesheet" href="/assets/site.css?v={{ asset_version }}">
+  <script src="/assets/site.js?v={{ asset_version }}" defer></script>
+  {% if page == 'home' %}<script src="/assets/overview.js?v={{ asset_version }}" defer></script>{% endif %}
+  {% if page == 'home' %}<script src="/assets/race.js?v={{ asset_version }}" defer></script>{% endif %}
+</head>
+<body class="page-{{ page }}">
+{% if logo_sprite %}{{ logo_sprite | safe }}<script type="application/json" data-provider-prefixes>{{ provider_prefixes | tojson }}</script>{% endif %}
+<a class="site-skip" href="#main-content">Skip to content</a>
+<header class="site-header">
+  <a class="site-brand" href="/index.html" aria-label="CUA-Speedrun home"><svg class="brand-cursor" viewBox="0 0 13 19" width="11" height="16" aria-hidden="true"><path d="M1 1v15.5l4.2-4 3 6.6 2.6-1.2-3-6.4H13z"/></svg>CUA-Speedrun</a>
+  <nav class="site-navigation" aria-label="Primary navigation" data-site-nav>
+    {% for key, label, href in nav if key != 'home' %}<a href="/{{ href }}" {% if page == key %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+  </nav>
+  <a class="modal-credit" href="https://modal.com" aria-label="powered by Modal"><span>powered by</span><img src="/assets/modal-logo.png" width="118" height="22" alt="Modal"></a>
+</header>
+<main id="main-content" class="{% block main_class %}page-content{% endblock %}">{% block content %}{% endblock %}</main>
+<footer class="site-footer"><span>CUA-Speedrun · powered by <a href="https://modal.com">Modal</a><span class="load-time" data-load-time hidden></span></span><nav aria-label="Footer"><a href="https://github.com/{{ repository }}">Code</a><a href="{{ dataset_url }}">Trajectory data</a><button class="theme-switch" type="button" aria-label="Switch to dark theme" data-theme-switch>Dark theme</button></nav></footer>
+</body>
+</html>

@@ -1,0 +1,4 @@
+<div class="authors" aria-label="Authors">
+  {% for author in site.authors %}<span><a href="{{ author.url }}" rel="author">{{ author.name }}</a>{% if author.equal_contribution %}<sup aria-label="equal contribution">*</sup>{% endif %}</span>{% endfor %}
+</div>
+<p class="author-note">* Equal contribution</p>

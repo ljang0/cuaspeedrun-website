@@ -1,0 +1,9 @@
+{% macro paper_figure(name, alt, caption, label='', eager=false) %}
+<figure class="paper-figure" data-reveal{% if label %} id="fig-{{ name }}"{% endif %}>
+  <a class="figure-image" href="/assets/figures/{{ name }}.svg" data-figure-zoom aria-label="Enlarge figure: {{ alt }}">
+    <img src="/assets/figures/{{ name }}.svg" alt="{{ alt }}" loading="{{ 'eager' if eager else 'lazy' }}" decoding="async" width="{{ figures[name].width }}" height="{{ figures[name].height }}">
+    <span class="figure-enlarge" aria-hidden="true">Enlarge ↗</span>
+  </a>
+  <figcaption>{% if label %}<strong>{{ label }}.</strong> {% endif %}{{ caption }} <a href="/assets/figures/{{ name }}.pdf">Figure PDF</a></figcaption>
+</figure>
+{% endmacro %}

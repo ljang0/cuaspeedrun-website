@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Documentation · CUA-Speedrun{% endblock %}
+{% block content %}
+<header class="document-heading"><h1>Run your first evaluation</h1><p>Use an included agent template to run desktop tasks on Modal. Then adapt the template to evaluate your own model or agent.</p></header>
+<div class="article-layout">
+<nav class="contents-nav" aria-label="On this page"><a href="#getting-started">Before you start</a><a href="#modal">Install and run</a><a href="#agent-contract">Your own agent</a><a href="#open-weights">Open-weight models</a><a href="#measurement">Reading results</a><a href="#hosted">Hosted evaluations</a></nav>
+<article class="article-body">
+<section id="getting-started" data-reveal><h2>Before you start</h2><p>You need a Modal account and the model API key required by your agent. Modal supplies the compute; model calls and compute are billed to your accounts. The example below uses the Codex CLI template and <code>OPENAI_API_KEY</code>.</p></section>
+<section id="modal" data-reveal><h2>Install and run on Modal</h2><p>Install the toolkit on the machine that will coordinate the evaluation:</p><div class="code-block"><button type="button" data-copy>Copy</button><pre><code>git clone --recurse-submodules https://github.com/{{ repository }}.git
+cd cua-speed-run
+uv venv --python 3.11
+source .venv/bin/activate
+uv pip install -e .
+cua-speedrun install
+modal token new
+cua-speedrun doctor --require modal</code></pre></div><p>Add <code>OPENAI_API_KEY</code> and your Modal token pair to your shell or local <code>.env</code>, following the <a href="https://github.com/{{ repository }}#quick-start">repository setup</a>. Keep credentials out of source control.</p><p>Run the template on a small OSWorld task set:</p><div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun run --remote \
+  --submission templates/codex_cli \
+  --benchmark benchmarks/osworld-mini \
+  --agents-per-evaluation 2</code></pre></div><p>The toolkit starts the environments, runs the tasks, and prints a score summary with the saved run's location. This is a practice run; it does not enter an official ranking.</p>
+<details class="guide-detail" id="scored-submissions"><summary>Submit to an installed evaluator</summary><p>An evaluator provides the dashboard, task queue, and worker. Start your installation and inspect its available benchmarks and tracks:</p><div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun dashboard
+# In another terminal using the same installation:
+cua-speedrun catalog
+cua-speedrun submit --template codex_cli \
+  --track open-l40s-shared \
+  --benchmark osworld-pareto-48 \
+  --compute modal --environment modal --no-gpu</code></pre></div><p>Use a track and benchmark listed in your catalog. A track specifies the hardware and evaluation settings. Connect your Modal account in that installation before submitting.</p><p>To use another installation, add <code>--dashboard https://YOUR-EVALUATOR</code> and sign in with <code>cua-speedrun login</code>. Follow a run with <code>cua-speedrun status RUN_ID</code>, download it with <code>cua-speedrun export RUN_ID</code>, or stop it with <code>cua-speedrun cancel RUN_ID</code>.</p></details></section>
+<section id="agent-contract" data-reveal><h2>Evaluate your own agent</h2><p>Copy an <a href="https://github.com/{{ repository }}/tree/main/templates">agent template</a> and edit its two Python files. To try a new model, change the model call and how its response becomes an action.</p><dl class="file-contract"><div><dt><code>agent.py</code></dt><dd>The agent's action loop. It runs once per task as <code>python agent.py &lt;env_url&gt; &lt;task_description&gt;</code>. Use the environment client to observe the desktop, take actions, and finish.</dd></div><div><dt><code>init.py</code></dt><dd>Install dependencies or start a model server before timing begins. Keep this file for command-line runs, even when no setup is needed. Initialization can run more than once, so it must be safe to repeat.</dd></div></dl><p>The agent can observe, step, and call done. It cannot reset the environment or read the task's expected answers. Supply model keys through environment variables rather than including them in either file.</p><p><a href="https://github.com/{{ repository }}/blob/main/src/cua_speedrun/client.py">Python environment client</a> · <a href="https://github.com/{{ repository }}/tree/main/templates">Complete agent examples</a></p></section>
+<section id="open-weights" data-reveal><h2>Run an open-weight model</h2><p>The Qwen3-VL template starts a vLLM model server during initialization. This example requests an L40S GPU on Modal:</p><div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun run --remote \
+  --submission templates/qwen3vl \
+  --benchmark benchmarks/osworld-mini \
+  --agents-per-evaluation 2 --gpu L40S</code></pre></div><p>Choose a GPU with enough memory for your model and context. The desktop environment runs separately. If a run is interrupted, check your Modal workspace for remaining resources.</p></section>
+<section id="measurement" data-reveal><h2>Read the results</h2><p>Task time starts when the agent receives its instruction and ends when it finishes or times out. Machine startup, initialization, and the final success check are excluded. Saved trajectories contain the observations and actions taken during the task.</p><p>Model cost is recorded when the agent reports it. The toolkit does not automatically calculate provider charges. Follow the <a href="https://github.com/{{ repository }}#submitting">cost reporting instructions</a> when adding a model.</p><p>Official rankings compare compatible runs that clear the track's required score. The public <a href="/results.html">results explorer</a> groups research measurements by task set and includes their execution settings and cost assumptions.</p></section>
+<section id="hosted" data-reveal><h2>Hosted evaluations</h2><p>The <a href="/submit">submission page</a> shows whether hosted evaluations are available. When open, you can sign in with GitHub, choose a benchmark, and select a template or upload your Python files. Compute and model calls use your own accounts.</p></section>
+</article></div>
+{% endblock %}

@@ -1,0 +1,168 @@
+{
+  "evidence": "docs/static-results-datasets.md#reviewed-variants-and-exclusions",
+  "subsets": [
+    {
+      "run_id": "svc_56_9e002a",
+      "dataset": "osworld-energy50-representative",
+      "task_count": 50,
+      "archive_sha256": "5731ef82133732322757fb68410942cbba37e93a3e07e068c0972745d0e1a6f8",
+      "task_seed_sha256": "a3209ab8908d4673404b00e781c5d0b441f12938ce169a55e367b29314e42ad1"
+    },
+    {
+      "run_id": "svc_25_a689ab",
+      "dataset": "osworld-unanimous-295",
+      "task_count": 295,
+      "archive_sha256": "536ba92cd626d59848bdb3e15b9f2a1dcac0667058b8ef420782c2b270153bd9",
+      "task_seed_sha256": "5ee588ed3de24c35a21759611a76956d96a662888879935100c0b8a610171653"
+    },
+    {
+      "run_id": "svc_16_409b44",
+      "dataset": "osworld-unanimous-295",
+      "task_count": 295,
+      "archive_sha256": "4ca69bdc02533b193dd4785db548459e178b2eb10b2f60d9bcfd6d85697dc6cf",
+      "task_seed_sha256": "ddcb42d218e7995628eaf1994d5e63477f5ac7dd242a8256bf45cee63fd6574f"
+    },
+    {
+      "run_id": "svc_23_f1fbb4",
+      "dataset": "osworld-unanimous-295",
+      "task_count": 295,
+      "archive_sha256": "df97a092d81d73ac3bdc6e0cab8e690c3e3f471647ea1c5e13739cbb59135371",
+      "task_seed_sha256": "43c754ac8fb46330d50a3d7b53441a83e336f2d304359b642ac74a5dda1328d7"
+    }
+  ],
+  "runs": {
+    "svc_56_9e002a": {
+      "archive_sha256": "5731ef82133732322757fb68410942cbba37e93a3e07e068c0972745d0e1a6f8",
+      "variant": "Single tool call",
+      "notes": "One model tool call per response; the code in that call can contain multiple GUI actions."
+    },
+    "svc_157_c2dbaf": {
+      "archive_sha256": "",
+      "variant": "Single action",
+      "notes": "One GUI action per request, with a fresh screenshot required before the next action."
+    },
+    "svc_93_cbb0ad": {
+      "archive_sha256": "bd526cae8a0e686bd6323a2cb9eeed65b7311bd111a8db1b7b269dd179e9cc4f",
+      "variant": "Codex"
+    },
+    "svc_94_2d132c": {
+      "archive_sha256": "ea24050474f27eda9cc55760601c49995a8e0f8dcc483e0866a58d757fe148d9",
+      "variant": "Codex"
+    },
+    "svc_95_5ae456": {
+      "archive_sha256": "35fafc53af94d4723403aa8b030f3e31a1bf86367d0fc50ca0c5672225ca9f8f",
+      "variant": "Codex"
+    },
+    "svc_96_fee517": {
+      "archive_sha256": "2edfbaa0fa4ef53e72f4a0cb03cf31d70d84b02f4df5760b766b9d7c5a2b73be",
+      "variant": "Codex"
+    },
+    "svc_145_4091f6": {
+      "archive_sha256": "63a3e434820e912dee636c11519dee857337e4f58d5585beb22f47900aed607a",
+      "supersedes_archive_sha256": ["4f8ba0531b4a223c74658ee4a5778b534aa4517bcf597d4e005022f0beb382e6"],
+      "notes": "Completed high-effort resume; the earlier billing-interrupted snapshot remains in the downloadable CSV."
+    },
+    "svc_147_d5291e": {
+      "archive_sha256": "20cac06e00a936fefbc02aadf79eed9fa9d16cf23342c0efe24dd7045a0d581d",
+      "supersedes_archive_sha256": ["43ca655c3db6827fd10107d61debf6738b831b89f704c8344acc4221629f121e"],
+      "notes": "Completed max-effort resume; the earlier billing-interrupted snapshot remains in the downloadable CSV. One final task reports more reasoning tokens than total output tokens; raw provider counters are retained and the impossible derived non-reasoning count is left unknown."
+    },
+    "svc_20_9456b8": {
+      "archive_sha256": "a0c103fd1d60cac0db7d04083e9c60b69fb31748b53b956032e3ca0b152bcb3f",
+      "variant": "Direct API"
+    },
+    "svc_21_00be0a": {
+      "archive_sha256": "5d8082e15a7680de69025704c1d6bb5a862c98ddef4bb239ec1a319f660bf2c3",
+      "variant": "Direct API"
+    },
+    "svc_63_ccb407": {
+      "archive_sha256": "9e8a5d2766c3b81fbf1b49a15a956177322d8c412054c08878d4417322366bcc",
+      "variant": "Direct API"
+    },
+    "svc_153_795ea7": {
+      "archive_sha256": "76871666b7dc074e095a6c7e7fe18b6abd3a8cdf808acf3fc316b5209d23ca1c",
+      "variant": "Codex"
+    },
+    "svc_154_323b97": {
+      "archive_sha256": "ed686dd23a5eb79d37c69a10a448d7c7e5aabe722f058e2cd179a7a45662ced4",
+      "variant": "Codex"
+    },
+    "svc_155_7fbf62": {
+      "archive_sha256": "82c0f1578dd8fce5df70818bccc0d13a375f3fdb503d2dce5f805730c70db1f4",
+      "variant": "Codex"
+    },
+    "svc_156_2bc119": {
+      "archive_sha256": "ffe610af487361a65825726d7f6452d448c1430561ea518e89edce01fde74a03",
+      "variant": "Codex"
+    },
+    "svc_68 + rerun3_xhigh13": {
+      "archive_sha256": "49ed81fc616ece76302d2b53f1348c5c99fedb5a6286ab0d64bbbf5ae3502a82 | 0aea762fa31b06050ac337cae6b0e74823b4901e3eafe70dbc3857e5cb69ed1c",
+      "replaces": ["svc_68_bca75f", "rerun3_xhigh13"],
+      "notes": "Published as one combined 50-task result. Original tasks ran at concurrency 8; the three recovery tasks ran at concurrency 3. Both source archives are retained below."
+    },
+    "svc_121_b4bca3": {
+      "archive_sha256": "547b47ee3e4d209b677df27388a4388018c7c278491ba6cf6d6783569da60dc8",
+      "variant": "Normal I/O"
+    },
+    "svc_151_181620": {
+      "archive_sha256": "92edd27f8b9a4b60ff15240febed263d2aca8d5d404c09e78149fbec15ef414a",
+      "variant": "Normal I/O"
+    },
+    "svc_152_8d02f4": {
+      "archive_sha256": "96e39a5d822380f522f50bdc62e6a99500357755bf7027166ba688c7874bc7ca",
+      "variant": "Normal I/O"
+    },
+    "svc_122_93c9c5": {
+      "archive_sha256": "abfad367e32eb84e9390b306568421c3744cb961d1e9720974764237e33acc54",
+      "variant": "Normal I/O"
+    },
+    "svc_127_422895": {
+      "archive_sha256": "66658fe18f7ecf6a07dd97cf9187f76f22359659fc04b6fcd9f56d8a2364a93c",
+      "variant": "Fast I/O"
+    },
+    "svc_89_b4886a": {
+      "archive_sha256": "5e6f18ca4012c21bca14f21cf5fa8f150297f7605503618e374632c8af4ae698",
+      "variant": "Single tool call"
+    },
+    "svc_90_357e81": {
+      "archive_sha256": "78b3fdda08a5dfe629d8d722cb2e907724efe6f9708ed70175d809f2f932c24b",
+      "variant": "Single tool call"
+    },
+    "svc_143_e8d33d": {
+      "archive_sha256": "8be7df478a87b0da9b5155441af50d5f770673d5ea3575b64bd52dde8788f030",
+      "variant": "Batched tool calls"
+    },
+    "svc_144_1f26e4": {
+      "archive_sha256": "6bdce2c3a1abf2e7059ed893379a7359f4752db9e2b2249aa73a8fa19a2505c3",
+      "variant": "Batched tool calls"
+    },
+    "svc_141_f28fed": {
+      "archive_sha256": "8990ab0c01f34f4f021ec1c45b6d289ac683c624aef727ae128f83675952ffe5",
+      "variant": "Batched tool calls"
+    },
+    "svc_97_82e253": {
+      "archive_sha256": "d51c2bfe976c68b8748f422199294a60f0cf325b7aa7fafb3122fe56b6fc03f3",
+      "exclude_reason": "Older reference (2026-09-03); retaining newer medium run svc_61_1ec4be (2026-09-13, no preload). Not a failed run."
+    },
+    "svc_29_8c9590": {
+      "archive_sha256": "0b60680b835b3b73cf7d4543e05d10cd1bce1eb0eebd61a096a1c6d7db31ef21",
+      "exclude_reason": "Rate-limited playground contrast; contributor-tier high run svc_58_38520a retained."
+    },
+    "svc_31_c00240": {
+      "archive_sha256": "374c227d4221d1cb055f68386ba4641701fa79b659704ba9272fa551c3b6c90c",
+      "exclude_reason": "Rate-limited playground contrast; contributor-tier low run svc_60_72500b retained."
+    },
+    "svc_30_d46514": {
+      "archive_sha256": "9d0fbdef5483df726651c253a701cfda83dad1da70393948a0b3530ec6f5743b",
+      "exclude_reason": "Rate-limited playground contrast; contributor-tier medium run svc_59_d8a6d4 retained."
+    },
+    "svc_34_8c4108": {
+      "archive_sha256": "7b0e07cad9aaa5f816138fb771071842b9fe8b4747585a3ed9698aa29f8a4cb0",
+      "exclude_reason": "Rate-limited playground contrast; contributor-tier minimal run svc_61_96ce3f retained."
+    },
+    "svc_32_109178": {
+      "archive_sha256": "4ca0550099cd1e27f54b595d845a2a4e69175d25308f74b216590183349503c6",
+      "exclude_reason": "Rate-limited playground contrast; contributor-tier xhigh run svc_69_41f88a retained."
+    }
+  }
+}

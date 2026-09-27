@@ -1,0 +1,28 @@
+<figure class="race" aria-labelledby="race-title" data-race data-speed="{{ race.speed }}">
+  <header class="race-head">
+    <div>
+      <h2 id="race-title">Seven agents, one average {{ race.label }} task</h2>
+      <p>Mean time per task on the {{ race.tasks }}-task set, replayed at <span data-race-speed-label>{{ race.speed }}×</span>.</p>
+    </div>
+    <p class="race-clock" aria-hidden="true" data-race-clock>0:00.00</p>
+  </header>
+  <ol class="race-lanes" data-race-lanes>
+    {% for r in race.runners %}<li class="race-lane is-done{% if r.fastest %} is-fastest{% endif %}" data-time="{{ r.time }}" data-score="{{ r.score }}" data-steps="{{ r.steps }}" style="--p: 1">
+      <p class="lane-name"><svg class="lane-logo" aria-hidden="true"><use href="#logo-{{ r.provider }}"/></svg><strong>{{ r.model }}</strong><span>{{ r.effort }}{% if r.variant %} · {{ r.variant }}{% endif %}</span></p>
+      <div class="lane-track" aria-hidden="true"><span class="lane-trail"></span><span class="lane-marks"></span><svg class="lane-cursor" viewBox="0 0 13 19" width="13" height="19"><path d="M1 1v15.5l4.2-4 3 6.6 2.6-1.2-3-6.4H13z"/></svg></div>
+      <p class="lane-result"><span class="lane-place">#{{ r.place }}</span><span class="lane-time">{{ r.clock }}</span><span class="lane-score">{{ '%.1f' % (r.score * 100) }}%</span></p>
+    </li>{% endfor %}
+  </ol>
+  <div class="race-controls" hidden data-race-controls>
+    <button type="button" class="race-go" data-race-replay>Replay</button>
+    <div role="group" aria-label="Replay speed">
+      {% for s in [race.speed, 10, 1] %}<button type="button" data-race-speed="{{ s }}" aria-pressed="{{ 'true' if loop.first else 'false' }}">{{ s }}×{% if s == 1 %} (real time){% endif %}</button>{% endfor %}
+    </div>
+    <div role="group" aria-label="Order lanes by">
+      <button type="button" data-race-sort="lineup" aria-pressed="true">Start order</button>
+      <button type="button" data-race-sort="time" aria-pressed="false">Time</button>
+      <button type="button" data-race-sort="score" aria-pressed="false">Score</button>
+    </div>
+  </div>
+  <figcaption>Each lane is a measured configuration; ticks mark its mean number of steps. At the finish, each shows its mean task time and task score. {% set first = race.runners | selectattr("fastest") | first %}{% if first.score < race.runners | map(attribute="score") | max %}The first to finish scores {{ '%.1f' % (first.score * 100) }}%. {% endif %}<a href="/{{ race.href }}">See all {{ race.label }} results</a></figcaption>
+</figure>

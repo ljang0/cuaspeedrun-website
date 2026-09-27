@@ -1,0 +1,152 @@
+{
+  "verified_on": "2026-09-16",
+  "release_date_definition": "First public availability of the identified model version, including API or app previews; not a checkpoint, upload, evaluation, or later weights-release date. Null means the archived model version cannot be identified.",
+  "model_type_definition": "open means downloadable model weights under the publisher's license as of verified_on; it does not imply an OSI-approved license. closed means proprietary hosted access without published weights for this model version.",
+  "models": {
+    "Yutori n2": {
+      "verified_on": "2026-09-19",
+      "aliases": ["Navigator n2"],
+      "model_type": "closed",
+      "release_date": "2026-08-26",
+      "release_source": "https://yutori.com/blog/introducing-n2",
+      "access_source": "https://docs.yutori.com/reference/n2",
+      "notes": "Publisher's August 26 launch announces Navigator n2 through the Yutori API. Archived response.model is n2; the evaluated GUI-only SDK configuration disables bash/read/write/edit. Sources checked September 19, 2026."
+    },
+    "Claude Opus 5": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-07-24",
+      "release_source": "https://www.anthropic.com/news/claude-opus-5",
+      "access_source": "https://www.anthropic.com/news/claude-opus-5",
+      "notes": "Proprietary Claude model, available through Anthropic and hosted partners."
+    },
+    "Claude Sonnet 5": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-06-30",
+      "release_source": "https://www.anthropic.com/news/claude-sonnet-5",
+      "access_source": "https://www.anthropic.com/news/claude-sonnet-5",
+      "notes": "Proprietary Claude model, available through Anthropic and hosted partners."
+    },
+    "GLM-5V Turbo": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-04-01",
+      "release_source": "https://docs.z.ai/release-notes/new-released",
+      "access_source": "https://docs.z.ai/guides/vlm/glm-5v-turbo",
+      "notes": "The publisher's release notes date this API model April 1; the GLM-V repository posted its announcement April 2. GLM-5V-Turbo is not one of the downloadable GLM-V models; the GLM family name does not establish open weights."
+    },
+    "GPT-5.6 Luna": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-07-09",
+      "release_source": "https://developers.openai.com/api/docs/changelog",
+      "access_source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "notes": "OpenAI's July 9, 2026 changelog announces public availability of GPT-5.6 Sol and Luna. The legacy June 26 date is not the public release date. Proprietary hosted model."
+    },
+    "GPT-5.6 Sol": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-07-09",
+      "release_source": "https://developers.openai.com/api/docs/changelog",
+      "access_source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+      "notes": "OpenAI's July 9, 2026 changelog announces public availability of GPT-5.6 Sol and Luna. The legacy June 26 date is not the public release date. Proprietary hosted model."
+    },
+    "GPT-6 Astra": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-09-03",
+      "release_source": "https://developers.openai.com/api/docs/changelog",
+      "access_source": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+      "notes": "OpenAI's September 3, 2026 changelog announces GPT-6 Astra. Proprietary hosted model."
+    },
+    "Gemini 3 Flash Preview": {
+      "aliases": ["Gemini 3 Flash"],
+      "model_type": "closed",
+      "release_date": "2025-12-17",
+      "release_source": "https://ai.google.dev/gemini-api/docs/deprecations",
+      "access_source": "https://ai.google.dev/gemini-api/docs/models",
+      "notes": "gemini-3-flash-preview; the legacy aggregate shortens the same model name to Gemini 3 Flash. Proprietary Gemini API model, not the open-weight Gemma family."
+    },
+    "Gemini 3.6 Flash": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-07-21",
+      "release_source": "https://ai.google.dev/gemini-api/docs/deprecations",
+      "access_source": "https://ai.google.dev/gemini-api/docs/models",
+      "notes": "Proprietary Gemini API model. Metadata is retained even though its incomplete evaluation is excluded."
+    },
+    "Gemini 3.7 Flash": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-08-13",
+      "release_source": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/",
+      "access_source": "https://ai.google.dev/gemini-api/docs/models",
+      "notes": "Proprietary Gemini API model."
+    },
+    "Gemini 3.8 Flash": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-09-02",
+      "release_source": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/",
+      "access_source": "https://ai.google.dev/gemini-api/docs/models",
+      "notes": "Proprietary Gemini API model."
+    },
+    "Kimi K3": {
+      "aliases": [],
+      "model_type": "open",
+      "release_date": "2026-07-16",
+      "release_source": "https://www.kimi.com/en/blog/kimi-k3",
+      "access_source": "https://huggingface.co/moonshotai/Kimi-K3",
+      "notes": "Public model launch July 16; downloadable weights followed later. API use in the evaluation does not make this a closed-weight model."
+    },
+    "Meta Muse Spark": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": null,
+      "release_source": null,
+      "access_source": "https://ai.meta.com/blog/introducing-muse-spark-msl/",
+      "notes": "Version unverified. The unversioned archived run svc_16_409b44 records only the rolling provider alias super_nova_ext, not a Muse Spark version. Neither the family's April 8 launch nor the legacy August 5 date identifies the evaluated version; do not place this run on the release-date curve. The unversioned legacy aggregate likewise does not pin a version."
+    },
+    "Meta Muse Spark 1.1": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-07-09",
+      "release_source": "https://ai.meta.com/blog/introducing-muse-spark-meta-model-api/",
+      "access_source": "https://ai.meta.com/blog/introducing-muse-spark-meta-model-api/",
+      "notes": "Proprietary Muse Spark model served through Meta Model API; not an open-weight Llama or Muse Glimmer release."
+    },
+    "Meta Muse Spark 1.2": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-08-05",
+      "release_source": "https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2",
+      "access_source": "https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2",
+      "notes": "Proprietary model available through Muse Code and Meta Model API."
+    },
+    "Meta Muse Spark 1.3": {
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-09-02",
+      "release_source": "https://research.meta.ai/blog/introducing-muse-spark-1-3",
+      "access_source": "https://research.meta.ai/blog/introducing-muse-spark-1-3",
+      "notes": "Proprietary model available through Muse Code and Meta Model API."
+    },
+    "MiniMax M3": {
+      "aliases": ["MiniMax-M3"],
+      "model_type": "open",
+      "release_date": "2026-06-01",
+      "release_source": "https://www.minimax.io/blog/minimax-m3",
+      "access_source": "https://huggingface.co/MiniMaxAI/MiniMax-M3",
+      "notes": "Public model launch June 1; downloadable weights followed later under the MiniMax Community License. The hyphenated legacy label identifies the same model."
+    },
+    "Qwen3.5-9B-Thinking": {
+      "aliases": ["Qwen3.5-VL 9B"],
+      "model_type": "open",
+      "release_date": "2026-03-02",
+      "release_source": "https://github.com/QwenLM/Qwen3.8#news",
+      "access_source": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "notes": "Qwen/Qwen3.5-9B with thinking enabled; the legacy VL name describes this multimodal model, not a separate release. Official news announces availability March 2. February 27 is a pre-release repository upload date. Apache-2.0 weights."
+    }
+  }
+}

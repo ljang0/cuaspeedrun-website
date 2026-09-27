@@ -1,0 +1,32 @@
+{#- Record board for one public results page: the best configuration on each measure. -#}
+{% macro holder(e) -%}
+<p class="record-holder">{% for p in provider_prefixes if e.model.startswith(p.prefix) %}<svg class="record-logo" viewBox="0 0 24 24" role="img" aria-label="{{ p.name }}"><use href="#logo-{{ p.slug }}"/></svg>{% endfor %}<strong>{{ e.series or e.model }}</strong><span>{{ e.effort }}</span></p>
+{%- endmacro %}
+{% set entries = dashboard_entries %}
+{% if entries %}
+{% set top = entries | sort(attribute='time_per_task_sec') | sort(attribute='performance', reverse=true) | first %}
+{% set fastest = entries | sort(attribute='performance', reverse=true) | sort(attribute='time_per_task_sec') | first %}
+{% set priced = entries | rejectattr('cost_usd', 'none') | list %}
+{% set cheapest = (priced | sort(attribute='performance', reverse=true) | sort(attribute='cost_usd') | first) if priced else none %}
+<section class="record-board" aria-label="Records on {{ selected_dataset.label }}" data-record-board>
+  <div class="record">
+    <p class="record-kind">Top score</p>
+    <p class="record-value"><span data-count-to="{{ '%.1f' % (top.performance * 100) }}" data-decimals="1">{{ '%.1f' % (top.performance * 100) }}</span><small>%</small></p>
+    {{ holder(top) }}
+    <p class="record-extra">{{ '%.1f' % top.time_per_task_sec }} s{% if top.cost_usd is not none %} · ${{ '%.2f' % top.cost_usd }}{% endif %} per task</p>
+  </div>
+  <div class="record is-wr">
+    <p class="record-kind">Fastest <abbr title="World record: the fastest mean task time, at any score">WR</abbr></p>
+    <p class="record-value"><span data-count-to="{{ '%.1f' % fastest.time_per_task_sec }}" data-decimals="1">{{ '%.1f' % fastest.time_per_task_sec }}</span><small>s</small></p>
+    {{ holder(fastest) }}
+    <p class="record-extra">Scores {{ '%.1f' % (fastest.performance * 100) }}%</p>
+  </div>
+  {% if cheapest %}<div class="record">
+    <p class="record-kind">Cheapest</p>
+    <p class="record-value"><small>$</small><span data-count-to="{{ '%.3f' % cheapest.cost_usd }}" data-decimals="3">{{ '%.3f' % cheapest.cost_usd }}</span></p>
+    {{ holder(cheapest) }}
+    <p class="record-extra">Scores {{ '%.1f' % (cheapest.performance * 100) }}% in {{ '%.1f' % cheapest.time_per_task_sec }} s</p>
+  </div>{% endif %}
+  <p class="record-foot">{{ entries | length }} configurations on the same {{ selected_dataset.paper_subset.selected_tasks if selected_dataset.paper_subset else '' }} tasks.{% if not cheapest or not (top.entry_id == fastest.entry_id == cheapest.entry_id) %} No single configuration holds every record.{% endif %}</p>
+</section>
+{% endif %}

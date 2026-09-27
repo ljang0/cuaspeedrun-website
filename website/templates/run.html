@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Run an evaluation · CUA-Speedrun{% endblock %}
+{% block content %}
+<header class="document-heading"><h1>Run an evaluation</h1><p>Evaluate a template or your own agent on benchmark tasks. Runs use your Modal account and model API keys.</p></header>
+<div class="connection-notice" role="status" id="connection-status"><p>Checking evaluation service…</p></div>
+<noscript><p>JavaScript is required for hosted submissions. You can also <a href="/docs.html#modal">run independently from the command line</a>.</p></noscript>
+<section class="run-guide article-body" id="run-guide" hidden>
+<h2>Run from your own machine</h2>
+<p>The command-line toolkit is available now. It starts the agent and desktop environments on Modal and saves the results to your machine.</p>
+<ol class="run-steps run-route"><li><strong>Install</strong>Install CUA-Speedrun and connect your Modal account.</li><li><strong>Pick an agent</strong>Choose an agent template and add its model API key.</li><li><strong>Run</strong>Run a benchmark and inspect the saved scores and trajectories.</li></ol>
+<p><a class="console-button" href="/docs.html#modal">Run on Modal</a></p>
+<p><a href="/docs.html#agent-contract">Bring your own agent</a> · <a href="https://github.com/{{ repository }}/tree/main/templates">Browse templates</a></p>
+</section>
+<div class="submit-layout" id="submit-layout" hidden>
+<form id="evaluation-form" autocomplete="off">
+<div class="account-status" id="account-status" hidden><a class="console-button" href="/login/github?next=%2Fsubmit" id="sign-in">Sign in with GitHub</a><p id="signed-in" hidden></p></div>
+<fieldset data-auth-field disabled><legend>Benchmark and settings</legend>
+<label for="benchmark">Benchmark</label><select id="benchmark" name="benchmark_id" required><option value="">Select a benchmark</option></select>
+<label for="track">Evaluation track</label><select id="track" name="track" required><option value="">Select a track</option></select><p class="form-help" id="track-help">A track specifies the hardware and evaluation settings used to compare runs.</p>
+<label for="evaluation-name">Evaluation name</label><input id="evaluation-name" name="name" maxlength="120" required placeholder="Evaluation name">
+</fieldset>
+<fieldset data-auth-field disabled><legend>Agent implementation</legend>
+<label for="source">Agent source</label><select id="source" name="source"><option value="upload">Upload Python files</option></select><p id="template-description" class="form-help"></p>
+<div id="upload-fields"><label for="agent-file">agent.py · required</label><input type="file" id="agent-file" name="agent_file" accept=".py" required><label for="init-file">init.py · optional setup</label><input type="file" id="init-file" name="init_file" accept=".py"><p>Your agent runs once per task. Setup runs before the task clock starts. If you omit init.py, we supply an empty initializer. Up to 1 MiB combined. <a href="/docs.html#agent-contract">See the agent interface</a></p></div>
+<label class="check-label"><input type="checkbox" id="allocate-gpu" name="allocate_gpu"><span>Allocate the track's GPU for my model.<br><small>Leave off for agents that only call external model APIs.</small></span></label>
+</fieldset>
+<fieldset data-auth-field disabled><legend>Modal credentials and model keys</legend>
+<p>Compute is billed to your Modal workspace. Model calls are billed to the providers whose keys you supply.</p>
+<p id="modal-status">Connect a Modal token pair. <a href="https://modal.com/settings/tokens" target="_blank" rel="noopener">Create a token in Modal</a></p>
+<div class="two-fields"><div><label for="modal-id">Modal token ID</label><input type="password" id="modal-id" autocomplete="off" placeholder="ak-…" spellcheck="false"></div><div><label for="modal-secret">Modal token secret</label><input type="password" id="modal-secret" autocomplete="new-password" placeholder="as-…" spellcheck="false"></div></div>
+<p>Modal credentials are encrypted and saved to your account for future runs. You can remove them in <a href="/me">account settings</a>. Model keys below apply only to this evaluation and are stored encrypted.</p>
+<label>Model API keys and environment variables</label><div id="environment-keys"></div><button type="button" class="secondary-button" id="add-key">+ Add a key</button>
+<p>Use the exact variable name your agent reads, such as OPENAI_API_KEY or ANTHROPIC_API_KEY. Never include keys in uploaded code.</p>
+</fieldset>
+<fieldset data-auth-field disabled class="launch-review"><legend>Review and launch</legend><p id="run-summary">Select a benchmark and track above.</p><label class="check-label"><input type="checkbox" id="billing-consent" required><span>I understand this launches paid compute in my Modal account and may make paid calls using my model API keys.</span></label><p>Results start unlisted. A result-card link can be shared; publishing to a leaderboard is a separate action after evaluation.</p><button class="console-button" type="submit" id="launch">Launch evaluation</button></fieldset>
+<p id="form-message" class="form-message" role="alert"></p>
+</form>
+<aside class="submit-note"><h2>Submission format</h2><p><code>agent.py</code> contains your action loop.<br><code>init.py</code> prepares dependencies or a model server.</p><h3>What happens next</h3><p>The evaluator queues your run, starts environments on Modal, and records each task. Follow progress, inspect trajectories, and download the evidence from your run page.</p><h3>Command-line usage</h3><p><a href="/docs.html#modal">Run the benchmark on Modal</a></p><h3>Agent templates</h3><p><a href="https://github.com/{{ repository }}/tree/main/templates">Browse agent templates</a></p></aside>
+</div>
+<script src="/assets/submit.js?v={{ asset_version }}" defer></script>
+{% endblock %}

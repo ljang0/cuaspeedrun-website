@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% from "figures.html" import paper_figure with context %}
+{% block title %}Research · CUA-Speedrun{% endblock %}
+{% block content %}
+<header class="document-heading article-heading">
+  <h1>CUA-Speedrun: Standardized Benchmarking of the Speed of Computer-Use Agents</h1>
+  {% include "authors.html" %}
+  <div class="article-links"><a href="/results.html">Explore results</a><a href="https://github.com/{{ repository }}">Source code</a><a href="{{ dataset_url }}">Trajectory data</a><a href="#cite">Cite</a>{% if site.paper_url %}<a href="{{ site.paper_url }}">Paper PDF</a>{% endif %}</div>
+</header>
+
+<section class="abstract" aria-labelledby="abstract-heading">
+  <h2 id="abstract-heading">Abstract</h2>
+  <p>Computer-use agents (CUAs) operate graphical interfaces to complete tasks on a computer, and now exceed human reference scores on several standard benchmarks. Their speed and cost remain a barrier to deployment. Measuring speed reliably is difficult because benchmarks run on different machines, containers, and agent code, which confounds task time. We present CUA-Speedrun, standardized infrastructure and task sets for measuring the performance, speed, and cost of CUAs. It uses a uniform virtual machine setup and execution pipeline, and a common agent interface that lets one agent implementation run across benchmarks. Across four benchmarks, we study how reasoning effort, agent harnesses, and environment latency affect performance, time, and cost. No single model family is best on all three, and no open-weight model we evaluate is on the Pareto frontier. For some models, more reasoning shortens task time, while faster environment I/O lengthens it. We also show that most benchmarks can be reduced to a representative subset while preserving model rankings, making repeated evaluation cheaper.</p>
+</section>
+
+{{ paper_figure('scene', 'Overview diagram: four benchmarks reduced to representative tasks, agents run on the same tasks and runtime, and a summary of frontier, reasoning, and I/O findings.', 'CUA-Speedrun combines representative task selection with standardized infrastructure on Modal, enabling consistent comparisons across models, agent harnesses, and reasoning settings. More reasoning can reduce task time and model cost, while faster environment I/O can make agents slower.', 'Figure 1', eager=true) }}
+
+<div class="article-layout">
+<nav class="contents-nav" aria-label="On this page">
+  <a href="#introduction">1 Introduction</a>
+  <a href="#evaluation">2 Standardized evaluation</a>
+  <a href="#selection">3 Representative tasks</a>
+  <a href="#infrastructure">4 Infrastructure</a>
+  <a href="#setup">5 Experimental setup</a>
+  <a href="#results">6 Results</a>
+  <a href="#recommendations">7 Recommendations</a>
+  <a href="#related">8 Related work</a>
+  <a href="#limitations">9 Limitations</a>
+  <a href="#conclusion">10 Conclusion</a>
+  <a href="#cite">Citation</a>
+</nav>
+<article class="article-body paper-body">
+
+<section id="introduction" data-reveal>
+  <h2><span class="sec-no">1</span>Introduction</h2>
+  <p>Computer-use agents interact with graphical user interfaces to reach a goal given in natural language. Because they use the same interface as people, they can automate software that offers no API. Measured by success alone, recent models have passed human baselines: frontier models report 78.7% to 86.1% on OSWorld-Verified, against a 72.4% human reference score, and perform well on long-horizon benchmarks such as OSWorld 2.0 and CUA-World.</p>
+  <p>Speed and cost now limit practical use. Research on efficiency has trailed research on capability, partly because speed is hard to compare fairly. Benchmarks run on different execution environments, from local virtual machines to cloud-parallel desktops, and differ in deployment, API interfaces, hyperparameters, agent harnesses, and even benchmark implementations. Each of these changes the measured time.</p>
+  <p>CUA-Speedrun is a standardized platform that uses existing benchmarks to measure the speed and cost of CUAs. It addresses three problems:</p>
+  <ul class="contribution-list">
+    <li><strong>Uniform evaluation infrastructure.</strong> Every evaluation runs through the same execution pipeline and the same virtual machine setup on a serverless cloud provider, <a href="https://modal.com">Modal</a>.</li>
+    <li><strong>A common agent interface.</strong> One interface for observing the desktop and acting on it lets a single agent implementation run on any supported benchmark, while leaving the agent's own design free.</li>
+    <li><strong>Representative task subsets.</strong> An energy-minimization method selects a small subset of each benchmark that preserves agent scores and their ordering. On OSWorld it reduces evaluation time by 84.9%.</li>
+  </ul>
+  <p>We benchmark frontier and open-weight models on OSWorld-Verified and OSWorld 2.0, and extend the analysis to CUA-World (long-horizon tasks) and MyPCBench (personalized computer use). Success alone hides large differences in speed. On OSWorld, the open-weight Kimi K3 at maximum reasoning matches GPT-6 Astra at high effort but takes 4.4× longer per task, and none of the open-weight models we evaluate lie on a performance–time or performance–cost Pareto frontier. Speed also interacts with reasoning and infrastructure in unexpected ways: more reasoning can shorten tasks by avoiding repeated failed actions, and faster I/O can lengthen them.</p>
+</section>
+
+<section id="evaluation" data-reveal>
+  <h2><span class="sec-no">2</span>Standardized computer-use evaluation</h2>
+  <p>A CUA evaluation combines four components: the <em>agent</em>, driven by a language model; the <em>benchmark</em>, which defines what must be accomplished; the <em>environment infrastructure</em>, which manages virtual machines, the environment lifecycle, and the action and observation contract; and the <em>agent loop</em>, which determines how the model interacts with the infrastructure. Existing evaluations make different choices for all four at once. Adopting a new model may bring a benchmark-specific action loop, and adopting a new benchmark may require changes to the agent or infrastructure. CUA-Speedrun separates these components so each can be changed on its own.</p>
+  <h3>Problem setup</h3>
+  <p>Following prior computer-use benchmarks, each task specifies an initial desktop state, a natural-language instruction, and a verifier (a programmatic check or a model judge) that scores the agent's trajectory and final state. Agents observe screenshots and act through keyboard and mouse actions. Comparisons between agents hold the benchmark and infrastructure fixed; comparisons across benchmarks hold the agent and infrastructure fixed. Each change is therefore a controlled ablation.</p>
+  <h3>Measuring speed</h3>
+  <p>For each task, the clock starts when the instruction is given to the agent and stops when the agent terminates or reaches the task limit (a step limit, a wall-time limit, or both). Environment provisioning, task setup, agent initialization, and verification happen outside this interval. Task time is further divided into environment operations and agent operations, so agent time can be attributed to the agent alone. We also log the cost of every model call. Infrastructure failures are retried; agent failures end the trajectory, which is then scored.</p>
+  {% include "clock-line.html" %}
+</section>
+
+<section id="selection" data-reveal>
+  <h2><span class="sec-no">3</span>Selecting representative tasks</h2>
+  <p>Full computer-use evaluations are expensive: long trajectories add API or GPU cost, and managing virtual machines adds overhead. GPT-5.4, for example, costs about $4,000 to evaluate on CUA-World-Long. We ask whether a smaller task set can recover the scores of the agents evaluated on the full set, keeping individual scores close and preserving their order.</p>
+  <h3>Selection by energy distance</h3>
+  <p>We validate every selection method with leave-one-agent-out evaluation: for each agent, a subset is built from the other agents' results only, and the held-out agent's subset score is compared with its full-benchmark score. Across several iterations of this procedure, the best method minimized the energy distance between the distributions of agent scores on the full benchmark and on the subset. Let <var>C<sub>mi</sub></var> ∈ [0, 1] be agent <var>m</var>'s partial score on task <var>i</var> and <var>B<sub>mi</sub></var> = 1[<var>C<sub>mi</sub></var> = 1] its exact completion. Task <var>i</var> is represented by</p>
+  <math display="block" class="equation"><mrow><msub><mi>z</mi><mi>i</mi></msub><mo>=</mo><mo>(</mo><msub><mi>C</mi><mrow><mn>1</mn><mi>i</mi></mrow></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mi>C</mi><mrow><mi>M</mi><mi>i</mi></mrow></msub><mo>,</mo><msub><mi>B</mi><mrow><mn>1</mn><mi>i</mi></mrow></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mi>B</mi><mrow><mi>M</mi><mi>i</mi></mrow></msub><mo>)</mo><mo>∈</mo><msup><mi>ℝ</mi><mrow><mn>2</mn><mi>M</mi></mrow></msup></mrow></math>
+  <p>so two tasks are similar when agents show similar patterns of partial and exact completion on them. With <var>D<sub>ij</sub></var> = ‖<var>z<sub>i</sub></var> − <var>z<sub>j</sub></var>‖<sub>2</sub> and <var>D̄</var> the mean distance between distinct tasks, a subset <var>S<sub>K</sub></var> of <var>K</var> tasks from <var>N</var> is scored by</p>
+  <math display="block" class="equation"><mrow><mi>ℰ</mi><mo>(</mo><msub><mi>S</mi><mi>K</mi></msub><mo>)</mo><mo>=</mo><mfrac><mn>1</mn><mover accent="true"><mi>D</mi><mo>¯</mo></mover></mfrac><mrow><mo>(</mo><mfrac><mn>2</mn><mrow><mi>K</mi><mi>N</mi></mrow></mfrac><munder><mo>∑</mo><mrow><mi>i</mi><mo>∈</mo><msub><mi>S</mi><mi>K</mi></msub></mrow></munder><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msub><mi>D</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><mfrac><mn>1</mn><msup><mi>K</mi><mn>2</mn></msup></mfrac><munder><mo>∑</mo><mrow><mi>i</mi><mo>,</mo><msup><mi>i</mi><mo>′</mo></msup><mo>∈</mo><msub><mi>S</mi><mi>K</mi></msub></mrow></munder><msub><mi>D</mi><mrow><mi>i</mi><msup><mi>i</mi><mo>′</mo></msup></mrow></msub><mo>−</mo><mfrac><mn>1</mn><msup><mi>N</mi><mn>2</mn></msup></mfrac><munder><mo>∑</mo><mrow><mi>j</mi><mo>,</mo><msup><mi>j</mi><mo>′</mo></msup></mrow></munder><msub><mi>D</mi><mrow><mi>j</mi><msup><mi>j</mi><mo>′</mo></msup></mrow></msub><mo>)</mo></mrow></mrow></math>
+  <p>The objective favors subsets that cover the performance patterns of the full benchmark while avoiding redundant tasks. The last term depends only on the full benchmark and is constant during selection. We minimize it approximately from 100 starting subsets, swapping one selected task for an unselected one whenever the swap lowers the objective, and keep the best subset found.</p>
+  <h3>How many tasks are enough</h3>
+  <p>Let <var>ρ<sub>q</sub></var>(<var>K</var>) be the Spearman correlation between leave-one-agent-out subset estimates and full-benchmark results for quantity <var>q</var> (partial score or exact completion). We choose the smallest <var>K</var> that clears 0.95 at <var>K</var> and both neighbors, so a size that works only by chance is not selected:</p>
+  <math display="block" class="equation"><mrow><msup><mi>K</mi><mo>*</mo></msup><mo>=</mo><mo>min</mo><mrow><mo>{</mo><mi>K</mi><mo>:</mo><munder><mo>min</mo><mi>q</mi></munder><munder><mo>min</mo><mrow><mi>k</mi><mo>∈</mo><mo>{</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>K</mi><mo>,</mo><mi>K</mi><mo>+</mo><mn>1</mn><mo>}</mo></mrow></munder><msub><mi>ρ</mi><mi>q</mi></msub><mo>(</mo><mi>k</mi><mo>)</mo><mo>≥</mo><mn>0.95</mn><mo>}</mo></mrow></mrow></math>
+  <table class="paper-subsets"><caption>Table 1. CUA-Speedrun evaluation sets</caption><thead><tr><th scope="col">Benchmark</th><th scope="col">Eligible tasks</th><th scope="col">Selected tasks</th><th scope="col">Reduction</th></tr></thead><tbody>{% for subset in overview_data %}<tr><th scope="row">{{ subset.label }}</th><td>{{ subset.eligible_tasks }}</td><td><a href="/{{ subset.href }}">{{ subset.selected_tasks }}</a></td><td>{{ '%.1f' % (subset.eligible_tasks / subset.selected_tasks) }}×</td></tr>{% endfor %}</tbody></table>
+  <h3>Validation on held-out models</h3>
+  <p>At 50 OSWorld tasks, energy selection reduces the held-out partial-score error from 4.02 to 2.16 percentage points compared with difficulty-stratified random selection, and reduces the mean-task-time error from 51.0 to 31.4 s even though selection uses only scores. Rank correlations are 0.983 (partial score) and 0.975 (exact completion) on OSWorld at 50 tasks, and 0.964 and 0.955 on OSWorld 2.0 at 52 tasks; both stay above 0.95 at the neighboring sizes. At a fixed budget of 32 OSWorld tasks, energy selection has a mean error of 4.42 points, against 5.08 for stratified random selection and 8.08 for an IRT-inspired method.</p>
+  {{ paper_figure('selection', 'Four panels: score error and time error against number of selected OSWorld tasks for stratified random and energy selection, and Spearman rank correlation against number of tasks for OSWorld and OSWorld 2.0.', 'Score error and rank correlation on held-out models. OSWorld uses nine leave-one-agent-out folds and OSWorld 2.0 uses seven. The randomized baseline averages 300 difficulty-stratified selections per task count. Dotted vertical lines mark 50 and 52 tasks; horizontal lines mark rank correlation 0.95.', 'Figure 2') }}
+  <p>The subset also preserves the speed–performance frontier: estimated from held-out 50-task subsets, it recovers two of the three full-set frontier configurations and adds none (100% precision, 66.7% recall), and pairwise dominance agrees for 91.7% of model pairs. The 50 selected OSWorld tasks are 5.9× fewer than the full set and account for 15.1% of recorded task time, a 6.6× reduction. Selected subsets may need revalidation as agent capabilities change.</p>
+</section>
+
+<section id="infrastructure" data-reveal>
+  <h2><span class="sec-no">4</span>Infrastructure</h2>
+  <h3>Hosting</h3>
+  <p>We adapt the virtual machine runtime from Gym-Anything to run task environments natively in Modal sandboxes. Agents and environments run in separate sandboxes for isolation, and Modal provides a standardized hosted runtime, so differences in users' own machines do not affect results. Self-hosted open-weight models are served with vLLM on fixed L40S GPUs. A Python library handles GPU scheduling, environment allocation, and parallel evaluation.</p>
+  <h3>Actions and observations</h3>
+  <p>The action space consists of keyboard actions, such as typing text or pressing Ctrl+C, and mouse actions, such as clicking or double-clicking at coordinates. Observations are 1920×1080 RGB screenshots of the desktop.</p>
+  <h3>Checking the interface with CUA-AutoDebug</h3>
+  <p>To make actions behave identically across runtimes, CUA-AutoDebug runs a controlled application that records the keyboard and mouse input it receives and compares it with the intended input, and checks that screenshots match the application's state. Of 100 cases covering clicks, drags, scrolls, key presses, key combinations, text entry, and sequences, 94 are supported by the tested interface. Repeating each five times through SSH and PyAutoGUI, 83 pass and 11 fail: one shell-expansion case, one shifted-symbol case (typing &gt; when &lt; was requested), five Unicode cases (accented characters silently dropped), and four named-key cases. After we corrected literal text handling, key and modifier mapping, and characters missing from the default keymap, the CUA-Speedrun runtime passes all 470 runs.</p>
+  <h3>FastCUA, a fast I/O mode</h3>
+  <p>Standard computer-use runtimes take roughly 2–3 s from issuing an action to returning an observation, dominated by action execution, waiting for the application, and networking. That delay incidentally gives applications time to respond, so the agent sees the effect of its action. Our main evaluations keep this design. We also built FastCUA, which optimizes networking, action execution, and image processing to bring action-to-observation latency down to 2–28 ms, and use it to test whether lower infrastructure latency reduces task time (Section 6.4).</p>
+  <h3>Writing an agent</h3>
+  <p>An agent is a single Python file containing its loop, with an optional initializer for setup that runs before the clock starts. We provide templates for popular agents, and one command runs either a hosted or a local evaluation. The <a href="/docs.html">documentation</a> walks through both.</p>
+</section>
+
+<section id="setup" data-reveal>
+  <h2><span class="sec-no">5</span>Experimental setup</h2>
+  <p>We evaluate 56 agent configurations on OSWorld and 21 on OSWorld 2.0 using the representative task sets from Section 3. Configurations cover frontier open-weight and proprietary models, each run through its public reference agent or native computer-use API at selected reasoning-effort settings, with tasks and infrastructure held fixed. Every agent design is checked by manual inspection and with CUA-AutoDebug on representative tasks. For selected models we also compare agent harnesses, standard and fast I/O, and single versus batched tool calls per model response.</p>
+  <p><strong>Metrics.</strong> For each configuration we report the mean verifier score, which keeps partial credit, the mean task time (Section 2), and the mean model cost per task, taken from the provider's recorded charge or from recorded token usage at the applicable API prices. We report the performance–time and performance–cost Pareto frontiers and the joint frontier over all three.</p>
+  <p><strong>Repeatability.</strong> Across five seeds, GPT-6 Astra at low effort scores 90.8 ± 1.8% on OSWorld with a mean task time of 89.5 ± 2.2 s.</p>
+</section>
+
+<section id="results" data-reveal>
+  <h2><span class="sec-no">6</span>Results</h2>
+  <h3>6.1 No single model family dominates the frontier</h3>
+  {{ paper_figure('overview', 'Four scatter plots: mean score against mean task time and against model cost, for OSWorld and OSWorld 2.0, with Pareto frontiers circled.', 'Different agents define the speed and cost frontiers. Mean score against mean task time and model cost on OSWorld (top, 54 configurations) and OSWorld 2.0 (bottom, 19 configurations), excluding MiniMax M3. Dashed lines connect the observed Pareto-frontier points, which are circled. Darker shades indicate higher reasoning effort. Astra (low) uses five-seed means for each I/O setting.', 'Figure 3') }}
+  <p>On OSWorld, the high-performance end of the time frontier runs from Claude Opus 5 (low), at 87.6% in 86 s, through GPT-6 Astra (low), at 90.8% in 90 s, to Astra (xhigh), at 91.6% in 127 s. Gemini 3.8 Flash (low) matches the top score in nearly the same time as Astra, but costs $0.11 per task rather than $0.71. At the low-cost end, GPT-5.6 Luna (low, direct API) costs about $0.01 per task and scores 61.8%.</p>
+  <h3>6.2 The frontier changes across benchmarks</h3>
+  <p>On OSWorld 2.0, the time frontier consists entirely of GPT-6 Astra configurations. Astra (high) reaches 75.0% in 914 s; xhigh reaches 76.9% in 1,237 s, gaining 1.9 points for 35% more time. The cost frontier includes other models: Gemini 3.8 Flash (medium) scores 59.9% at $2.91 per task, compared with $7.39 for Astra (high), and Muse Spark 1.3 (minimal) extends the frontier to an estimated $0.39 at 34.0%. No open-weight model is on either frontier for either benchmark. The preferred agent depends on the benchmark and on the performance needed within a time or cost budget.</p>
+  <h3>6.3 Reasoning effort cuts both ways</h3>
+  {{ paper_figure('reasoning', 'Three bar charts for Gemini 3 Flash Preview at low, medium, and high effort: mean task time, generated tokens, and model calls.', 'Less reasoning can make an agent slower. Gemini 3 Flash Preview at low, medium, and high effort on OSWorld: mean task time, generated tokens including reasoning, and model calls across all 50 tasks. Scores are 33.6%, 57.6%, and 59.6%. Medium and high effort generate more tokens than low effort but need fewer calls and finish sooner.', 'Figure 4') }}
+  <p><strong>Less reasoning can make an agent slower.</strong> Moving Gemini 3 Flash Preview from low to medium effort raises its OSWorld score from 33.6% to 57.6% and lowers mean task time from 492 s to 268 s. At low effort the model generates fewer tokens (1,598 against 4,125) but takes far more steps (56.0 against 32.5), because most of its steps are unproductive. Its trajectories repeat failed actions, such as trying to enter spreadsheet text through key combinations instead of typing it.</p>
+  {{ paper_figure('reasoning-benchmarks', 'Two line plots of mean score against mean task time for Gemini 3.8 Flash at low, medium, and high effort, on OSWorld and OSWorld 2.0, labeled with cost per task.', 'The useful reasoning setting changes across benchmarks. Gemini 3.8 Flash at low, medium, and high effort, labeled with mean cost per task. Model, harness, and execution settings are fixed within each curve. Extra reasoning brings no gain on OSWorld, while moving from low to medium substantially improves OSWorld 2.0.', 'Figure 5') }}
+  <p><strong>More reasoning can add time and cost without improving performance.</strong> On OSWorld, Gemini 3.8 Flash scores 91.6% at both low and medium effort, but medium roughly doubles cost and raises mean task time from 127 s to 250 s. On OSWorld 2.0, low to medium improves the score from 35.3% to 59.9%, while high adds only 0.2 points for 49% more time and 72% more cost. GPT-6 Astra shows the same dependence: on OSWorld, medium is within two points of xhigh with 29% less time and 15% less cost, while on OSWorld 2.0, high gains 7.8 points over medium for 10% more time.</p>
+  <h3 id="fast-io">6.4 Faster infrastructure can make the agent slower</h3>
+  {{ paper_figure('latency', 'Stacked bars comparing normal and fast I/O time components, and two screenshots showing a Save As dialog missing then present.', 'Faster I/O can be offset by more waiting and interaction. GPT-6 Astra (low) with normal and fast I/O, averaged over five seeds per setting. (a) Agent time, agent-requested waits, and remaining environment processing; error bars show the standard deviation of mean task time across seeds. (b) Two consecutive screenshots after opening Save As: the dialog is absent in the first and visible in the second, requested 5.8 s later with no intervening action.', 'Figure 6') }}
+  <p>With FastCUA, mean environment processing time falls from 12.68 s to 0.34 s per task, yet total task time for GPT-6 Astra (low) rises from 89.5 s to 99.0 s, and trajectories contain more steps. Fast I/O can return a screenshot before the application has updated. After opening Save As, the agent receives a screenshot without the dialog and asks for another one 5.8 s later. A model could in principle wait about 100 ms for the interface to settle, but current models do not use the faster loop well.</p>
+  <h3>6.5 The harness matters as much as the model</h3>
+  {{ paper_figure('harness', 'Line plot of mean score against mean task time for GPT-5.6 Luna at low, medium, and high effort through a direct-API agent and through Codex.', 'The same model through two harnesses. GPT-5.6 Luna on OSWorld at three reasoning settings, through a direct-API agent and through the Codex harness.', 'Figure 7') }}
+  <p>At low effort, Codex raises GPT-5.6 Luna's OSWorld score from 61.8% to 75.6% but doubles mean task time, from 74 s to 145 s. At medium and high effort the direct-API agent is both more accurate and faster (75.6% in 119 s against 67.6% in 189 s at medium; 81.6% in 161 s against 79.6% in 325 s at high), so neither harness is better in every setting.</p>
+  <p><strong>Batching actions reduces task time.</strong> Each step costs a screenshot, a model call, and environment latency, so agents that issue several actions per response finish sooner. GPT-6 Astra (low) completes OSWorld tasks in 5.9 action batches on average. Restricting Astra (xhigh) to one action per response keeps its score at 91.6% but raises mean task time from 127 s to 183 s.</p>
+  <p><strong>Fast agents generate fewer tokens, not tokens faster.</strong> Claude Opus 5 (low) generates 1,795 tokens per task against 1,579 for GPT-6 Astra (low), scoring 87.6% against 90.8%. Claude Sonnet 5 (high) takes 141 s for the score Astra (medium) reaches in 90 s while generating 3.5× more tokens, and Gemini 3.8 Flash (high) generates 5.6× more tokens than at low effort and finishes 2.7× later.</p>
+  <h3>6.6 Choosing across all three measures</h3>
+  {{ paper_figure('joint-frontier', 'Three-dimensional plot of OSWorld score against time per task and cost per task, with the joint Pareto frontier surface and labeled frontier configurations.', 'Choosing an agent by performance, time, and cost. Joint Pareto frontier on OSWorld; circled points are configurations on the frontier. Time and cost axes are logarithmic.', 'Figure 8') }}
+  <p><strong>Other benchmarks.</strong> We also evaluate GPT-6 Astra through Codex at four reasoning settings on MyPCBench and CUA-World, which test personalized and long-horizon computer use and are graded by vision-language models rather than programmatic checks. Astra exceeds 90% rubric scores on both, which points to the need for harder task sets.</p>
+  <p class="method-note">Every measured configuration, including source records and cost assumptions, is in the <a href="/results.html">results explorer</a>. Its catalog is curated separately from the figure populations above.</p>
+</section>
+
+<section id="recommendations" data-reveal>
+  <h2><span class="sec-no">7</span>Recommendations for building fast agents</h2>
+  <ol class="recommendations">
+    <li><strong>Choose a frontier configuration for the performance and budget you need.</strong> No configuration is best on every measure, and the frontier moves between benchmarks, so measure candidates on tasks that resemble the target workload.</li>
+    <li><strong>Tune reasoning effort rather than setting it to an extreme.</strong> Too little lengthens trajectories; too much adds time and cost without improving performance. Start at low or medium and raise it only for a measured gain.</li>
+    <li><strong>Batch actions when intermediate screenshots are unnecessary.</strong> Fewer steps mean fewer screenshots, model calls, and environment round trips.</li>
+    <li><strong>Reduce tokens and steps rather than chasing token rate or I/O speed.</strong> Faster generation or I/O helps only if the agent does not spend it on longer outputs or extra steps.</li>
+    <li><strong>Optimize the harness together with the model.</strong> The same model and reasoning setting can land at different points on the frontier depending on its harness.</li>
+  </ol>
+</section>
+
+<section id="related" data-reveal>
+  <h2><span class="sec-no">8</span>Related work</h2>
+  <p><strong>Computer-use benchmarks.</strong> Early benchmarks used synthetic interfaces, then self-hosted website analogs such as WebArena and VisualWebArena, static datasets of live-site tasks, and live-internet evaluations. Desktop benchmarks such as OSWorld evaluate agents on real operating systems with programmatic verifiers, with WindowsAgentArena, macOSWorld, and AndroidWorld extending coverage. Recent work stresses long horizons (OSWorld 2.0, CUA-World, Odysseys) and personal assistance (MyPCBench, ClawBench). OSWorld-Human measures agent latency on OSWorld against human reference trajectories.</p>
+  <p><strong>Computer-use models.</strong> Frontier model releases increasingly prioritize computer use, and open-weight models such as Kimi K3, GLM-5, and Muse Spark include agentic workflows. Specialized models include UI-TARS, MolmoWeb, ScaleCUA, and Qwen-CUA, often trained in verifiable environments generated at scale.</p>
+  <p><strong>Reproducible and efficient evaluation.</strong> Agent evaluations are noisy, and single-run claims can be unreliable. Another line of work selects small benchmark subsets that predict full scores, using item response theory (tinyBenchmarks, metabench) or sparse optimization, or validates tasks by hand (SWE-bench Verified). CUA-Speedrun applies subset selection to computer use and measures time and cost as well as score.</p>
+</section>
+
+<section id="limitations" data-reveal>
+  <h2><span class="sec-no">9</span>Limitations</h2>
+  <p>Reported times and costs reflect API inference conditions at the time of evaluation; providers control later changes to inference speed and pricing. Representative subsets are validated on held-out agents, but their scores approximate full-benchmark performance, and changes in agent capability may require revalidating them. Evaluation cost limits coverage of every combination of model, harness, reasoning effort, and benchmark. Findings apply to the tested combinations.</p>
+</section>
+
+<section id="conclusion" data-reveal>
+  <h2><span class="sec-no">10</span>Conclusion</h2>
+  <p>CUA-Speedrun evaluates the performance, speed, and cost of computer-use agents on standardized infrastructure. Our evaluations identify the performance–time and performance–cost frontiers on OSWorld and OSWorld 2.0 and show how they change between benchmarks. More reasoning can reduce task time by avoiding repeated failed actions, and faster I/O can increase it through extra interaction, so reasoning and interaction should be studied together when building faster agents.</p>
+</section>
+
+<section id="cite" data-reveal>
+  <h2>Citation</h2>
+  <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>@misc{aggarwal2026cuaspeedrun,
+  title  = {{ '{' }}CUA-Speedrun: Standardized Benchmarking of the Speed of Computer-Use Agents{{ '}' }},
+  author = {{ '{' }}{% for author in site.authors %}{% set parts = author.name.split(' ') %}{{ parts[-1] }}, {{ parts[:-1] | join(' ') }}{% if not loop.last %} and {% endif %}{% endfor %}{{ '}' }},
+  year   = {{ '{' }}2026{{ '}' }},
+  url    = {{ '{' }}{{ site.site_url }}{{ '}' }}
+}</code></pre></div>
+  <p class="method-note">Based on manuscript revision 128fef0. Figures are reproduced from its original exports; see <a href="/assets/figures/sources.json">figure provenance</a>.</p>
+</section>
+</article></div>
+{% endblock %}

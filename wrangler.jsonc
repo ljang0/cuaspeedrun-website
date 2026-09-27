@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cuaspeedrun",
+  "compatibility_date": "2026-09-26",
+  "assets": {
+    "directory": "./output/public-site",
+    "html_handling": "none",
+    "not_found_handling": "404-page",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+  },
+  "routes": [
+    {
+      "pattern": "cuaspeedrun.com",
+      "custom_domain": true,
+    },
+    {
+      "pattern": "www.cuaspeedrun.com",
+      "custom_domain": true,
+    },
+  ],
+  "main": "website/worker.js",
+}

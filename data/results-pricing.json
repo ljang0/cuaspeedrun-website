@@ -1,0 +1,37 @@
+{
+  "verified_on": "2026-09-16",
+  "unit": "USD per million tokens",
+  "models": {
+    "Meta Muse Spark 1.1": {
+      "model_id": "meta/muse-spark-1.1",
+      "input": 1.25,
+      "cached_input": 0.15,
+      "output": 4.25,
+      "estimate_from_usage": true,
+      "source_url": "https://openrouter.ai/api/v1/models",
+      "source_page": "https://openrouter.ai/meta/muse-spark-1.1",
+      "note": "Standard API price proxy, not the archived contributor-tier charge; historical contributor pricing is unverified."
+    },
+    "Meta Muse Spark": {
+      "model_id": "meta/muse-spark-1.1",
+      "input": 1.25,
+      "cached_input": 0.15,
+      "output": 4.25,
+      "estimate_from_usage": true,
+      "source_url": "https://openrouter.ai/api/v1/models",
+      "source_page": "https://openrouter.ai/meta/muse-spark-1.1",
+      "note": "Standard Muse Spark 1.1 API price proxy for an unversioned archive; this does not establish its model version or historical tier price."
+    },
+    "MiniMax M3": {
+      "model_id": "minimax/minimax-m3",
+      "input": 0.30,
+      "cached_input": 0.06,
+      "output": 1.20,
+      "estimate_from_usage": false,
+      "unit_note": "standard · ≤512K context",
+      "source_url": "https://platform.minimax.io/subscribe/token-plan?tab=api-enterprise",
+      "source_page": "https://www.minimax.io/blog/minimax-m3",
+      "note": "Standard API rates through 512K context; above 512K, input/output/cache rates double. Priority pricing differs. Archived responses do not retain token usage, so unit prices cannot yield a per-task total."
+    }
+  }
+}

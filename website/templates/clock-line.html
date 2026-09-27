@@ -1,0 +1,8 @@
+<figure class="clock-line" aria-labelledby="clock-line-caption">
+  <ol class="clock-steps">
+    <li class="is-off"><span class="clock-tag">Off the clock</span><p>Start the agent and desktop sandboxes, restore the task's starting state, run <code>init.py</code></p></li>
+    <li class="is-on"><span class="clock-tag">On the clock</span><p><span class="clock-flag">Starts when the instruction is sent</span>Screenshot, model call, keyboard and mouse actions, repeated<span class="clock-flag is-stop">Stops at done or the task limit</span></p><span class="clock-ticks" aria-hidden="true"></span></li>
+    <li class="is-off"><span class="clock-tag">Off the clock</span><p>The benchmark's verifier scores the final state and trajectory</p></li>
+  </ol>
+  <figcaption id="clock-line-caption">What each task's time includes. Agent time and environment time are recorded separately inside the timed interval.</figcaption>
+</figure>

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block styles %}
+<link rel="stylesheet" href="static/instrument.css">
+<link rel="stylesheet" href="static/frontier.css?v={{ static_asset_versions['frontier.css'] }}">
+<link rel="stylesheet" href="static/results.css">
+<script src="/assets/leaderboard-plus.js?v={{ asset_version }}" defer></script>
+{% endblock %}
+{% block main_class %}results-content{% endblock %}

@@ -1,0 +1,41 @@
+<figure class="benchmark-explainer" aria-labelledby="explainer-title" data-benchmark-explainer data-reveal>
+  <header class="explainer-heading">
+    <h2 id="explainer-title">How we compare computer-use agents</h2>
+    <p>We select representative tasks, run agents under common timing rules, and measure accuracy, time, and cost.</p>
+  </header>
+  <div class="explainer-interactive" data-explainer-interactive>
+    <div class="explainer-benchmarks" role="group" aria-label="Choose a benchmark">
+      {% for subset in overview_data %}<button type="button" data-benchmark="{{ subset.name }}" aria-pressed="{{ 'true' if loop.first else 'false' }}">{{ subset.label }}<span>{{ subset.selected_tasks }} tasks</span></button>{% endfor %}
+    </div>
+    <div class="explainer-canvas">
+      <section class="explainer-selection" aria-label="Representative task selection">
+        <h3>Representative tasks</h3>
+        <p class="selection-count"><strong data-selected-count>50</strong> of <span data-eligible-count>295</span></p>
+        <svg class="task-matrix" viewBox="0 0 240 180" role="img" aria-label="Selected and remaining task counts" data-task-matrix></svg>
+        <p class="matrix-key"><span>Selected</span><span>Remaining</span></p>
+        <p>We choose tasks whose historical agent scores reflect the larger benchmark.</p>
+        <a href="/paper.html#selection">How tasks are selected</a>
+      </section>
+      <section class="explainer-results" aria-label="Measured agent results">
+        <div class="explainer-plot-heading">
+          <h3>Measured results</h3>
+          <div class="explainer-metrics" role="group" aria-label="Compare by">
+            <button type="button" data-metric="time_per_task_sec" aria-pressed="true">Time</button>
+            <button type="button" data-metric="cost_usd" aria-pressed="false">Cost</button>
+          </div>
+        </div>
+        <svg class="overview-scatter" viewBox="0 0 620 355" role="group" aria-label="Task score against mean task time" data-overview-scatter></svg>
+        <ul class="provider-key" aria-label="Model developers" data-provider-key></ul>
+        <p class="plot-instruction" data-plot-instruction>Select a point to inspect an agent configuration.</p>
+        <label class="explainer-agent-label" for="overview-agent">Agent configuration</label>
+        <select id="overview-agent" data-overview-agent></select>
+        <div class="explainer-readout" aria-live="polite" aria-atomic="true" data-overview-readout></div>
+      </section>
+    </div>
+    <div class="explainer-method"><p>The clock runs from the task instruction to completion or timeout. Setup and final verification are excluded.</p><a data-overview-link href="/results.html">Open full results</a></div>
+  </div>
+  <noscript><style>.explainer-interactive { display: none; }</style><img class="explainer-fallback" src="/assets/figures/overview.svg" alt="Paper results comparing agent task score against time and model cost on OSWorld and OSWorld 2.0."><p><a href="/results.html">Explore the results</a></p></noscript>
+  <figcaption>Interactive overview. Squares show task counts; each plotted point is a measured configuration, marked with its developer's logo. The explorer covers the paper’s four task subsets, with configuration coverage curated separately from its figures. Logos identify developers and are trademarks of their owners.</figcaption>
+  <script type="application/json" data-overview-data>{{ overview_data | tojson }}</script>
+  <script type="application/json" data-providers>{{ providers | tojson }}</script>
+</figure>

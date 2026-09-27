@@ -1,0 +1,86 @@
+{
+  "manuscript_revision": "128fef0e8e7ef207d18e302c46bf1576e3d63355",
+  "render_command": "pdftocairo -svg SOURCE.pdf OUTPUT.svg",
+  "figures": [
+    {
+      "name": "overview",
+      "source": "figures/results_overview_multicolor_kimi_review_20260925.pdf",
+      "pdf": "overview.pdf",
+      "pdf_sha256": "53b9658a4fd383dad9cfea1bf3217457c442beadc782c9d43c07b76cad5ecfa7",
+      "svg": "overview.svg",
+      "svg_sha256": "3ba8e56eaea584ef7c023bd69c4077b2620240c0872c254190c930da09fc6955",
+      "width": 1870,
+      "height": 1124
+    },
+    {
+      "name": "reasoning",
+      "source": "figures/results_reasoning_interactions_green_20260921.pdf",
+      "pdf": "reasoning.pdf",
+      "pdf_sha256": "b712e3aefda501373e7e857f6731f1b4e58216ae26bc1a4a49606483f543a8c0",
+      "svg": "reasoning.svg",
+      "svg_sha256": "bc3405df7d459a3d4899a1b25bb962beec14fccfa3a47c6d832dc8301b42a1b1",
+      "width": 1594,
+      "height": 419
+    },
+    {
+      "name": "latency",
+      "source": "figures/results_fast_io_green_20260921.pdf",
+      "pdf": "latency.pdf",
+      "pdf_sha256": "ae6c87fab059732814ced2eae75a1b2ce43fc0ce2afb8a8b867140f278d2969d",
+      "svg": "latency.svg",
+      "svg_sha256": "13b825e81c8a2130f6c98b3448c01ff3212941ac844e75bd984d7fe6fd8ffd36",
+      "width": 1594,
+      "height": 466
+    },
+    {
+      "name": "scene",
+      "source": "figures/cua-speedrun-scene.pdf",
+      "pdf": "scene.pdf",
+      "pdf_sha256": "9175f2a8179695c3014960fbace8464ea37f7fa53455af26b45900bea42abce5",
+      "svg": "scene.svg",
+      "svg_sha256": "4432a1a12480c07a318f3bf28ee84b0013754fdf2c1947c749326f6a2749abe6",
+      "width": 2074,
+      "height": 1027
+    },
+    {
+      "name": "selection",
+      "source": "figures/appendix_selection_validation.pdf",
+      "pdf": "selection.pdf",
+      "pdf_sha256": "14d524bb7b593f3bb67df1f0e30c3b85d8bc61d020266856a48e07f6d924e870",
+      "svg": "selection.svg",
+      "svg_sha256": "484e286e4b91a21549d8fb5914cd636ded4717a13c9b86d3af86978c2cf59a8d",
+      "width": 1963,
+      "height": 1358
+    },
+    {
+      "name": "reasoning-benchmarks",
+      "source": "figures/results_reasoning_green_20260921.pdf",
+      "pdf": "reasoning-benchmarks.pdf",
+      "pdf_sha256": "0f4ae2640be7569fc5a6916b8298802af4184d5081f8f218c4d969c41f27c2a4",
+      "svg": "reasoning-benchmarks.svg",
+      "svg_sha256": "468f6842ed0c5d7456b3438f0745301edc1727a3e232262560a3db88b8e75583",
+      "width": 1570,
+      "height": 551
+    },
+    {
+      "name": "harness",
+      "source": "figures/results_harness_full_green_20260921.pdf",
+      "pdf": "harness.pdf",
+      "pdf_sha256": "30578f49bb1ef4ee5d230e8c45b8b9b05a908d87afeb926795f14d0a36f0aeaa",
+      "svg": "harness.svg",
+      "svg_sha256": "ab79f2c3bbb2dde1acdd9b99da3d4da854196333dc47804a37632aeb615075a1",
+      "width": 1594,
+      "height": 629
+    },
+    {
+      "name": "joint-frontier",
+      "source": "figures/results_joint_frontier_osworld_multicolor_review_20260925.pdf",
+      "pdf": "joint-frontier.pdf",
+      "pdf_sha256": "b843bb1807e8204dc37b8e5694caa9f024d5193efde25dd7ec24ad0f0688c38a",
+      "svg": "joint-frontier.svg",
+      "svg_sha256": "8e4cfe69faa93d06e940c32c47aa8b5ae02392e50c9a7ebe268f6689448cd943",
+      "width": 1724,
+      "height": 947
+    }
+  ]
+}

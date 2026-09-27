@@ -1,0 +1,150 @@
+{
+  "site_url": "https://cuaspeedrun.com",
+  "repository": "Pranjal2041/cua-speed-run",
+  "paper_url": "",
+  "authors": [
+    {
+      "name": "Pranjal Aggarwal",
+      "url": "https://pranjal2041.github.io/",
+      "equal_contribution": true
+    },
+    {
+      "name": "Lawrence Keunho Jang",
+      "url": "https://lawrencekjang.github.io/",
+      "equal_contribution": true
+    },
+    {
+      "name": "Sean Welleck",
+      "url": "https://wellecks.com/",
+      "equal_contribution": false
+    },
+    {
+      "name": "Daniel Fried",
+      "url": "https://dpfried.github.io/",
+      "equal_contribution": false
+    },
+    {
+      "name": "Ruslan Salakhutdinov",
+      "url": "https://www.cs.cmu.edu/~rsalakhu/",
+      "equal_contribution": false
+    },
+    {
+      "name": "Jing Yu Koh",
+      "url": "https://jykoh.com/",
+      "equal_contribution": true
+    }
+  ],
+  "paper_subsets": {
+    "osworld-energy50-representative": {
+      "label": "OSWorld",
+      "selected_tasks": 50,
+      "eligible_tasks": 295
+    },
+    "osworld2-k52": {
+      "label": "OSWorld 2.0",
+      "selected_tasks": 52,
+      "eligible_tasks": 63
+    },
+    "cua-world-long-k26": {
+      "label": "CUA-World",
+      "selected_tasks": 26,
+      "eligible_tasks": 143
+    },
+    "mypcbench-energy38": {
+      "label": "MyPCBench",
+      "selected_tasks": 38,
+      "eligible_tasks": 184
+    }
+  },
+  "race": {
+    "subset": "osworld-energy50-representative",
+    "speed": 40,
+    "runners": [
+      {
+        "model": "Gemini 3 Flash Preview",
+        "effort": "low",
+        "variant": ""
+      },
+      {
+        "model": "GPT-6 Astra",
+        "effort": "medium",
+        "variant": "Normal I/O"
+      },
+      {
+        "model": "Kimi K3",
+        "effort": "max",
+        "variant": "Batched tool calls"
+      },
+      {
+        "model": "GPT-5.6 Luna",
+        "effort": "low",
+        "variant": "Direct API"
+      },
+      {
+        "model": "Gemini 3.8 Flash",
+        "effort": "low",
+        "variant": ""
+      },
+      {
+        "model": "Gemini 3 Flash Preview",
+        "effort": "medium",
+        "variant": ""
+      },
+      {
+        "model": "Claude Opus 5",
+        "effort": "low",
+        "variant": ""
+      }
+    ]
+  },
+  "providers": [
+    {
+      "prefix": "GPT-",
+      "name": "OpenAI",
+      "slug": "openai",
+      "logo": "openai.svg"
+    },
+    {
+      "prefix": "Claude",
+      "name": "Anthropic",
+      "slug": "anthropic",
+      "logo": "anthropic.svg"
+    },
+    {
+      "prefix": "Gemini",
+      "name": "Google",
+      "slug": "google",
+      "logo": "googlegemini.svg"
+    },
+    {
+      "prefix": "Kimi",
+      "name": "Moonshot AI",
+      "slug": "moonshot",
+      "logo": "moonshotai.svg"
+    },
+    {
+      "prefix": "Meta",
+      "name": "Meta",
+      "slug": "meta",
+      "logo": "meta.svg"
+    },
+    {
+      "prefix": "MiniMax",
+      "name": "MiniMax",
+      "slug": "minimax",
+      "logo": "minimax.svg"
+    },
+    {
+      "prefix": "GLM",
+      "name": "Zhipu AI",
+      "slug": "zhipu",
+      "logo": "zhipu.svg"
+    },
+    {
+      "prefix": "Yutori",
+      "name": "Yutori",
+      "slug": "yutori",
+      "logo": "yutori.svg"
+    }
+  ]
+}

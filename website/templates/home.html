@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block main_class %}home-content{% endblock %}
+{% block content %}
+<header class="release-heading">
+  <h1>CUA-<strong>Speedrun</strong><span class="title-caret" aria-hidden="true"></span></h1>
+  <p class="release-purpose">How fast can a computer-use agent finish the job?</p>
+  <p class="release-description">Most benchmarks only record whether an agent succeeded. CUA-Speedrun is an evaluation system that also measures how long each task takes and what its model calls cost. Every run uses the same pipeline and virtual machine setup on <a href="https://modal.com">Modal</a>, and one agent interface works across OSWorld, OSWorld 2.0, CUA-World, and MyPCBench. Smaller task sets, chosen so their scores track the full benchmarks, keep repeated runs affordable.</p>
+  {% include "authors.html" %}
+  <nav class="release-links" aria-label="Project resources">
+    <a class="console-button" href="/docs.html#modal">Run on Modal</a>
+    <a href="/results.html">Explore results</a>
+    <a href="/paper.html">Read the research</a>
+    <a href="https://github.com/{{ repository }}">Code</a>
+  </nav>
+</header>
+{% include "race.html" %}
+<section class="infra" aria-labelledby="infra-heading" data-reveal>
+  <h2 id="infra-heading">Same machine, same clock, any agent</h2>
+  <p class="infra-lede">CUA-Speedrun is the software that runs these comparisons. It holds the hardware, desktops, tasks, and timing fixed, so differences in time and cost come from the agent.</p>
+  {% include "clock-line.html" %}
+  <dl class="infra-list">
+    <div><dt>Identical hardware for every run</dt><dd>Agents and desktops run in separate <a href="https://modal.com">Modal</a> sandboxes, built from the same pinned images for every run. Open-weight models are served with vLLM on fixed L40S GPUs. Results do not depend on whose computer launched the run.</dd></div>
+    <div><dt>One agent file, four benchmarks</dt><dd>An agent is a single <code>agent.py</code> that receives 1920×1080 screenshots and sends keyboard and mouse actions. The same file runs on OSWorld, OSWorld 2.0, CUA-World, and MyPCBench.</dd></div>
+    <div><dt>A clock that measures the agent</dt><dd>Setup and scoring happen off the clock. Infrastructure failures are retried; agent failures end the attempt and are scored. Model cost is logged per request.</dd></div>
+    <div><dt>Inputs that do what they say</dt><dd>CUA-AutoDebug sends 94 keyboard and mouse cases to an app that records what it receives. Through SSH and PyAutoGUI, 11 failed, such as typing &gt; when &lt; was requested. Our runtime passes all 94, five times each.</dd></div>
+    <div><dt>Smaller task sets that keep the ranking</dt><dd>Energy-distance selection keeps 50 of 295 OSWorld tasks, with a 0.98 rank correlation to full-benchmark scores for models left out of the selection.</dd></div>
+    <div><dt>An optional fast I/O mode</dt><dd>FastCUA cuts the delay between an action and the next screenshot from about 2–3 s to 2–28 ms, to test whether agents benefit from a faster desktop.</dd></div>
+  </dl>
+  <p class="infra-more"><a href="/paper.html#infrastructure">Read the infrastructure section</a> · <a href="/docs.html">Run it yourself</a></p>
+</section>
+<section class="splits" aria-labelledby="splits-heading" data-reveal>
+  <h2 id="splits-heading">Results we did not expect</h2>
+  <ol class="split-list">
+    <li class="split is-ahead">
+      <p class="split-what"><strong>More reasoning, less time.</strong> Gemini 3 Flash Preview on OSWorld, low to medium reasoning effort. The score also rose from 33.6% to 57.6%; extra thinking replaced repeated failed actions.</p>
+      <p class="split-times"><span>492 s</span><span>268 s</span></p>
+      <p class="split-delta">−224 s</p>
+    </li>
+    <li class="split is-behind">
+      <p class="split-what"><strong>A faster environment, a slower agent.</strong> GPT-6 Astra at low effort, averaged over five seeds. Screenshots arrived before applications finished updating, so the agent looked again or repeated itself.</p>
+      <p class="split-times"><span>89.5 s</span><span>99.0 s</span></p>
+      <p class="split-delta">+9.5 s</p>
+    </li>
+    <li class="split is-behind">
+      <p class="split-what"><strong>Same score, four times the wait.</strong> Kimi K3 at max effort matches GPT-6 Astra at high effort on OSWorld (89.6%). No open-weight model we tested is on the time or cost frontier.</p>
+      <p class="split-times"><span>101 s</span><span>444 s</span></p>
+      <p class="split-delta">×4.4</p>
+    </li>
+    <li class="split is-gold">
+      <p class="split-what"><strong>Fewer tasks, similar ranking.</strong> A 50-task OSWorld subset, chosen so that historical scores match the full set, cuts evaluation time by 84.9%.</p>
+      <p class="split-times"><span>295 tasks</span><span>50 tasks</span></p>
+      <p class="split-delta">−84.9%</p>
+    </li>
+  </ol>
+  <p class="split-source">From the paper. <a href="/paper.html">Read how each was measured</a>.</p>
+</section>
+{% include "overview-figure.html" %}
+<article class="overview article-body">
+  <section aria-labelledby="software-heading" data-reveal>
+    <h2 id="software-heading">Race your own agent</h2>
+    <p>Start with an included agent or bring your own Python implementation. The toolkit prepares the desktops, runs benchmark tasks, and saves scores, timings, screenshots, and action logs. It supports OSWorld, OSWorld 2.0, CUA-World, and MyPCBench.</p>
+    <p>After <a href="/docs.html#modal">installation and account setup</a>, run the Codex CLI template on a small OSWorld task set:</p>
+    <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun run --remote \
+  --submission templates/codex_cli \
+  --benchmark benchmarks/osworld-mini \
+  --agents-per-evaluation 2</code></pre></div>
+    <p class="code-caption">Compute uses your Modal account; model calls use your API key. The command prints a score summary and the location of the saved run.</p>
+    <p><a href="/docs.html#agent-contract">Add your own agent</a> or <a href="https://github.com/{{ repository }}/tree/main/templates">browse the templates</a>.</p>
+  </section>
+  <section aria-labelledby="results-heading" data-reveal>
+    <h2 id="results-heading">Every measured run</h2>
+    <p>The results explorer covers the four task subsets used in the paper. Compare configurations, filter models, and inspect the records behind each result. Configuration coverage is curated separately from the paper’s figures; execution settings and cost assumptions accompany each record.</p>
+    <div class="benchmark-library">
+      {% for dataset in datasets %}<a href="/{{ dataset.href }}"><span>{{ dataset.label }}</span><span>{{ dataset.records | length }} results</span></a>{% endfor %}
+    </div>
+  </section>
+</article>
+{% endblock %}
