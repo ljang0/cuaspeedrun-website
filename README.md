@@ -46,14 +46,18 @@ data notes, including the hosted-evaluation proxy in `website/worker.js`.
 The site is a Cloudflare Worker named `cuaspeedrun` with custom domains
 `cuaspeedrun.com` and `www.cuaspeedrun.com` (see `wrangler.jsonc`).
 
-From a machine logged in to the owning Cloudflare account:
+To deploy by hand from a machine logged in to the owning Cloudflare account:
 
 ```sh
 python3 scripts/build_public_site.py
 npx --yes wrangler@4.141.0 deploy
 ```
 
-Or run the **Deploy** workflow from the Actions tab. It needs repository
-secrets `CLOUDFLARE_API_TOKEN` (Workers edit permission) and
-`CLOUDFLARE_ACCOUNT_ID` from the account that owns the domain. It never runs
-automatically.
+Every push to `main` deploys automatically through the **Deploy** workflow
+(`.github/workflows/deploy.yml`): it runs the tests, builds the site, and
+deploys only if both succeed. It can also be run by hand from the Actions tab.
+It needs two repository secrets from the account that owns the domain:
+`CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` (a token made from the
+"Edit Cloudflare Workers" template). Until both exist, the workflow skips the
+deploy step with a notice. Make changes on a branch and open a pull request if
+you want review before they go live.
