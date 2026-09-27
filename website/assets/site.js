@@ -72,6 +72,24 @@
     });
   }
 
+  // Cite opens the BibTeX in a popup; without dialog support the link
+  // still jumps to the citation section.
+  const citeDialog = document.querySelector("[data-cite-dialog]");
+  if (citeDialog && typeof HTMLDialogElement !== "undefined") {
+    document.querySelectorAll("[data-cite-open]").forEach((link) =>
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        citeDialog.showModal();
+      }),
+    );
+    citeDialog
+      .querySelector("[data-cite-close]")
+      .addEventListener("click", () => citeDialog.close());
+    citeDialog.addEventListener("click", (event) => {
+      if (event.target === citeDialog) citeDialog.close();
+    });
+  }
+
   const figures = document.querySelectorAll("[data-figure-zoom]");
   if (figures.length && typeof HTMLDialogElement !== "undefined") {
     const dialog = document.createElement("dialog");

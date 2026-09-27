@@ -53,7 +53,8 @@ def test_public_results_only_include_paper_subsets(public_site, tmp_path):
     subprocess.run([sys.executable, str(ROOT / 'scripts/build_public_site.py'),
                     '--output', str(tmp_path)], cwd=ROOT, check=True)
     catalog = json.loads((tmp_path / 'results-catalog.json').read_text())
-    subsets = json.loads((ROOT / 'website/config.json').read_text())['paper_subsets']
+    config = json.loads((ROOT / 'website/config.json').read_text())
+    subsets = config['paper_subsets']
     assert set(catalog['datasets']) == set(subsets)
     assert catalog['included_rows'] == 85
     assert catalog['publication_scope']['omitted_reviewed_rows'] == 11
@@ -67,6 +68,12 @@ def test_public_results_only_include_paper_subsets(public_site, tmp_path):
             assert not (tmp_path / dataset['href']).exists()
             assert dataset['href'] not in (tmp_path / 'sitemap.xml').read_text()
             continue
+        # The public site omits labels that name a default setting; every
+        # other field matches the archive exactly.
+        for record in dataset['records']:
+            if record['variant'] in config['default_variants']:
+                record['variant'], record['series'] = '', record['model']
+            record['ablation'] = record['variant'] in config['ablation_variants']
         assert catalog['datasets'][name]['records'] == dataset['records']
         interactive = next(d for d in overview if d['name'] == name)
         assert interactive['selected_tasks'] == dataset['task_counts'][0]

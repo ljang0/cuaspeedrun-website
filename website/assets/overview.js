@@ -82,12 +82,13 @@
       group.append(dt, dd);
       list.append(group);
     });
-    const costNote = document.createElement("p");
-    costNote.textContent =
-      record.cost_usd == null
-        ? "Model cost was not available for this run."
-        : `Cost basis: ${record.cost_label.toLowerCase()}. See the full result for assumptions.`;
-    readout.replaceChildren(list, costNote);
+    const children = [list];
+    if (record.cost_usd == null) {
+      const costNote = document.createElement("p");
+      costNote.textContent = "Model cost was not available for this run.";
+      children.push(costNote);
+    }
+    readout.replaceChildren(...children);
   }
 
   function drawPlot() {
@@ -158,6 +159,51 @@
           : "Mean task time (seconds)",
       ),
     );
+    // Dashed Pareto frontier: each configuration on it scores higher than
+    // every configuration that is faster (or cheaper).
+    const frontier = [];
+    let best = -Infinity;
+    [...records]
+      .sort((a, b) => a[metric] - b[metric] || b.performance - a.performance)
+      .forEach((record) => {
+        if (record.performance > best) {
+          frontier.push(record);
+          best = record.performance;
+        }
+      });
+    // Drawn above the markers: frontier points cluster, so a line beneath
+    // them would be hidden. It ignores the pointer so markers stay clickable.
+    const frontierLayer = element("g", {
+      class: "overview-frontier-layer",
+      "data-overview-frontier": "",
+    });
+    if (frontier.length > 1) {
+      frontierLayer.append(
+        element("path", {
+          class: "overview-frontier",
+          d: frontier
+            .map(
+              (record, i) =>
+                `${i ? "L" : "M"} ${x(record[metric]).toFixed(1)} ${y(record.performance).toFixed(1)}`,
+            )
+            .join(" "),
+        }),
+      );
+      nodes.push(
+        element("line", {
+          x1: width - right - 118,
+          x2: width - right - 96,
+          y1: 12,
+          y2: 12,
+          class: "overview-frontier",
+        }),
+        element(
+          "text",
+          { x: width - right, y: 16, "text-anchor": "end" },
+          "Pareto frontier",
+        ),
+      );
+    }
     const axis = element("g", { "data-overview-axis": "" });
     axis.append(...nodes);
     const previous = new Map(
@@ -241,6 +287,8 @@
     points.forEach(({ node }) => {
       if (node.parentNode !== pointLayer) pointLayer.append(node);
     });
+    plot.querySelector("[data-overview-frontier]")?.remove();
+    plot.append(frontierLayer);
     inspect(selected);
   }
 
@@ -299,9 +347,8 @@
           String(button.dataset.metric === metric),
         ),
       );
-    const omitted = dataset.records.length - records.length;
     figure.querySelector("[data-plot-instruction]").textContent =
-      `Select a point to inspect it; related reasoning settings are highlighted.${omitted ? ` ${omitted} configurations have no available cost.` : ""}`;
+      "Select a point to inspect it; related reasoning settings are highlighted.";
     figure.querySelector("[data-overview-link]").href = `/${dataset.href}`;
     const present = [...new Set(records.map((record) => record.provider))];
     providerKey.replaceChildren(

@@ -41,6 +41,18 @@
   const volumeNote = root.querySelector("[data-volume-note]");
   const surfaceLabel = root.querySelector("[data-surface-label]");
   const surfaceCache = new Map();
+  const search = root.querySelector("[data-results-search]");
+  // Main track by default; readers can include ablation configurations.
+  const trackToggle = root.querySelector("[data-track-toggle]");
+  const totalCount = root.querySelector("[data-total-count]");
+  // Developer names let a search for "OpenAI" or "Google" find their models.
+  const developers = (() => {
+    try {
+      return JSON.parse(document.querySelector("[data-provider-prefixes]")?.textContent || "[]");
+    } catch {
+      return [];
+    }
+  })();
   const initialParams = new URLSearchParams(window.location.search);
 
   const palette = [
@@ -65,15 +77,23 @@
     families: new Set(familyNames),
     efforts: new Set(effortNames),
     showAllEfforts: true,
+    query: "",
+    includeAblations: false,
     volumeYaw: -0.72,
     volumePitch: 0.55,
     surfaceMode: ["dominance", "smooth"].includes(initialParams.get("surface"))
       ? initialParams.get("surface") : "smooth",
   };
 
-  function countFor(key, value) {
-    return entries.filter((entry) => entry[key] === value).length;
+  function inTrack(entry) {
+    return state.includeAblations || !entry.ablation;
   }
+
+  function countFor(key, value) {
+    return entries.filter((entry) => inTrack(entry) && entry[key] === value).length;
+  }
+
+  const filterChecks = [];
 
   function filterCheck(kind, value, label, count, color) {
     const wrapper = document.createElement("label");
@@ -92,7 +112,18 @@
     wrapper.append(input);
     if (swatch) wrapper.append(swatch);
     wrapper.append(text, total);
+    filterChecks.push({ wrapper, total, key: kind === "family" ? "model" : "effort", value });
     return wrapper;
+  }
+
+  // Filter options and counts follow the selected track.
+  function updateFilterCounts() {
+    filterChecks.forEach(({ wrapper, total, key, value }) => {
+      const count = countFor(key, value);
+      total.textContent = String(count);
+      wrapper.hidden = count === 0;
+    });
+    if (totalCount) totalCount.textContent = String(entries.filter(inTrack).length);
   }
 
   familyNames.forEach((family) => {
@@ -108,12 +139,23 @@
   entries.forEach((entry) => {
     rows.get(entry.entry_id)?.style.setProperty("--model-color", colors.get(entry.model));
   });
+  updateFilterCounts();
+
+  function matchesQuery(entry) {
+    const terms = state.query.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!terms.length) return true;
+    const developer = developers.find((item) => entry.model.startsWith(item.prefix));
+    const text = [entry.model, entry.effort, developer?.name].filter(Boolean).join(" ").toLowerCase();
+    return terms.every((term) => text.includes(term));
+  }
 
   function baseFilteredEntries() {
     let filtered = entries.filter((entry) =>
       (state.access === "all" || entry.model_type === state.access) &&
       state.families.has(entry.model) &&
-      state.efforts.has(entry.effort)
+      state.efforts.has(entry.effort) &&
+      inTrack(entry) &&
+      matchesQuery(entry)
     );
     if (state.showAllEfforts) return filtered;
 
@@ -577,7 +619,8 @@
     }));
     const omitted = filtered.length - points.length;
     frontierSummary.hidden = !metricDefinition.lowerBetter;
-    const omittedText = omitted
+    // The public site does not report left-out results.
+    const omittedText = omitted && !root.dataset.defaultView
       ? ` ${omitted} ${omitted === 1 ? "result" : "results"} without reported `
         + `${metricDefinition.noun} ${omitted === 1 ? "is" : "are"} omitted.`
       : "";
@@ -695,12 +738,9 @@
   }
 
   function appendCostDetails(details, entry) {
-    if (!entry.cost_label) return;
-    // The public site uses two plain labels instead of the internal cost taxonomy.
-    const label = !root.dataset.defaultView ? entry.cost_label
-      : !Number.isFinite(entry.cost_usd) ? "Cost not recorded"
-      : entry.cost_kind === "recorded" ? "Recorded cost" : "Estimated cost";
-    details.append(document.createElement("br"), document.createTextNode(label));
+    // The public site shows the cost value without the internal cost taxonomy.
+    if (!entry.cost_label || root.dataset.defaultView) return;
+    details.append(document.createElement("br"), document.createTextNode(entry.cost_label));
     if (Number.isFinite(entry.cost_range_min_usd) && !root.dataset.defaultView) {
       details.append(document.createElement("br"), document.createTextNode(
         `Cache range: $${entry.cost_range_min_usd.toFixed(4)}–$${entry.cost_range_max_usd.toFixed(4)}`
@@ -818,7 +858,7 @@
       if (surfaceCache.size >= 24) surfaceCache.delete(surfaceCache.keys().next().value);
       surfaceCache.set(cacheKey, surface);
     }
-    const missingCostNote = missingCost
+    const missingCostNote = missingCost && !root.dataset.defaultView
       ? ` ${missingCost} ${missingCost === 1 ? "result is" : "results are"} omitted because cost is unknown.`
       : "";
     if (state.surfaceMode === "dominance") {
@@ -1185,7 +1225,33 @@
       render();
     }
   });
+  function selectTrack(track) {
+    state.includeAblations = track === "all";
+    trackToggle?.querySelectorAll("[data-track]").forEach((candidate) => {
+      const active = candidate.dataset.track === track;
+      candidate.classList.toggle("active", active);
+      candidate.setAttribute("aria-pressed", String(active));
+    });
+    document.querySelectorAll("[data-track-board]").forEach((board) => {
+      board.hidden = board.dataset.trackBoard !== track;
+    });
+    updateFilterCounts();
+  }
+  trackToggle?.querySelectorAll("[data-track]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectTrack(button.dataset.track);
+      render();
+    });
+  });
+  search?.addEventListener("input", () => {
+    state.query = search.value.trim();
+    render();
+  });
   root.querySelector("[data-reset-filters]").addEventListener("click", () => {
+    state.query = "";
+    if (search) search.value = "";
+    // Reset returns to the default main track.
+    if (trackToggle) selectTrack("main");
     state.access = "all";
     state.families = new Set(familyNames);
     state.efforts = new Set(effortNames);

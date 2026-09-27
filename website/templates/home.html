@@ -8,7 +8,7 @@
   {% include "authors.html" %}
   <nav class="release-links" aria-label="Project resources">
     <a class="console-button" href="/docs.html#modal">Run on Modal</a>
-    <a href="/results.html">Explore results</a>
+    <a href="/results.html">Explore leaderboard</a>
     <a href="/paper.html">Read the research</a>
     <a href="https://github.com/{{ repository }}">Code</a>
   </nav>
@@ -31,11 +31,6 @@
 <section class="splits" aria-labelledby="splits-heading" data-reveal>
   <h2 id="splits-heading">Results we did not expect</h2>
   <ol class="split-list">
-    <li class="split is-ahead">
-      <p class="split-what"><strong>More reasoning, less time.</strong> Gemini 3 Flash Preview on OSWorld, low to medium reasoning effort. The score also rose from 33.6% to 57.6%; extra thinking replaced repeated failed actions.</p>
-      <p class="split-times"><span>492 s</span><span>268 s</span></p>
-      <p class="split-delta">−224 s</p>
-    </li>
     <li class="split is-behind">
       <p class="split-what"><strong>A faster environment, a slower agent.</strong> GPT-6 Astra at low effort, averaged over five seeds. Screenshots arrived before applications finished updating, so the agent looked again or repeated itself.</p>
       <p class="split-times"><span>89.5 s</span><span>99.0 s</span></p>
@@ -51,13 +46,18 @@
       <p class="split-times"><span>295 tasks</span><span>50 tasks</span></p>
       <p class="split-delta">−84.9%</p>
     </li>
+    <li class="split is-ahead">
+      <p class="split-what"><strong>More reasoning, less time.</strong> Gemini 3 Flash Preview on OSWorld, low to medium reasoning effort. The score also rose from 33.6% to 57.6%; extra thinking replaced repeated failed actions.</p>
+      <p class="split-times"><span>492 s</span><span>268 s</span></p>
+      <p class="split-delta">−224 s</p>
+    </li>
   </ol>
   <p class="split-source">From the paper. <a href="/paper.html">Read how each was measured</a>.</p>
 </section>
 {% include "overview-figure.html" %}
 <article class="overview article-body">
   <section aria-labelledby="software-heading" data-reveal>
-    <h2 id="software-heading">Race your own agent</h2>
+    <h2 id="software-heading">Evaluate your own agent</h2>
     <p>Start with an included agent or bring your own Python implementation. The toolkit prepares the desktops, runs benchmark tasks, and saves scores, timings, screenshots, and action logs. It supports OSWorld, OSWorld 2.0, CUA-World, and MyPCBench.</p>
     <p>After <a href="/docs.html#modal">installation and account setup</a>, run the Codex CLI template on a small OSWorld task set:</p>
     <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun run --remote \

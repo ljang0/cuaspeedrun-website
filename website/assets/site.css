@@ -1835,6 +1835,16 @@ body.figure-open {
   stroke: var(--border);
   stroke-width: 1;
 }
+.overview-frontier-layer {
+  pointer-events: none;
+}
+.overview-frontier {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  stroke-dasharray: 5 4;
+  stroke-linejoin: round;
+}
 .overview-point {
   fill: var(--surface);
   stroke: var(--accent);
@@ -3603,4 +3613,120 @@ math {
   font-size: 18px;
   margin-bottom: 8px;
   color: var(--text);
+}
+
+/* Search in the results toolbar. */
+.results-search {
+  flex: 1 1 260px;
+  max-width: 420px;
+  margin-left: auto;
+}
+.results-search input {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  background: var(--surface);
+  color: var(--text);
+  font: 15px var(--font);
+}
+.results-search input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+/* Filter panel text at a readable size. */
+.results-filters > summary {
+  font-size: 15px;
+}
+.results-content .filter-group legend {
+  font-size: 15px;
+}
+.results-content .filter-check {
+  min-height: 32px;
+  font-size: 15px;
+}
+.results-content .filter-check input {
+  width: 16px;
+  height: 16px;
+}
+.results-content .filter-check i {
+  width: 10px;
+  height: 10px;
+}
+.results-content .filter-check small {
+  font-size: 12px;
+}
+.results-content .check-list {
+  max-height: 240px;
+}
+.results-content .mini-segments button {
+  min-height: 34px;
+  font-size: 14px;
+}
+.results-content .effort-mode strong {
+  font-size: 15px;
+}
+.results-content .effort-mode small {
+  max-width: 260px;
+  font-size: 13px;
+}
+.results-content [data-reset-filters] {
+  font-size: 14px;
+}
+@media (max-width: 760px) {
+  .results-search {
+    max-width: none;
+    margin-left: 0;
+  }
+}
+
+/* Citation popup on the research page. */
+.cite-dialog {
+  width: min(760px, 94vw);
+  padding: 22px 24px 24px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 20px 80px #0004;
+}
+.cite-dialog::backdrop {
+  background: #12200cd9;
+  backdrop-filter: blur(5px);
+}
+.cite-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.cite-dialog-head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+.cite-dialog-head button {
+  padding: 7px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  font: 14px var(--font);
+  cursor: pointer;
+}
+.cite-dialog .code-block {
+  margin: 0;
+}
+.cite-dialog pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Model type and the main-track / ablations toggle share the first column. */
+.results-content .filter-column {
+  min-width: 0;
+}
+.results-content .filter-check[hidden] {
+  display: none;
 }

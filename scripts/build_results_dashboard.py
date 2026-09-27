@@ -139,7 +139,8 @@ def load_results(path: Path) -> list[dict[str, object]]:
 
 
 def build_site(input_path: Path, output_dir: Path, *, public_context: dict | None = None,
-               dataset_scope: dict | None = None) -> Path:
+               dataset_scope: dict | None = None, default_variants: tuple = (),
+               ablation_variants: tuple = ()) -> Path:
     """Render a deterministic site directory ready for static hosting."""
     repository_root = Path(__file__).resolve().parents[1]
     service_root = repository_root / "results"
@@ -147,7 +148,9 @@ def build_site(input_path: Path, output_dir: Path, *, public_context: dict | Non
         is_catalog = "row_type" in next(csv.reader(handle), [])
     if is_catalog:
         return build_catalog_site(input_path, output_dir, service_root,
-                                  public_context=public_context, dataset_scope=dataset_scope)
+                                  public_context=public_context, dataset_scope=dataset_scope,
+                                  default_variants=default_variants,
+                                  ablation_variants=ablation_variants)
     records = load_results(input_path)
     benchmark = "osworld-energy50-representative@0.1"
 
@@ -192,7 +195,9 @@ def build_site(input_path: Path, output_dir: Path, *, public_context: dict | Non
 
 def build_catalog_site(input_path: Path, output_dir: Path, service_root: Path,
                        *, public_context: dict | None = None,
-                       dataset_scope: dict | None = None) -> Path:
+                       dataset_scope: dict | None = None,
+                       default_variants: tuple = (),
+                       ablation_variants: tuple = ()) -> Path:
     repository_root = service_root.parent
     catalog = load_catalog(input_path, METADATA_PATH,
                            repository_root / "data/results-curation.json")
@@ -219,6 +224,17 @@ def build_catalog_site(input_path: Path, output_dir: Path, service_root: Path,
                        "note": "Paper task subsets. The source CSV retains the full archive.",
                    }}
         datasets = selected
+    # A variant that names the default setting adds no information, so the
+    # published record uses the plain model name.
+    for dataset in datasets.values():
+        for record in (*dataset["records"], *dataset["excluded_evaluations"]):
+            if record["variant"] in default_variants:
+                record["variant"] = ""
+                record["series"] = record["model"]
+        # Ablations are shown only when a reader includes them.
+        for record in dataset["records"]:
+            record["ablation"] = record["variant"] in ablation_variants
+        dataset["has_ablations"] = any(record["ablation"] for record in dataset["records"])
     previous_catalog = output_dir / "results-catalog.json"
     old_pages = {}
     if previous_catalog.is_file():
