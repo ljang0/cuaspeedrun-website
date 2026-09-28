@@ -193,7 +193,7 @@
       });
       if (!connection.configured)
         throw new Error(
-          "Hosted evaluations are not open yet. You can run the same toolkit on Modal from the command line.",
+          "Hosted runs, where you upload an agent here and we run it for you, will open later. Until then, use the steps above.",
         );
       [benchmarks, tracks, templates] = await Promise.all([
         api("/api/benchmarks"),
@@ -237,7 +237,7 @@
         fieldset.disabled = false;
       });
       ready = true;
-      note("Evaluation service connected. Choose a benchmark to get started.");
+      note("Hosted runs are open. Sign in below to upload an agent and launch it on your Modal account.");
       $("connection-status").dataset.state = "open";
     } catch (error) {
       note(

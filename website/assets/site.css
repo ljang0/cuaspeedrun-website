@@ -3730,3 +3730,10 @@ math {
 .results-content .filter-check[hidden] {
   display: none;
 }
+.page-run .connection-notice {
+  max-width: 720px;
+  margin-top: 8px;
+}
+.page-run .run-guide h2 {
+  margin-top: 34px;
+}
