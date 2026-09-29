@@ -139,3 +139,10 @@ then explicitly requested deployment of this change in the standalone website.
 Use `pranjala@cmu.edu`, `ljang@cmu.edu`, and `jykoh@cmu.edu` (the supplied domain
 is `cmu.edu`, rather than `cs.cmu.edu` in an earlier manuscript draft). The shared
 author component displays these links on the homepage and research article.
+
+Deployed this change from commit `c03cc16` with Wrangler 4.141.0 to the existing
+`cuaspeedrun` Worker on `cuaspeedrun.com` and `www.cuaspeedrun.com`. Cloudflare
+version: `b4cc43b7-1207-46c1-98e1-71ab95de5fc4`. All 30 website tests passed;
+browser verification confirmed the three visible `mailto:` links on the live
+homepage and research page. Source is on local branch `codex/author-email-links`;
+no Git push or remote PR was performed.
