@@ -146,3 +146,14 @@ version: `b4cc43b7-1207-46c1-98e1-71ab95de5fc4`. All 30 website tests passed;
 browser verification confirmed the three visible `mailto:` links on the live
 homepage and research page. Source is on local branch `codex/author-email-links`;
 no Git push or remote PR was performed.
+
+## September 29, 2026: main is the production source
+
+The owner explicitly requested that website changes be on GitHub `main` and that
+updates to `main` deploy to the site. This authorizes pushing and merging the
+pending author-email changes in `ljang0/cuaspeedrun-website` through a pull
+request. Routine releases must come from the main-branch GitHub Actions workflow,
+not an unmerged local working tree. The existing workflow runs on pushes to main;
+both Cloudflare repository secrets are configured. Documentation now makes this
+the default release path. Verify the actual deployment step, not only the overall
+workflow status, because missing secrets currently skip deployment.
