@@ -6,12 +6,14 @@
     {
       "name": "Pranjal Aggarwal",
       "url": "https://pranjal2041.github.io/",
-      "equal_contribution": true
+      "equal_contribution": true,
+      "email": "pranjala@cmu.edu"
     },
     {
       "name": "Lawrence Keunho Jang",
       "url": "https://lawrencekjang.github.io/",
-      "equal_contribution": true
+      "equal_contribution": true,
+      "email": "ljang@cmu.edu"
     },
     {
       "name": "Sean Welleck",
@@ -31,7 +33,8 @@
     {
       "name": "Jing Yu Koh",
       "url": "https://jykoh.com/",
-      "equal_contribution": true
+      "equal_contribution": true,
+      "email": "jykoh@cmu.edu"
     }
   ],
   "paper_subsets": {

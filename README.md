@@ -46,18 +46,22 @@ data notes, including the hosted-evaluation proxy in `website/worker.js`.
 The site is a Cloudflare Worker named `cuaspeedrun` with custom domains
 `cuaspeedrun.com` and `www.cuaspeedrun.com` (see `wrangler.jsonc`).
 
-To deploy by hand from a machine logged in to the owning Cloudflare account:
+Production is deployed from `main`. Make website changes on a branch, open a pull
+request, and merge it into `main`. Every push to `main` runs the **Deploy** workflow
+(`.github/workflows/deploy.yml`), which tests and builds the site before deploying
+to Cloudflare. Verify that the workflow's deploy step succeeds after merging.
+Do not publish unmerged local changes directly with Wrangler: a later deployment
+from `main` would replace them.
+
+To redeploy the current `main` without a code change, choose **Actions → Deploy →
+Run workflow** and select `main`, or run:
 
 ```sh
-python3 scripts/build_public_site.py
-npx --yes wrangler@4.141.0 deploy
+gh workflow run deploy.yml --ref main
 ```
 
-Every push to `main` deploys automatically through the **Deploy** workflow
-(`.github/workflows/deploy.yml`): it runs the tests, builds the site, and
-deploys only if both succeed. It can also be run by hand from the Actions tab.
-It needs two repository secrets from the account that owns the domain:
-`CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` (a token made from the
-"Edit Cloudflare Workers" template). Until both exist, the workflow skips the
-deploy step with a notice. Make changes on a branch and open a pull request if
-you want review before they go live.
+The workflow needs `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` repository
+secrets from the account that owns the domain (the token uses the "Edit Cloudflare
+Workers" template). Both are configured as of September 29, 2026. A run without
+them skips deployment with a notice; a green run alone does not prove publication,
+so check that **Deploy to Cloudflare** ran successfully.

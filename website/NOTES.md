@@ -131,3 +131,29 @@ fails. Change the lineup there, not in the template.
 
 The Barlow fonts are self-hosted under `assets/fonts/`, with their upstream source
 and SIL Open Font License included. No third-party font requests are needed.
+
+## September 28, 2026: author email links
+
+The owner requested public email links for Pranjal, Lawrence, and Jing Yu and
+then explicitly requested deployment of this change in the standalone website.
+Use `pranjala@cmu.edu`, `ljang@cmu.edu`, and `jykoh@cmu.edu` (the supplied domain
+is `cmu.edu`, rather than `cs.cmu.edu` in an earlier manuscript draft). The shared
+author component displays these links on the homepage and research article.
+
+Deployed this change from commit `c03cc16` with Wrangler 4.141.0 to the existing
+`cuaspeedrun` Worker on `cuaspeedrun.com` and `www.cuaspeedrun.com`. Cloudflare
+version: `b4cc43b7-1207-46c1-98e1-71ab95de5fc4`. All 30 website tests passed;
+browser verification confirmed the three visible `mailto:` links on the live
+homepage and research page. Source is on local branch `codex/author-email-links`;
+no Git push or remote PR was performed.
+
+## September 29, 2026: main is the production source
+
+The owner explicitly requested that website changes be on GitHub `main` and that
+updates to `main` deploy to the site. This authorizes pushing and merging the
+pending author-email changes in `ljang0/cuaspeedrun-website` through a pull
+request. Routine releases must come from the main-branch GitHub Actions workflow,
+not an unmerged local working tree. The existing workflow runs on pushes to main;
+both Cloudflare repository secrets are configured. Documentation now makes this
+the default release path. Verify the actual deployment step, not only the overall
+workflow status, because missing secrets currently skip deployment.

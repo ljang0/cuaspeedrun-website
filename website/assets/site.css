@@ -3737,3 +3737,15 @@ math {
 .page-run .run-guide h2 {
   margin-top: 34px;
 }
+
+.author-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.author-contacts a {
+  white-space: nowrap;
+}
