@@ -1,7 +1,10 @@
 <div class="authors" aria-label="Authors">
   {% for author in site.authors %}<span><a href="{{ author.url }}" rel="author">{{ author.name }}</a>{% if author.equal_contribution %}<sup aria-label="equal contribution">*</sup>{% endif %}</span>{% endfor %}
 </div>
+{% set contacts = site.authors | selectattr('email') | list %}
+{% if contacts %}
 <div class="author-contacts" aria-label="Author email addresses">
-  {% for author in site.authors if author.email %}<a href="mailto:{{ author.email }}" aria-label="Email {{ author.name }}">{{ author.email }}</a>{% endfor %}
+  <a href="mailto:{{ contacts | map(attribute='email') | join(',') }}" aria-label="Email {{ contacts | map(attribute='name') | join(', ') }}">{{ '{' }}{% for author in contacts %}{{ author.email.split('@')[0] }}{% if not loop.last %}, {% endif %}{% endfor %}{{ '}' }}@{{ contacts[0].email.split('@')[1] }}</a>
 </div>
+{% endif %}
 <p class="author-note">* Equal contribution</p>
