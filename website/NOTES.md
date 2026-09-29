@@ -172,3 +172,15 @@ block prevented jobs from starting. Main was therefore deployed with Wrangler
 (Cloudflare version `f0a40e38-306f-4e79-8b32-e2e7b95950f1`). Until the account block
 is resolved, any necessary manual deployment must use a clean, merged main
 revision; the main-triggered workflow remains the normal release path.
+
+
+## September 29, 2026: public website repository
+
+The owner explicitly requested making `ljang0/cuaspeedrun-website` public to use
+free standard GitHub-hosted Actions runners. The repository visibility is now
+public, including its existing branches and commit history. This decision applies
+to the standalone website repository. Standard runner usage on public repositories
+is free, but GitHub's runtime, concurrency, and other service limits still apply.
+The release process remains branch, pull request, then automatic deployment from
+main; verify a successful deployment rather than assuming a visibility change
+clears an account billing block.
