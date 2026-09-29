@@ -3783,36 +3783,15 @@ math {
 .faq h3 {
   scroll-margin-top: 30px;
 }
-.faq-steps {
+.faq-list {
   margin: 0 0 24px;
   padding-left: 22px;
 }
-.faq-steps li {
-  margin-bottom: 10px;
+.faq-list li {
+  margin-bottom: 8px;
   font-size: 18px;
   line-height: 1.7;
   color: var(--text-secondary);
-}
-.faq-table-wrap {
-  margin: 0 0 24px;
-  overflow-x: auto;
-}
-.faq-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 15px;
-}
-.faq-table th,
-.faq-table td {
-  padding: 10px 12px 10px 0;
-  border-bottom: 1px solid var(--border);
-  text-align: left;
-  vertical-align: top;
-  color: var(--text-secondary);
-}
-.faq-table th {
-  color: var(--text);
-  font-weight: 500;
 }
 @media (max-width: 760px) {
   .faq-paths {
