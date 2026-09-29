@@ -184,3 +184,16 @@ is free, but GitHub's runtime, concurrency, and other service limits still apply
 The release process remains branch, pull request, then automatic deployment from
 main; verify a successful deployment rather than assuming a visibility change
 clears an account billing block.
+
+
+## September 29, 2026: one author contact link
+
+The owner requested one visible contact link, `{pranjala, ljang, jingyuk}@cs.cmu.edu`,
+in place of three separate email links. Its `mailto:` target addresses all three
+full email addresses, separated by commas. The shared component applies this to
+the homepage and research page and derives the recipients from `config.json`.
+Clicking opens a draft in the visitor's email client; it does not send a message.
+
+Making the website repository public cleared the earlier Actions block. Automatic
+tests, build, and Cloudflare deployment passed for main commit `2ae72b3` in GitHub
+Actions run `36614449043`; releases continue through the main workflow.
