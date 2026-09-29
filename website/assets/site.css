@@ -3749,3 +3749,73 @@ math {
 .author-contacts a {
   white-space: nowrap;
 }
+/* Documentation: who-are-you shortcuts, numbered steps, and small tables. */
+.faq-paths {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: -18px 0 56px;
+}
+.faq-paths a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 160ms, transform 160ms;
+}
+.faq-paths a:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.faq-paths strong {
+  font-size: 17px;
+  font-weight: 500;
+}
+.faq-paths span {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.faq h3 {
+  scroll-margin-top: 30px;
+}
+.faq-steps {
+  margin: 0 0 24px;
+  padding-left: 22px;
+}
+.faq-steps li {
+  margin-bottom: 10px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+.faq-table-wrap {
+  margin: 0 0 24px;
+  overflow-x: auto;
+}
+.faq-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.faq-table th,
+.faq-table td {
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  color: var(--text-secondary);
+}
+.faq-table th {
+  color: var(--text);
+  font-weight: 500;
+}
+@media (max-width: 760px) {
+  .faq-paths {
+    grid-template-columns: 1fr;
+  }
+}
