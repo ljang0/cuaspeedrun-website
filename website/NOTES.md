@@ -131,3 +131,11 @@ fails. Change the lineup there, not in the template.
 
 The Barlow fonts are self-hosted under `assets/fonts/`, with their upstream source
 and SIL Open Font License included. No third-party font requests are needed.
+
+## September 28, 2026: author email links
+
+The owner requested public email links for Pranjal, Lawrence, and Jing Yu and
+then explicitly requested deployment of this change in the standalone website.
+Use `pranjala@cmu.edu`, `ljang@cmu.edu`, and `jykoh@cmu.edu` (the supplied domain
+is `cmu.edu`, rather than `cs.cmu.edu` in an earlier manuscript draft). The shared
+author component displays these links on the homepage and research article.
