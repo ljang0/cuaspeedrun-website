@@ -136,9 +136,9 @@ and SIL Open Font License included. No third-party font requests are needed.
 
 The owner requested public email links for Pranjal, Lawrence, and Jing Yu and
 then explicitly requested deployment of this change in the standalone website.
-Use `pranjala@cmu.edu`, `ljang@cmu.edu`, and `jykoh@cmu.edu` (the supplied domain
-is `cmu.edu`, rather than `cs.cmu.edu` in an earlier manuscript draft). The shared
-author component displays these links on the homepage and research article.
+The initial addresses used the supplied `cmu.edu` domain. These have been
+superseded by the September 29 correction below. The shared author component
+displays the links on the homepage and research article.
 
 Deployed this change from commit `c03cc16` with Wrangler 4.141.0 to the existing
 `cuaspeedrun` Worker on `cuaspeedrun.com` and `www.cuaspeedrun.com`. Cloudflare
@@ -157,3 +157,18 @@ not an unmerged local working tree. The existing workflow runs on pushes to main
 both Cloudflare repository secrets are configured. Documentation now makes this
 the default release path. Verify the actual deployment step, not only the overall
 workflow status, because missing secrets currently skip deployment.
+
+
+## September 29, 2026: corrected author email addresses
+
+The owner corrected all three contact addresses to the `cs.cmu.edu` domain and
+specified `jingyuk` as Jing Yu Koh's username. Use `pranjala@cs.cmu.edu`,
+`ljang@cs.cmu.edu`, and `jingyuk@cs.cmu.edu` on both the homepage and research
+article. This supersedes the initial September 28 addresses.
+
+The preceding website changes landed on main through PR #2 (merge `91d3d3a`).
+GitHub Actions triggered on that merge, but the account's payment/spending-limit
+block prevented jobs from starting. Main was therefore deployed with Wrangler
+(Cloudflare version `f0a40e38-306f-4e79-8b32-e2e7b95950f1`). Until the account block
+is resolved, any necessary manual deployment must use a clean, merged main
+revision; the main-triggered workflow remains the normal release path.
