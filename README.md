@@ -50,6 +50,9 @@ Production is deployed from `main`. Make website changes on a branch, open a pul
 request, and merge it into `main`. Every push to `main` runs the **Deploy** workflow
 (`.github/workflows/deploy.yml`), which tests and builds the site before deploying
 to Cloudflare. Verify that the workflow's deploy step succeeds after merging.
+
+This website repository is public. Its standard GitHub-hosted Actions runners
+are free; GitHub still applies workflow runtime and concurrency limits.
 Do not publish unmerged local changes directly with Wrangler: a later deployment
 from `main` would replace them.
 
