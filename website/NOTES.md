@@ -197,3 +197,22 @@ Clicking opens a draft in the visitor's email client; it does not send a message
 Making the website repository public cleared the earlier Actions block. Automatic
 tests, build, and Cloudflare deployment passed for main commit `2ae72b3` in GitHub
 Actions run `36614449043`; releases continue through the main workflow.
+
+
+## September 30, 2026: remove public trajectory download links
+
+The owner raised the team's concerns about publishing benchmark trajectories,
+including possible distillation and benchmark contamination, and shared the
+proposal to remove the links from the website and paper. Remove public trajectory
+download links from the site and its research article while keeping aggregate
+scores, timings, costs, and figures available. Do not promise unrestricted or
+automatic access on request; any later research sharing needs a separate decision.
+This website change does not change the Hugging Face dataset's visibility or
+rewrite existing repository history. Keep source evidence intact for auditability.
+
+The public build also omits trajectory-dataset URLs from embedded catalog data,
+CSV downloads, and the copied statistical evidence JSON. The source records and
+full archive exporter retain their original provenance; measurements are unchanged.
+The documentation directs trajectory-access questions to the authors. A scan of
+the local manuscript's LaTeX and bibliography files found no link to this dataset,
+so no manuscript file was edited.

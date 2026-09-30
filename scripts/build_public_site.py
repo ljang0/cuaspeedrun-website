@@ -17,7 +17,7 @@ from urllib.parse import urlsplit
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 import build_results_dashboard as renderer
-from build_results_dashboard import build_site, REPOSITORY, DATASET_URL
+from build_results_dashboard import build_site, REPOSITORY
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = ROOT / "data/all-hf-model-trajectory-metrics-2026-09-13.csv"
@@ -109,7 +109,7 @@ def build_public_site(output: Path, config_path: Path, paper: Path | None = None
     version = hashlib.sha256(b"".join(p.read_bytes() for p in sorted(assets.rglob("*"))
                                      if p.is_file())).hexdigest()[:12]
     context = {"site": config, "nav": NAV, "repository": repository,
-               "dataset_url": DATASET_URL, "asset_version": version,
+               "asset_version": version,
                "public_layout": "public-results-layout.html", "page": "results",
                "logo_sprite": logo_sprite(config["providers"], assets / "logos"),
                "provider_prefixes": [{k: p[k] for k in ("prefix", "slug", "name")}
@@ -119,7 +119,7 @@ def build_public_site(output: Path, config_path: Path, paper: Path | None = None
         default_variants=tuple(config.get("default_variants", ())),
         ablation_variants=tuple(config.get("ablation_variants", ())),
         public_context={k: v for k, v in context.items()
-                        if k not in {"repository", "dataset_url"}},
+                        if k != "repository"},
     )
     # The results entry point uses the first published subset.
     shutil.copy2(output / "index.html", output / "results.html")

@@ -7,6 +7,7 @@ import argparse
 import csv
 import hashlib
 import json
+import re
 import shutil
 from html import escape
 from pathlib import Path
@@ -56,6 +57,31 @@ STATIC_ASSETS = (
     "pareto-surface.js",
     "leaderboard.js",
 )
+
+
+def without_trajectory_links(value):
+    """Omit trajectory source links from public copies, retaining measurements.
+
+    Source files and the full archive export retain their original provenance.
+    This is a publication choice, not an access control for the remote dataset.
+    """
+    if isinstance(value, dict):
+        return {key: without_trajectory_links(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [without_trajectory_links(item) for item in value]
+    if isinstance(value, str):
+        value = re.sub(re.escape(DATASET_URL) + r'[^\s<>"|]*', '', value)
+        return value.replace(DATASET_URL.split('/datasets/', 1)[1], '')
+    return value
+
+
+def write_public_metrics(input_path: Path, output_path: Path) -> None:
+    with input_path.open(newline='', encoding='utf-8') as source, \
+            output_path.open('w', newline='', encoding='utf-8') as output:
+        reader = csv.DictReader(source)
+        writer = csv.DictWriter(output, fieldnames=reader.fieldnames)
+        writer.writeheader()
+        writer.writerows(without_trajectory_links(row) for row in reader)
 
 
 def _number(value: str, *, field: str, row_number: int) -> float:
@@ -235,6 +261,9 @@ def build_catalog_site(input_path: Path, output_dir: Path, service_root: Path,
         for record in dataset["records"]:
             record["ablation"] = record["variant"] in ablation_variants
         dataset["has_ablations"] = any(record["ablation"] for record in dataset["records"])
+    if public_context:
+        catalog = without_trajectory_links(catalog)
+        datasets = catalog["datasets"]
     previous_catalog = output_dir / "results-catalog.json"
     old_pages = {}
     if previous_catalog.is_file():
@@ -261,12 +290,19 @@ def build_catalog_site(input_path: Path, output_dir: Path, service_root: Path,
     asset_output.mkdir(exist_ok=True)
     for asset_name in STATIC_ASSETS:
         shutil.copy2(service_root / "static" / asset_name, asset_output / asset_name)
-    shutil.copy2(input_path, output_dir / "trajectory-metrics.csv")
+    if public_context:
+        write_public_metrics(input_path, output_dir / "trajectory-metrics.csv")
+    else:
+        shutil.copy2(input_path, output_dir / "trajectory-metrics.csv")
     shutil.copy2(METADATA_PATH, output_dir / "model-metadata.json")
     shutil.copy2(PRICING_PATH, output_dir / "results-pricing.json")
     evidence_root = repository_root / "data" / "results-evidence"
     if evidence_root.is_dir():
         shutil.copytree(evidence_root, output_dir / "results-evidence", dirs_exist_ok=True)
+        if public_context:
+            for evidence in (output_dir / "results-evidence").glob("*.json"):
+                evidence.write_text(json.dumps(without_trajectory_links(
+                    json.loads(evidence.read_text())), indent=2) + "\n")
     cost_fields = (
         "run_id", "model", "effort", "source_cost_usd", "cost_usd", "cost_kind",
         "cost_label", "cost_note", "cost_range_min_usd", "cost_range_max_usd",
