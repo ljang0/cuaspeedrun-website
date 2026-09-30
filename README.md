@@ -38,9 +38,11 @@ Open <http://localhost:8787>. Rebuild after every edit; the preview serves
 "Code" link. Point it at the public code repository once it exists.
 
 Set `paper_url` to the announced `https://arxiv.org/abs/...` URL when it is
-available. Until then, the homepage says "Paper forthcoming" and the old
-`/paper.html` route redirects to the homepage. A configured URL updates paper
-links, the legacy redirect, and the citation destination together. The site does
+available. The top navigation always includes Paper. Until arXiv announces the
+paper, that tab is disabled and marked "forthcoming", the homepage says "Paper
+forthcoming", and the old `/paper.html` route redirects to the homepage. A
+configured URL updates paper links, the legacy redirect, and the citation
+destination together. The site does
 not reproduce the article or publish local manuscript PDFs.
 
 The build validates the data: every published model needs a developer entry

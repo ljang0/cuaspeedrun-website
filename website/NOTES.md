@@ -227,3 +227,12 @@ as a public paper URL. Until the owner supplies the announced URL, show "Paper
 forthcoming" and send the retired `/paper.html` route to the homepage. Once
 `paper_url` is set, paper links and the retired route should lead directly to it.
 Retain the homepage's original figures and interactive results.
+
+
+## September 30, 2026: keep Paper in the top navigation
+
+The owner requested a top-level Paper tab that opens the paper on arXiv directly.
+Keep Paper visible on every page, including while the public URL is pending.
+During that period, mark the tab "forthcoming" and leave it disabled. Once
+`paper_url` is supplied, the same tab becomes a direct arXiv link; it must not
+open a duplicate article on this site.
