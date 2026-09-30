@@ -21,7 +21,7 @@ from build_results_dashboard import build_site, REPOSITORY
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = ROOT / "data/all-hf-model-trajectory-metrics-2026-09-13.csv"
-NAV = [("home", "Overview", "index.html"), ("paper", "Research", "paper.html"),
+NAV = [("home", "Overview", "index.html"), ("paper", "Paper", "paper.html"),
        ("results", "Leaderboard", "results.html"), ("docs", "Documentation", "docs.html"),
        ("run", "Run", "submit")]
 
@@ -37,6 +37,11 @@ def configuration(path: Path) -> dict:
             raise ValueError(f"{key} must be a public HTTPS URL without credentials"
                              + ("" if key == "paper_url" else " or a path"))
         config[key] = value
+    if config["paper_url"]:
+        paper_url = urlsplit(config["paper_url"])
+        if (paper_url.hostname != "arxiv.org" or paper_url.query
+                or not re.fullmatch(r"/abs/\d{4}\.\d{4,5}(?:v\d+)?", paper_url.path)):
+            raise ValueError("paper_url must be an announced arXiv abstract URL")
     if not config["site_url"]:
         raise ValueError("site_url is required")
     return config
@@ -100,7 +105,7 @@ def race_data(race: dict, catalog: dict, providers: list[dict]) -> dict:
             "speed": race["speed"], "href": dataset["href"], "runners": runners}
 
 
-def build_public_site(output: Path, config_path: Path, paper: Path | None = None) -> Path:
+def build_public_site(output: Path, config_path: Path) -> Path:
     config = configuration(config_path)
     # "Code" links on every page, including the results renderer, use this repository.
     repository = config.get("repository", REPOSITORY)
@@ -128,14 +133,8 @@ def build_public_site(output: Path, config_path: Path, paper: Path | None = None
     shutil.copytree(assets, output / "assets", dirs_exist_ok=True)
     # Existing run/account pages use this script through the same-origin proxy.
     shutil.copy2(ROOT / "results/static/app.js", output / "static/app.js")
-    if paper:
-        if not paper.is_file() or not paper.read_bytes().startswith(b"%PDF-"):
-            raise ValueError("--paper must reference a real PDF")
-        shutil.copy2(paper, output / "paper.pdf")
-        config["paper_url"] = "paper.pdf"
-    elif (output / "paper.pdf").exists():
-        # Do not accidentally republish a draft left from an earlier build.
-        (output / "paper.pdf").unlink()
+    # The paper is published on arXiv, never from a local draft PDF.
+    (output / "paper.pdf").unlink(missing_ok=True)
     env = Environment(loader=FileSystemLoader(ROOT / "website/templates"),
                       autoescape=select_autoescape(("html", "xml")))
     overview_data = [{"name": d["name"], "href": d["href"], **d["paper_subset"],
@@ -158,7 +157,7 @@ def build_public_site(output: Path, config_path: Path, paper: Path | None = None
         destination.write_text(html)
     (output / "404.html").write_text(env.get_template("404.html").render(**{**context, "page": "404"}))
     (output / "robots.txt").write_text(f'User-agent: *\nAllow: /\nSitemap: {config["site_url"]}/sitemap.xml\n')
-    pages = [filename for _, _, filename in NAV] + [d["href"] for d in datasets]
+    pages = [filename for key, _, filename in NAV if key != "paper"] + [d["href"] for d in datasets]
     (output / "sitemap.xml").write_text(env.get_template("sitemap.xml").render(site=config, pages=pages))
     (output / "_headers").write_text(
         "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n"
@@ -172,6 +171,5 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT / "output/public-site")
     parser.add_argument("--config", type=Path, default=ROOT / "website/config.json")
-    parser.add_argument("--paper", type=Path, help="Release-approved PDF to include in this build")
     args = parser.parse_args()
-    build_public_site(args.output.resolve(), args.config.resolve(), args.paper)
+    build_public_site(args.output.resolve(), args.config.resolve())

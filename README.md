@@ -24,7 +24,8 @@ Open <http://localhost:8787>. Rebuild after every edit; the preview serves
 | What | File |
 | --- | --- |
 | Documentation page | `website/templates/docs.html` |
-| Homepage, research article, run page | `website/templates/home.html`, `paper.html`, `run.html` |
+| Homepage, run page | `website/templates/home.html`, `run.html` |
+| Paper destination | `paper_url` in `website/config.json` |
 | Leaderboard page layout and table | `results/templates/leaderboard.html` |
 | Leaderboard record board and reading note | `website/templates/results-records.html`, `results-note.html` |
 | Leaderboard behavior (sorting, plots, 3D) | `results/static/leaderboard.js`; public-only extras in `website/assets/leaderboard-plus.js` |
@@ -35,6 +36,12 @@ Open <http://localhost:8787>. Rebuild after every edit; the preview serves
 
 `website/config.json` sets `repository`, the GitHub repository behind every
 "Code" link. Point it at the public code repository once it exists.
+
+Set `paper_url` to the announced `https://arxiv.org/abs/...` URL when it is
+available. Until then, the homepage says "Paper forthcoming" and the old
+`/paper.html` route redirects to the homepage. A configured URL updates paper
+links, the legacy redirect, and the citation destination together. The site does
+not reproduce the article or publish local manuscript PDFs.
 
 The build validates the data: every published model needs a developer entry
 in `providers`, every race runner must match exactly one result, and the task

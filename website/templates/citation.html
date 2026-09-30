@@ -1,0 +1,14 @@
+{% set bibtex %}@misc{aggarwal2026cuaspeedrun,
+  title  = {{ '{' }}CUA-Speedrun: Standardized Benchmarking of the Speed of Computer-Use Agents{{ '}' }},
+  author = {{ '{' }}{% for author in site.authors %}{% set parts = author.name.split(' ') %}{{ parts[-1] }}, {{ parts[:-1] | join(' ') }}{% if not loop.last %} and {% endif %}{% endfor %}{{ '}' }},
+  year   = {{ '{' }}2026{{ '}' }},
+  url    = {{ '{' }}{{ site.paper_url or site.site_url }}{{ '}' }}
+}{% endset %}
+<section id="cite" aria-labelledby="citation-heading">
+  <h2 id="citation-heading">Citation</h2>
+  <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>{{ bibtex }}</code></pre></div>
+</section>
+<dialog class="cite-dialog" aria-labelledby="cite-dialog-title" data-cite-dialog>
+  <div class="cite-dialog-head"><h2 id="cite-dialog-title">Cite CUA-Speedrun</h2><button type="button" data-cite-close>Close</button></div>
+  <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>{{ bibtex }}</code></pre></div>
+</dialog>

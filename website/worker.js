@@ -1,3 +1,5 @@
+import siteConfig from "./config.json";
+
 // Public assets and a same-origin bridge to an operator-selected evaluator.
 // No Python execution, credentials, or evaluation artifacts live in this Worker.
 export function evaluatorOrigin(value) {
@@ -37,6 +39,15 @@ export default {
     if (url.hostname === "www.cuaspeedrun.com") {
       url.hostname = "cuaspeedrun.com";
       return Response.redirect(url.toString(), 308);
+    }
+    if (["/paper", "/paper/", "/paper.html"].includes(url.pathname)) {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: siteConfig.paper_url || new URL("/", url).toString(),
+          "Cache-Control": "no-store",
+        },
+      });
     }
     const origin = evaluatorOrigin(env.EVALUATOR_ORIGIN);
     if (url.pathname === "/site-api/status")

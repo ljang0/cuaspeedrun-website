@@ -216,3 +216,14 @@ full archive exporter retain their original provenance; measurements are unchang
 The documentation directs trajectory-access questions to the authors. A scan of
 the local manuscript's LaTeX and bibliography files found no link to this dataset,
 so no manuscript file was edited.
+
+
+## September 30, 2026: link to arXiv instead of duplicating the paper
+
+The owner requested removing the website's research article and linking directly
+to arXiv. The submission is still awaiting announcement; no public arXiv URL has
+been supplied. Do not use a temporary submission number or private author dashboard
+as a public paper URL. Until the owner supplies the announced URL, show "Paper
+forthcoming" and send the retired `/paper.html` route to the homepage. Once
+`paper_url` is set, paper links and the retired route should lead directly to it.
+Retain the homepage's original figures and interactive results.

@@ -40,7 +40,7 @@ def test_publication_preserves_catalog_and_links(public_site):
             if url.scheme or url.netloc or not url.path or url.path in ['/me', '/login/github']:
                 continue
             path = public_site / url.path.lstrip('/')
-            if url.path == '/submit': path = path / 'index.html'
+            if url.path in ['/', '/submit']: path = path / 'index.html'
             assert path.is_file(), (filename, raw)
     assert not (public_site / 'paper.pdf').exists()
 
@@ -129,19 +129,17 @@ def test_paper_figures_and_author_credit(public_site):
     provenance = json.loads((figures / 'sources.json').read_text())
     expected_names = ['Pranjal Aggarwal', 'Lawrence Keunho Jang', 'Sean Welleck',
                       'Daniel Fried', 'Ruslan Salakhutdinov', 'Jing Yu Koh']
-    for filename in ['index.html', 'paper.html']:
-        page = BeautifulSoup((public_site / filename).read_text(), 'html.parser')
-        assert [a.get_text() for a in page.select('.authors a')] == expected_names
-        assert [a.get_text() for a in page.select('.authors > span') if a.sup] == [
-            'Pranjal Aggarwal*', 'Lawrence Keunho Jang*', 'Jing Yu Koh*']
+    page = BeautifulSoup((public_site / 'index.html').read_text(), 'html.parser')
+    assert [a.get_text() for a in page.select('.authors a')] == expected_names
+    assert [a.get_text() for a in page.select('.authors > span') if a.sup] == [
+        'Pranjal Aggarwal*', 'Lawrence Keunho Jang*', 'Jing Yu Koh*']
     for record in provenance['figures']:
         for format in ['pdf', 'svg']:
             artifact = figures / record[format]
             assert hashlib.sha256(artifact.read_bytes()).hexdigest() == record[f'{format}_sha256']
         assert (figures / record['pdf']).read_bytes().startswith(b'%PDF-')
-    paper = BeautifulSoup((public_site / 'paper.html').read_text(), 'html.parser')
-    assert {image['src'] for image in paper.select('.paper-figure img')} == {
-        '/assets/figures/' + record['svg'] for record in provenance['figures']}
+    assert page.select_one('#cite code')
+    assert page.select_one('[data-cite-open]')['href'] == '#cite'
 
 
 def test_submission_page_starts_disabled(public_site):
@@ -150,3 +148,50 @@ def test_submission_page_starts_disabled(public_site):
     assert page.select_one('#modal-secret')['type'] == 'password'
     assert page.select_one('#agent-file')['name'] == 'agent_file'
     assert page.select_one('#billing-consent').has_attr('required')
+
+
+def test_paper_destination_replaces_duplicate_article(public_site):
+    config = json.loads((ROOT / 'website/config.json').read_text())
+    paper_url = config['paper_url']
+    page = BeautifulSoup((public_site / 'paper.html').read_text(), 'html.parser')
+    assert page.select_one('meta[http-equiv="refresh"]')['content'] == '0;url=' + (paper_url or '/')
+    assert page.select_one('link[rel="canonical"]')['href'] == (paper_url or config['site_url'])
+    assert page.select_one('meta[name="robots"]')['content'] == 'noindex'
+    assert not page.select('article, .abstract, .paper-figure')
+    assert 'paper.html' not in (public_site / 'sitemap.xml').read_text()
+    home = BeautifulSoup((public_site / 'index.html').read_text(), 'html.parser')
+    assert ('Paper forthcoming' in home.get_text()) == (not paper_url)
+    for filename in public_site.rglob('*.html'):
+        rendered = BeautifulSoup(filename.read_text(), 'html.parser')
+        assert not rendered.select('a[href^="/paper.html"]'), filename
+
+
+def test_announced_paper_url_updates_links_and_redirect(tmp_path):
+    # A real arXiv URL exercises the configurable destination in an isolated
+    # build; the release configuration remains empty until our paper is public.
+    paper_url = 'https://arxiv.org/abs/1706.03762'
+    config = json.loads((ROOT / 'website/config.json').read_text())
+    config['paper_url'] = paper_url
+    config_path = tmp_path / 'config.json'
+    config_path.write_text(json.dumps(config))
+    output = tmp_path / 'public'
+    output.mkdir()
+    # A previously exported real PDF must not survive the new release policy.
+    (output / 'paper.pdf').write_bytes((ROOT / 'website/assets/figures/overview.pdf').read_bytes())
+    command = [sys.executable, str(ROOT / 'scripts/build_public_site.py'),
+               '--config', str(config_path), '--output', str(output)]
+    subprocess.run(command, cwd=ROOT, check=True)
+    assert not (output / 'paper.pdf').exists()
+    home = BeautifulSoup((output / 'index.html').read_text(), 'html.parser')
+    assert home.select_one('.site-navigation a')['href'] == paper_url
+    assert home.select_one('.release-links a[href="' + paper_url + '"]')
+    assert paper_url in home.select_one('#cite code').get_text()
+    assert 'Paper forthcoming' not in home.get_text()
+    redirect = BeautifulSoup((output / 'paper.html').read_text(), 'html.parser')
+    assert redirect.select_one('meta[http-equiv="refresh"]')['content'] == '0;url=' + paper_url
+    for private_or_incomplete in ['https://arxiv.org/user/', 'https://arxiv.org/abs/']:
+        config['paper_url'] = private_or_incomplete
+        config_path.write_text(json.dumps(config))
+        result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+        assert result.returncode != 0
+        assert 'announced arXiv abstract URL' in result.stderr

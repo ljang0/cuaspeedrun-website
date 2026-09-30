@@ -23,7 +23,7 @@
 <header class="site-header">
   <a class="site-brand" href="/index.html" aria-label="CUA-Speedrun home"><svg class="brand-cursor" viewBox="0 0 13 19" width="11" height="16" aria-hidden="true"><path d="M1 1v15.5l4.2-4 3 6.6 2.6-1.2-3-6.4H13z"/></svg>CUA-Speedrun</a>
   <nav class="site-navigation" aria-label="Primary navigation" data-site-nav>
-    {% for key, label, href in nav if key != 'home' %}<a href="/{{ href }}" {% if page == key %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+    {% for key, label, href in nav if key != 'home' and (key != 'paper' or site.paper_url) %}<a href="{{ site.paper_url if key == 'paper' else '/' ~ href }}" {% if page == key %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
   </nav>
   <a class="modal-credit" href="https://modal.com" aria-label="powered by Modal"><span>powered by</span><img src="/assets/modal-logo.png" width="118" height="22" alt="Modal"></a>
 </header>
