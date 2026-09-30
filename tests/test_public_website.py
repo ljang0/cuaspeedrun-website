@@ -1,6 +1,7 @@
 """Publication and upload checks using the real catalog and shipped scripts."""
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 import subprocess
@@ -58,8 +59,21 @@ def test_public_results_only_include_paper_subsets(public_site, tmp_path):
     assert set(catalog['datasets']) == set(subsets)
     assert catalog['included_rows'] == 85
     assert catalog['publication_scope']['omitted_reviewed_rows'] == 11
-    assert (tmp_path / 'trajectory-metrics.csv').read_bytes() == (
-        ROOT / 'data/all-hf-model-trajectory-metrics-2026-09-13.csv').read_bytes()
+    # Every measurement and unrelated metadata value survives publication;
+    # only references to the trajectory dataset are omitted.
+    with (ROOT / 'data/all-hf-model-trajectory-metrics-2026-09-13.csv').open() as handle:
+        source_rows = list(csv.DictReader(handle))
+    with (tmp_path / 'trajectory-metrics.csv').open() as handle:
+        public_rows = list(csv.DictReader(handle))
+    assert len(public_rows) == len(source_rows)
+    for source, public in zip(source_rows, public_rows, strict=True):
+        assert public.keys() == source.keys()
+        for key, value in source.items():
+            if 'anonymousmypcbench/cua-speedrun-trajectories' not in value:
+                assert public[key] == value, key
+    for filename in tmp_path.rglob('*'):
+        if filename.suffix in {'.html', '.json', '.csv', '.js', '.xml'}:
+            assert 'anonymousmypcbench/cua-speedrun-trajectories' not in filename.read_text(), filename
     home = BeautifulSoup((tmp_path / 'index.html').read_text(), 'html.parser')
     overview = json.loads(home.select_one('[data-overview-data]').string)
     assert [d['name'] for d in overview] == list(subsets)
@@ -68,13 +82,20 @@ def test_public_results_only_include_paper_subsets(public_site, tmp_path):
             assert not (tmp_path / dataset['href']).exists()
             assert dataset['href'] not in (tmp_path / 'sitemap.xml').read_text()
             continue
-        # The public site omits labels that name a default setting; every
-        # other field matches the archive exactly.
+        # Default-setting labels and trajectory source links are omitted;
+        # all other catalog fields, including every plotted value, are exact.
         for record in dataset['records']:
             if record['variant'] in config['default_variants']:
                 record['variant'], record['series'] = '', record['model']
             record['ablation'] = record['variant'] in config['ablation_variants']
-        assert catalog['datasets'][name]['records'] == dataset['records']
+        link_fields = {'source_archive_url', 'source_archive_urls',
+                       'cost_source_url', 'cost_source'}
+        for public, source in zip(catalog['datasets'][name]['records'],
+                                  dataset['records'], strict=True):
+            assert public.keys() == source.keys()
+            for key, value in source.items():
+                if key not in link_fields or 'cua-speedrun-trajectories' not in str(value):
+                    assert public[key] == value, key
         interactive = next(d for d in overview if d['name'] == name)
         assert interactive['selected_tasks'] == dataset['task_counts'][0]
         providers = {p['prefix']: p['slug'] for p in json.loads(

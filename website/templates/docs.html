@@ -12,7 +12,7 @@
   <a href="#own-agent"><strong>I built an agent or harness</strong><span>Two Python files, one interface</span></a>
   <a href="#add-benchmark"><strong>I have a benchmark</strong><span>Add your tasks and run any agent</span></a>
   <a href="#no-modal"><strong>I don't have Modal</strong><span>Create an account or run locally</span></a>
-  <a href="#data"><strong>I want the results and data</strong><span>Timings, costs, and trajectories</span></a>
+  <a href="#data"><strong>I want the results and data</strong><span>Scores, timings, and costs</span></a>
 </nav>
 <div class="article-layout">
 <nav class="contents-nav" aria-label="On this page"><a href="#start">Getting started</a><a href="#evaluate-model">Evaluate a model</a><a href="#open-weights">Open-weight models</a><a href="#own-agent">Build an agent</a><a href="#add-benchmark">Add a benchmark</a><a href="#no-modal">Without Modal</a><a href="#data">Results and data</a><a href="#leaderboard">The leaderboard</a><a href="#help">When something fails</a></nav>
@@ -155,7 +155,7 @@ cua-speedrun run \
 <h3>Where are my results saved?</h3>
 <p>In the folder printed at the end of the run. It holds a summary and, for each task, every screenshot, action, and verdict.</p>
 <h3>Where can I get the leaderboard data?</h3>
-<p>Download the results as a CSV from the <a href="/results.html">leaderboard</a>. Full trajectories are on <a href="{{ dataset_url }}">Hugging Face</a>.</p>
+<p>Download aggregate scores, timings, and costs as a CSV from the <a href="/results.html">leaderboard</a>. For questions about trajectory access, <a href="mailto:{{ site.authors | selectattr('email') | map(attribute='email') | join(',') }}">email the authors</a>.</p>
 </section>
 
 <section id="leaderboard" data-reveal>
