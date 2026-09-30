@@ -7,7 +7,7 @@
   <p class="release-description">Most benchmarks only record whether an agent succeeded. CUA-Speedrun is an evaluation system that also measures how long each task takes and what its model calls cost. Every run uses the same pipeline and virtual machine setup on <a href="https://modal.com">Modal</a>, and one agent interface works across OSWorld, OSWorld 2.0, CUA-World, and MyPCBench. Smaller task sets, chosen so their scores track the full benchmarks, keep repeated runs affordable.</p>
   {% include "authors.html" %}
   <nav class="release-links" aria-label="Project resources">
-    <a class="console-button" href="/docs.html#modal">Run on Modal</a>
+    <a class="console-button" href="/docs.html#start">Run on Modal</a>
     <a href="/results.html">Explore leaderboard</a>
     {% if site.paper_url %}<a href="{{ site.paper_url }}">Paper on arXiv</a>{% else %}<span>Paper forthcoming</span>{% endif %}
     <a href="https://github.com/{{ repository }}">Code</a>
@@ -60,13 +60,11 @@
   <section aria-labelledby="software-heading" data-reveal>
     <h2 id="software-heading">Evaluate your own agent</h2>
     <p>Start with an included agent or bring your own Python implementation. The toolkit prepares the desktops, runs benchmark tasks, and saves scores, timings, screenshots, and action logs. It supports OSWorld, OSWorld 2.0, CUA-World, and MyPCBench.</p>
-    <p>After <a href="/docs.html#modal">installation and account setup</a>, run the Codex CLI template on a small OSWorld task set:</p>
-    <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun run --remote \
-  --submission templates/codex_cli \
-  --benchmark benchmarks/osworld-mini \
-  --agents-per-evaluation 2</code></pre></div>
-    <p class="code-caption">Compute uses your Modal account; model calls use your API key. The command prints a score summary and the location of the saved run.</p>
-    <p><a href="/docs.html#agent-contract">Add your own agent</a> or <a href="https://github.com/{{ repository }}/tree/main/templates">browse the templates</a>.</p>
+    <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>pip install cua-speedrun
+cua-speedrun setup
+cua-speedrun benchmark</code></pre></div>
+    <p class="code-caption"><code>setup</code> saves your Modal credentials and API keys. <code>benchmark</code> asks for an agent and a task set, then shows progress. Compute uses your Modal account and model calls use your API key.</p>
+    <p><a href="/docs.html#own-agent">Add your own agent</a> or <a href="https://github.com/{{ repository }}/tree/main/agents">browse the included agents</a>.</p>
   </section>
   <section aria-labelledby="results-heading" data-reveal>
     <h2 id="results-heading">Every measured run</h2>
