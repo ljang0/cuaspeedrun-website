@@ -14,7 +14,7 @@
         <svg class="task-matrix" viewBox="0 0 240 180" role="img" aria-label="Selected and remaining task counts" data-task-matrix></svg>
         <p class="matrix-key"><span>Selected</span><span>Remaining</span></p>
         <p>We choose tasks whose historical agent scores reflect the larger benchmark.</p>
-        <a href="/paper.html#selection">How tasks are selected</a>
+        {% if site.paper_url %}<a href="{{ site.paper_url }}">How tasks are selected</a>{% endif %}
       </section>
       <section class="explainer-results" aria-label="Measured agent results">
         <div class="explainer-plot-heading">

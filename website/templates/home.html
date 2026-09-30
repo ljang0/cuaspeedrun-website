@@ -9,8 +9,9 @@
   <nav class="release-links" aria-label="Project resources">
     <a class="console-button" href="/docs.html#modal">Run on Modal</a>
     <a href="/results.html">Explore leaderboard</a>
-    <a href="/paper.html">Read the research</a>
+    {% if site.paper_url %}<a href="{{ site.paper_url }}">Paper on arXiv</a>{% else %}<span>Paper forthcoming</span>{% endif %}
     <a href="https://github.com/{{ repository }}">Code</a>
+    <a href="#cite" data-cite-open>Cite</a>
   </nav>
 </header>
 {% include "race.html" %}
@@ -26,7 +27,7 @@
     <div><dt>Smaller task sets that keep the ranking</dt><dd>Energy-distance selection keeps 50 of 295 OSWorld tasks, with a 0.98 rank correlation to full-benchmark scores for models left out of the selection.</dd></div>
     <div><dt>An optional fast I/O mode</dt><dd>FastCUA cuts the delay between an action and the next screenshot from about 2–3 s to 2–28 ms, to test whether agents benefit from a faster desktop.</dd></div>
   </dl>
-  <p class="infra-more"><a href="/paper.html#infrastructure">Read the infrastructure section</a> · <a href="/docs.html">Run it yourself</a></p>
+  <p class="infra-more">{% if site.paper_url %}<a href="{{ site.paper_url }}">Read the paper</a> · {% endif %}<a href="/docs.html">Run it yourself</a></p>
 </section>
 <section class="splits" aria-labelledby="splits-heading" data-reveal>
   <h2 id="splits-heading">Results we did not expect</h2>
@@ -52,7 +53,7 @@
       <p class="split-delta">−224 s</p>
     </li>
   </ol>
-  <p class="split-source">From the paper. <a href="/paper.html">Read how each was measured</a>.</p>
+  {% if site.paper_url %}<p class="split-source">From the paper. <a href="{{ site.paper_url }}">Read how each was measured</a>.</p>{% endif %}
 </section>
 {% include "overview-figure.html" %}
 <article class="overview article-body">
@@ -74,5 +75,6 @@
       {% for dataset in datasets %}<a href="/{{ dataset.href }}"><span>{{ dataset.label }}</span><span>{{ dataset.records | length }} results</span></a>{% endfor %}
     </div>
   </section>
+  {% include "citation.html" %}
 </article>
 {% endblock %}
