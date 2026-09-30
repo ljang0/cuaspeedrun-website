@@ -5,14 +5,14 @@
 {% macro contact() -%}
 {% set emails = site.authors | selectattr('email') | map(attribute='email') | list %}{% if emails %}email one of us ({% for email in emails %}<a href="mailto:{{ email }}">{{ email }}</a>{% if not loop.last %}, {% endif %}{% endfor %}) or {% endif %}open an issue on <a href="{{ issues }}">GitHub</a>
 {%- endmacro %}
-<header class="document-heading"><h1>Documentation</h1><p>Find the question that fits you. Each answer has the steps and commands you need.</p></header>
+<header class="document-heading"><h1>Documentation</h1><p>Pick what fits you. Each answer has the steps and commands you need.</p></header>
 <nav class="faq-paths" aria-label="Start here">
   <a href="#evaluate-model"><strong>I want to evaluate my model</strong><span>Run it on the leaderboard's task sets</span></a>
-  <a href="#open-weights"><strong>I have an open-weight model</strong><span>Serve it on a GPU, set up for you</span></a>
-  <a href="#own-agent"><strong>I built an agent or harness</strong><span>Two Python files, one interface</span></a>
+  <a href="#open-weights"><strong>I have an open-weight model</strong><span>Serve it on a Modal GPU</span></a>
+  <a href="#own-agent"><strong>I built my own agent</strong><span>Two Python files and one interface</span></a>
   <a href="#add-benchmark"><strong>I have a benchmark</strong><span>Add your tasks and run any agent</span></a>
-  <a href="#no-modal"><strong>I don't have Modal</strong><span>Run locally, in a browser, or from scripts</span></a>
-  <a href="#data"><strong>I want the results and data</strong><span>Scores, timings, and costs</span></a>
+  <a href="#no-modal"><strong>I don't have Modal</strong><span>Sign up, or run on your own Linux machine</span></a>
+  <a href="#leaderboard"><strong>I want my result on the leaderboard</strong><span>How to submit</span></a>
 </nav>
 <div class="article-layout">
 <nav class="contents-nav" aria-label="On this page"><a href="#start">Getting started</a><a href="#evaluate-model">Evaluate a model</a><a href="#open-weights">Open-weight models</a><a href="#own-agent">Build an agent</a><a href="#add-benchmark">Add a benchmark</a><a href="#no-modal">Other ways to run</a><a href="#data">Results and data</a><a href="#leaderboard">The leaderboard</a><a href="#help">When something fails</a></nav>
@@ -21,55 +21,65 @@
 <section id="start" data-reveal>
 <h2>Getting started</h2>
 <h3>What do I need?</h3>
-<p>Python 3.10 or newer, a <a href="https://modal.com">Modal</a> account, and an API key for your model. Modal runs the desktops and your agent, and bills your account. No Modal? You can also <a href="#no-modal">run on your own machine</a>.</p>
+<p>Python 3.10 or newer, a <a href="#no-modal">Modal</a> account, and an API key for your model, or its weights on Hugging Face. Modal is a pay-per-second cloud service that runs the desktops and your agent. CUA-World and MyPCBench also need a Gemini API key for grading. Without Modal, you can <a href="#local">run on your own Linux machine</a>.</p>
 <h3>How do I run my first evaluation?</h3>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>pip install cua-speedrun
 cua-speedrun setup
 cua-speedrun benchmark</code></pre></div>
-<p><code>setup</code> saves your Modal credentials and API keys. <code>benchmark</code> asks for an agent and a task set, then shows progress while it runs.</p>
-<h3>How do I skip the questions?</h3>
-<p>Name the agent and task set. <code>cua-speedrun catalog</code> lists them all.</p>
+<p><code>setup</code> asks for your Modal token pair, which you create on Modal's <a href="https://modal.com/settings/tokens">Tokens page</a>, and then for the API keys your agent needs. It saves them for later runs. <code>benchmark</code> then asks you to pick an agent and a task set, and shows progress while it runs. To turn your computer off during the run, add <code>--host modal</code>, explained below.</p>
+<h3>How do I choose the agent and task set in the command?</h3>
+<p>Pass them by name. <code>cua-speedrun catalog</code> lists every agent and task set.</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun benchmark --agent claude --dataset osworld-50</code></pre></div>
-<h3>Can I close my laptop while it runs?</h3>
-<p>Yes. Add <code>--host modal</code> and the evaluation runs from your Modal account. Check on it later with <code>cua-speedrun status RUN_ID</code>.</p>
+<h3>Can I turn off my computer while it runs?</h3>
+<p>Yes. Add <code>--host modal</code>. Then the part that coordinates the run also runs in your Modal account. Check on it later with <code>cua-speedrun status RUN_ID</code>. <code>cua-speedrun evaluations</code> lists your runs and their IDs.</p>
+<h3>Where does everything run?</h3>
+<p>Three flags choose where each part runs, and each takes <code>modal</code> or <code>local</code>. <code>--environment</code> is for the desktops, <code>--compute</code> is for your agent, and <code>--host</code> is for the part that coordinates the run. By default, the desktops and your agent run on Modal and your computer coordinates. To run everything on your own Linux machine, set <code>--compute</code> and <code>--environment</code> to <code>local</code>.</p>
 </section>
 
 <section id="evaluate-model" data-reveal>
 <h2>Evaluate a model</h2>
 <h3>How do I evaluate my model?</h3>
-<p><a href="#own-agent">Write an agent</a> that calls your model, or adapt one of the <a href="https://github.com/{{ repository }}/tree/main/agents">included agents</a>. Check it, then run it:</p>
+<p><a href="#own-agent">Write an agent</a> that calls your model, or adapt an included one. The included agents are in the <a href="https://github.com/{{ repository }}/tree/main/agents">agents folder</a> of the code repository. Copy one and change its model call. Check it, then run it:</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun validate --agent ./my-agent
 cua-speedrun benchmark --agent ./my-agent --dataset osworld-50</code></pre></div>
+<p><code>validate</code> checks the files without starting a desktop.</p>
+<h3>Can I use an included agent with a different model?</h3>
+<p>Yes, a model from the same provider. Included agents read the model name from a variable, such as <code>CLAUDE_MODEL</code> for <code>claude</code> or <code>OPENAI_MODEL</code> for <code>gpt54</code>. Your agent runs on Modal, so it only sees the variables you pass with <code>--env</code>:</p>
+<div class="code-block"><button type="button" data-copy>Copy</button><pre><code>CLAUDE_MODEL=your-model-id cua-speedrun benchmark \
+  --agent claude --dataset osworld-50 --env CLAUDE_MODEL</code></pre></div>
 <h3>Which task sets are on the leaderboard?</h3>
+<p>A task set is a fixed list of tasks from a benchmark. The leaderboard uses four, each chosen so model rankings match the full benchmark. Pass the name to <code>--dataset</code>:</p>
 <ul class="faq-list">
-<li>OSWorld, 50 tasks: <code>osworld-50</code></li>
-<li>OSWorld 2.0, 52 tasks: <code>osworld2-52</code></li>
-<li>CUA-World, 26 tasks: <code>cua-world-26</code></li>
-<li>MyPCBench, 38 tasks: <code>my-pc-bench</code></li>
+<li>OSWorld, 50 of 295 tasks: <code>osworld-50</code></li>
+<li>OSWorld 2.0, 52 of 63 tasks: <code>osworld2-52</code></li>
+<li>CUA-World, 26 of 143 tasks: <code>cua-world-26</code></li>
+<li>MyPCBench, 38 of 184 tasks: <code>my-pc-bench</code></li>
 </ul>
-<p>OSWorld 2.0 is gated: request access to <a href="https://huggingface.co/datasets/xlangai/osworld_v2_tasks">its tasks</a> and <a href="https://huggingface.co/datasets/xlangai/osworld_v2_assets_gated">its assets</a> on Hugging Face, then run <code>hf auth login</code>. CUA-World is graded with <code>GEMINI_API_KEY</code> and MyPCBench with <code>MYPCBENCH_JUDGE_API_KEY</code>, so add those keys in <code>setup</code>.</p>
+<p>The full benchmarks are <code>osworld-offline</code>, <code>osworld2-offline</code>, and <code>cua-world-offline</code>.</p>
+<p>OSWorld 2.0 needs approval. Request access on both Hugging Face pages, one for <a href="https://huggingface.co/datasets/xlangai/osworld_v2_tasks">its tasks</a> and one for <a href="https://huggingface.co/datasets/xlangai/osworld_v2_assets_gated">its assets</a>. Then run <code>hf auth login</code>, which comes with cua-speedrun.</p>
+<p>CUA-World and MyPCBench use a Gemini model to grade each task, billed to your Gemini API key. Save the key with <code>cua-speedrun setup</code>, as <code>GEMINI_API_KEY</code> for CUA-World and as <code>MYPCBENCH_JUDGE_API_KEY</code> for MyPCBench.</p>
 </section>
 
 <section id="open-weights" data-reveal>
 <h2>Open-weight models</h2>
 <h3>How do I evaluate an open-weight model?</h3>
-<p>Start your model server in <code>init.py</code> and name a GPU in <code>agent.json</code>, such as <code>"gpu": "L40S"</code>. The included <code>qwen3vl</code> agent does this with vLLM:</p>
+<p>Use the included <code>qwen3vl</code> agent. Its <code>init.py</code> starts a vLLM server on a Modal GPU for the model named in <code>VLLM_MODEL</code>. The agent uses the Qwen3-VL prompt and action format. If your model uses a different one, copy the agent and change its prompt and parsing.</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>VLLM_MODEL=your-org/your-model cua-speedrun benchmark \
   --agent qwen3vl --dataset osworld-50 --env VLLM_MODEL</code></pre></div>
-<p>Use <code>--gpu H200</code> if your model does not fit. The first run downloads the model, so it takes longer.</p>
+<p>Leaderboard results for open-weight models use an L40S GPU, set in the agent's <code>agent.json</code>. If your model does not fit, <code>--gpu H200</code> overrides it. For a gated or private model, also pass <code>--env HF_TOKEN</code>. The first run downloads the model, and later runs reuse it. A model you serve yourself has no API bill, so its cost shows as a dash.</p>
 </section>
 
 <section id="own-agent" data-reveal>
 <h2>Build an agent</h2>
 <h3>What does an agent look like?</h3>
 <p>A folder with two Python files, and an optional <code>agent.json</code>:</p>
-<dl class="file-contract"><div><dt><code>agent.py</code><span>timed, once per task</span></dt><dd>Looks at the screen, sends actions, and calls done.</dd></div><div><dt><code>init.py</code><span>untimed, before tasks</span></dt><dd>Installs packages or starts a model server. It may run more than once, so it must be safe to repeat.</dd></div><div><dt><code>agent.json</code><span>optional</span></dt><dd>The GPU and the keys the agent needs, for example <code>{"gpu": null, "required_environment_variables": ["MY_API_KEY"]}</code>.</dd></div></dl>
+<dl class="file-contract"><div><dt><code>agent.py</code><span>timed, once per task</span></dt><dd>Looks at the screen, sends actions, and calls done.</dd></div><div><dt><code>init.py</code><span>untimed, before tasks</span></dt><dd>Installs packages or starts a model server before the clock starts. It may run more than once, for example when a sandbox restarts, so it must be safe to repeat. If your agent needs no setup, it can just <code>print("ready")</code>.</dd></div><div><dt><code>agent.json</code><span>optional</span></dt><dd>The GPU and the keys the agent needs, for example <code>{"gpu": null, "required_environment_variables": ["MY_API_KEY"]}</code>.</dd></div></dl>
 <p>A complete <code>agent.py</code>, apart from your model call:</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>import sys
 from cua_speedrun.client import Computer
 
-computer = Computer(sys.argv[1])
-instruction = sys.argv[2]
+computer = Computer(sys.argv[1])  # the desktop's address, given by cua-speedrun
+instruction = sys.argv[2]         # the task, in plain English
 
 while True:
     screenshot = computer.observe()["png"]  # PNG bytes
@@ -80,7 +90,7 @@ while True:
 
 computer.done()</code></pre></div>
 <h3>What actions can it send?</h3>
-<p><code>step</code> takes a list of actions. Sending several at once saves round trips. Coordinates are screen pixels.</p>
+<p>The screen is 1920×1080 pixels. <code>step</code> takes a list of actions, for example <code>computer.step([{"mouse": {"left_click": [640, 400]}}, {"keyboard": {"text": "hello"}}])</code>. Sending several at once saves round trips. A scroll happens where the mouse is and counts wheel clicks. Key names include <code>enter</code>, <code>tab</code>, <code>esc</code>, <code>ctrl</code>, <code>alt</code>, <code>shift</code>, and single letters.</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>{"mouse": {"left_click": [640, 400]}}
 {"mouse": {"double_click": [640, 400]}}
 {"mouse": {"right_click": [640, 400]}}
@@ -88,12 +98,13 @@ computer.done()</code></pre></div>
 {"mouse": {"left_click_drag": [[100, 100], [300, 300]]}}
 {"mouse": {"scroll": 3}}                  # positive scrolls down
 {"keyboard": {"text": "hello"}}
+{"keyboard": {"keys": ["enter"]}}
 {"keyboard": {"keys": ["ctrl", "s"]}}     # pressed together
 {"action": "wait", "time": 1.0}</code></pre></div>
 <h3>How do I pass API keys and settings?</h3>
-<p>Save them with <code>cua-speedrun setup</code>, or export them in your shell. Keys listed in <code>agent.json</code> reach your agent automatically. Pass any other variable with <code>--env NAME</code>.</p>
+<p>Save them with <code>cua-speedrun setup</code>, or export them in your shell. Keys listed in <code>agent.json</code> reach your agent automatically. Pass any other variable with <code>--env NAME</code>. This is a different flag from <code>--environment</code>.</p>
 <h3>How do I report model cost?</h3>
-<p>After each model response, print the task's running total in this format:</p>
+<p>Your agent reports its own cost. After each model response, print the total cost so far for the task in this format. If it prints nothing, the cost shows as a dash.</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>__CUA_SPEEDRUN_COST_V1__{"cost_usd": 0.1234}</code></pre></div>
 <h3>What can my agent access?</h3>
 <p>The internet, and the desktop through observe, step, and done. It cannot reset the desktop, open a shell in it, or see how tasks are graded.</p>
@@ -102,7 +113,11 @@ computer.done()</code></pre></div>
 <section id="add-benchmark" data-reveal>
 <h2>Add a benchmark</h2>
 <h3>How do I add my benchmark?</h3>
-<p>Make a folder with a <code>manifest.yaml</code> and one folder per task. Keep the <a href="https://cmu-l3.github.io/gym-anything/docs/benchmarks/tasks-verifiers/">Gym-Anything environment</a>, with each task's setup and verifier, inside it:</p>
+<p>Your tasks must first be a <a href="https://cmu-l3.github.io/gym-anything/docs/core/">Gym-Anything</a> environment. Gym-Anything is an open-source toolkit where each task has a desktop, a setup script, and a verifier that checks the result. See its <a href="https://cmu-l3.github.io/gym-anything/docs/benchmarks/tasks-verifiers/">guide to tasks and verifiers</a>. Then lay out the folder like this:</p>
+<div class="code-block"><button type="button" data-copy>Copy</button><pre><code>my-benchmark/
+  manifest.yaml
+  environment/            # your Gym-Anything environment
+  tasks/my-task/task.yaml</code></pre></div>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code># my-benchmark/manifest.yaml
 name: my-benchmark
 version: "1"
@@ -110,46 +125,48 @@ tasks: [tasks/my-task]
 
 # my-benchmark/tasks/my-task/task.yaml
 task_id: my-task
-description: The task for the agent to complete.
+description: Short label for this task
+timeout_sec: 600                     # time limit in seconds
 env:
   kind: gym-anything
-  env_dir: ${BENCHMARK_DIR}/environment
-  task_id: my-task</code></pre></div>
+  env_dir: ${BENCHMARK_DIR}/environment   # BENCHMARK_DIR is the my-benchmark folder
+  task_id: my-task                        # the task's name inside the environment</code></pre></div>
+<p>Check it, then run any agent on it:</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun validate --dataset ./my-benchmark
 cua-speedrun benchmark --dataset ./my-benchmark --agent claude</code></pre></div>
 <p>To add it to the leaderboard, {{ contact() }}.</p>
-<h3>Can I run fewer tasks?</h3>
-<p>Yes. In the <a href="https://github.com/{{ repository }}">code repository</a>, this picks a smaller subset whose scores track the full benchmark, from your past model-by-task scores:</p>
+<h3>How do I pick a smaller set of my tasks?</h3>
+<p>Clone the <a href="https://github.com/{{ repository }}">code repository</a> and give this script your past model-by-task scores. It picks a subset so model rankings match the full benchmark. Run it with <code>--help</code> to see the input format.</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>python scripts/select_representative_tasks.py scores.json --output selection.json</code></pre></div>
 </section>
 
 <section id="no-modal" data-reveal>
 <h2>Other ways to run</h2>
-<h3>I don't have a Modal account.</h3>
-<p>Create one at <a href="https://modal.com">modal.com</a>, then run <code>cua-speedrun setup</code>.</p>
-<h3>Can I run on my own machine?</h3>
-<p>Yes, on Linux with KVM:</p>
+<h3>What is Modal, and do I need it?</h3>
+<p><a href="https://modal.com">Modal</a> is a cloud service that runs code on computers you rent by the second. CUA-Speedrun uses it for the desktops and your agent. Create an account at modal.com, then run <code>cua-speedrun setup</code>. The only way to skip Modal is to run on your own Linux machine.</p>
+<h3 id="local">Can I run on my own machine?</h3>
+<p>Yes, on Linux with KVM, which lets Linux run virtual machines at full speed. Check that <code>/dev/kvm</code> exists. Mac and Windows need Modal.</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun benchmark --agent claude --dataset osworld-50 \
   --compute local --environment local</code></pre></div>
 <p>Leaderboard results were measured on Modal, so use Modal to compare with them.</p>
 <h3>Is there a browser dashboard?</h3>
-<p>Yes. <code>cua-speedrun dashboard</code> opens one where you can start and inspect evaluations.</p>
-<h3>Can a script or an AI agent run it?</h3>
-<p>Yes. Add <code>--json</code> and every command writes JSON records instead of asking questions:</p>
+<p>Yes. <code>cua-speedrun dashboard</code> opens one in your browser, where you can start runs and follow their progress.</p>
+<h3>Can I run it from a script or a coding assistant?</h3>
+<p>Yes. Put <code>--json</code> right after <code>cua-speedrun</code>. It then writes JSON instead of asking questions:</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun --json benchmark --agent claude --dataset osworld-50</code></pre></div>
 </section>
 
 <section id="data" data-reveal>
 <h2>Results and data</h2>
 <h3>What exactly is timed?</h3>
-<p>From the moment the agent receives the instruction until it calls done or reaches the time limit. Setup, <code>init.py</code>, and grading are not timed.</p>
+<p>From the moment the agent receives the task until it calls done or reaches the time limit. Setup, <code>init.py</code>, and grading are not timed.</p>
 <h3>How are score and cost calculated?</h3>
-<p>The score comes from the benchmark's own verifier, averaged over the task set. The cost is the model API cost per task. It does not include Modal compute.</p>
-<h3>How do I see my results?</h3>
-<div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun evaluations
-cua-speedrun status RUN_ID
-cua-speedrun export RUN_ID</code></pre></div>
-<p><code>export</code> downloads every screenshot, action, and verdict as a zip file.</p>
+<p>The score comes from each benchmark's own verifier, averaged over its tasks, with partial credit where the benchmark gives it. The cost is the model API cost per task that your agent reports. It does not include Modal compute.</p>
+<h3>Where are my results?</h3>
+<p>Runs are saved in <code>~/.local/share/cua-speedrun/runs</code>. Runs started with <code>--host modal</code> stay in your Modal account until you export them. Each task's folder has your agent's output and errors.</p>
+<div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun evaluations       # your runs and their IDs
+cua-speedrun status RUN_ID     # score, time per task, and progress
+cua-speedrun export RUN_ID     # every screenshot, action, and verdict as a zip file</code></pre></div>
 <h3>Where can I get the leaderboard data?</h3>
 <p>Download the results as a CSV from the <a href="/results.html">leaderboard</a>. Full trajectories are on <a href="{{ dataset_url }}">Hugging Face</a>.</p>
 </section>
@@ -157,7 +174,7 @@ cua-speedrun export RUN_ID</code></pre></div>
 <section id="leaderboard" data-reveal>
 <h2>The leaderboard</h2>
 <h3>How do I get my result on the leaderboard?</h3>
-<p>Run the <a href="#evaluate-model">leaderboard's task sets</a>, then {{ contact() }}. Include the exported zip file and your agent's files.</p>
+<p>Run the <a href="#evaluate-model">leaderboard's task sets</a> on Modal and export each run. Then {{ contact() }}. Include a download link to the zip files and your agent's files.</p>
 </section>
 
 <section id="help" data-reveal>

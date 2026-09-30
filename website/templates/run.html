@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Run an evaluation · CUA-Speedrun{% endblock %}
 {% block content %}
-<header class="document-heading"><h1>Run an evaluation</h1><p>Evaluate an included agent, or your own, on the benchmark tasks. Everything runs on your Modal account with your model API keys, and the results are saved to your machine.</p></header>
+<header class="document-heading"><h1>Run an evaluation</h1><p>Evaluate an included agent, or your own, on the benchmark tasks. The desktops and your agent run on Modal, a pay-per-second cloud service, and bill your account. Model calls use your API keys. You can also <a href="/docs.html#local">run on your own Linux machine</a>.</p></header>
 <section class="run-guide article-body" id="run-guide">
-<ol class="run-steps run-route"><li><strong>Install</strong>Install the toolkit and connect your Modal account.</li><li><strong>Pick an agent</strong>Start from a template, or edit it to use your own model.</li><li><strong>Run</strong>Run a task set and read the scores, timings, and trajectories.</li></ol>
+<ol class="run-steps run-route"><li><strong>Install</strong>Install the toolkit and connect your Modal account.</li><li><strong>Pick an agent</strong>Start from an included agent, or write your own.</li><li><strong>Run</strong>Run a task set and read the scores, timings, and trajectories.</li></ol>
 <h2>Install</h2>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>pip install cua-speedrun
 cua-speedrun setup</code></pre></div>
 <p><code>setup</code> saves your Modal credentials and model API keys.</p>
 <h2>Pick an agent</h2>
-<p>Included agents cover OpenAI, Claude, Gemini, Kimi, GLM, MiniMax, Meta, and Yutori models, and Qwen models served on a Modal GPU. <code>cua-speedrun catalog</code> lists them. To test your own model, write <code>agent.py</code> and <code>init.py</code>, or adapt an included agent. <a href="/docs.html#own-agent">How agents work</a></p>
+<p>Included agents include <code>claude</code>, <code>gpt54</code>, <code>gemini_new</code>, and <code>kimi_k3</code>, which call their providers' APIs, and <code>qwen3vl</code>, which serves open-weight models with vLLM on a Modal GPU. <code>cua-speedrun catalog</code> lists them all. To test your own model, write <code>agent.py</code> and <code>init.py</code>, or adapt an included agent. <a href="/docs.html#own-agent">How agents work</a></p>
 <h2>Run</h2>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun benchmark --agent claude --dataset osworld-50</code></pre></div>
 <p>It starts the desktops, runs the tasks, and shows progress. Add <code>--host modal</code> to keep it running after you close your laptop. Compute is billed to your Modal account and model calls to your API key.</p>
 <p><a class="console-button" href="/docs.html">Read the full guide</a></p>
 </section>
-<div class="connection-notice" role="status" id="connection-status"><p>Checking whether hosted runs are open…</p></div>
+<div class="connection-notice" role="status" id="connection-status"><p>Checking whether hosted runs, where we run your agent for you, are open…</p></div>
 <noscript><p>Hosted runs need JavaScript. The steps above work without it.</p></noscript>
 <div class="submit-layout" id="submit-layout" hidden>
 <form id="evaluation-form" autocomplete="off">

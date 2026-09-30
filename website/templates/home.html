@@ -4,7 +4,7 @@
 <header class="release-heading">
   <h1>CUA-<strong>Speedrun</strong><span class="title-caret" aria-hidden="true"></span></h1>
   <p class="release-purpose">How fast can a computer-use agent finish the job?</p>
-  <p class="release-description">Most benchmarks only record whether an agent succeeded. CUA-Speedrun is an evaluation system that also measures how long each task takes and what its model calls cost. Every run uses the same pipeline and virtual machine setup on <a href="https://modal.com">Modal</a>, and one agent interface works across OSWorld, OSWorld 2.0, CUA-World, and MyPCBench. Smaller task sets, chosen so their scores track the full benchmarks, keep repeated runs affordable.</p>
+  <p class="release-description">Most benchmarks only record whether an agent succeeded. CUA-Speedrun is an evaluation system that also measures how long each task takes and what its model calls cost. Every leaderboard run uses the same pipeline and virtual machine setup on <a href="https://modal.com">Modal</a>, a pay-per-second cloud service, and one agent interface works across OSWorld, OSWorld 2.0, CUA-World, and MyPCBench. Smaller task sets, chosen so model rankings match the full benchmarks, keep repeated runs affordable.</p>
   {% include "authors.html" %}
   <nav class="release-links" aria-label="Project resources">
     <a class="console-button" href="/docs.html#start">Run on Modal</a>
@@ -21,11 +21,11 @@
   {% include "clock-line.html" %}
   <dl class="infra-list">
     <div><dt>Identical hardware for every run</dt><dd>Agents and desktops run in separate <a href="https://modal.com">Modal</a> sandboxes, built from the same pinned images for every run. Open-weight models are served with vLLM on fixed L40S GPUs. Results do not depend on whose computer launched the run.</dd></div>
-    <div><dt>One agent file, four benchmarks</dt><dd>An agent is a single <code>agent.py</code> that receives 1920×1080 screenshots and sends keyboard and mouse actions. The same file runs on OSWorld, OSWorld 2.0, CUA-World, and MyPCBench.</dd></div>
-    <div><dt>A clock that measures the agent</dt><dd>Setup and scoring happen off the clock. Infrastructure failures are retried; agent failures end the attempt and are scored. Model cost is logged per request.</dd></div>
-    <div><dt>Inputs that do what they say</dt><dd>CUA-AutoDebug sends 94 keyboard and mouse cases to an app that records what it receives. Through SSH and PyAutoGUI, 11 failed, such as typing &gt; when &lt; was requested. Our runtime passes all 94, five times each.</dd></div>
-    <div><dt>Smaller task sets that keep the ranking</dt><dd>Energy-distance selection keeps 50 of 295 OSWorld tasks, with a 0.98 rank correlation to full-benchmark scores for models left out of the selection.</dd></div>
-    <div><dt>An optional fast I/O mode</dt><dd>FastCUA cuts the delay between an action and the next screenshot from about 2–3 s to 2–28 ms, to test whether agents benefit from a faster desktop.</dd></div>
+    <div><dt>One agent, four benchmarks</dt><dd>An agent is a folder with an <code>agent.py</code> that receives 1920×1080 screenshots and sends keyboard and mouse actions, and an <code>init.py</code> that sets it up. The same folder runs on OSWorld, OSWorld 2.0, CUA-World, and MyPCBench.</dd></div>
+    <div><dt>A clock that measures the agent</dt><dd>Setup and scoring happen off the clock. If a desktop or sandbox fails, the task is retried. If the agent crashes, the task counts as failed. Each agent reports its model cost after every request.</dd></div>
+    <div><dt>Inputs that do what they say</dt><dd>Our test tool, CUA-AutoDebug, sends 94 keyboard and mouse inputs to an app that records what arrives. PyAutoGUI over SSH, a common setup, got 11 wrong, such as typing &gt; when &lt; was requested. Our runtime got all 94 right, five times each.</dd></div>
+    <div><dt>Smaller task sets that keep the ranking</dt><dd>We chose 50 of 295 OSWorld tasks so that model rankings match the full benchmark. On models not used to choose them, the rank correlation is 0.98.</dd></div>
+    <div><dt>An optional Fast I/O mode</dt><dd>Fast I/O mode (FastCUA) cuts the delay between an action and the next screenshot from about 2–3 s to 2–28 ms, to test whether agents benefit from a faster desktop. Leaderboard results use the normal mode unless marked Fast I/O.</dd></div>
   </dl>
   <p class="infra-more">{% if site.paper_url %}<a href="{{ site.paper_url }}">Read the paper</a> · {% endif %}<a href="/docs.html">Run it yourself</a></p>
 </section>
@@ -33,12 +33,12 @@
   <h2 id="splits-heading">Results we did not expect</h2>
   <ol class="split-list">
     <li class="split is-behind">
-      <p class="split-what"><strong>A faster environment, a slower agent.</strong> GPT-6 Astra at low effort, averaged over five seeds. Screenshots arrived before applications finished updating, so the agent looked again or repeated itself.</p>
+      <p class="split-what"><strong>A faster environment, a slower agent.</strong> With Fast I/O on, GPT-6 Astra at low effort took 99.0 s per task instead of 89.5 s, averaged over five runs. Screenshots arrived before applications finished updating, so the agent looked again or repeated itself.</p>
       <p class="split-times"><span>89.5 s</span><span>99.0 s</span></p>
       <p class="split-delta">+9.5 s</p>
     </li>
     <li class="split is-behind">
-      <p class="split-what"><strong>Same score, four times the wait.</strong> Kimi K3 at max effort matches GPT-6 Astra at high effort on OSWorld (89.6%). No open-weight model we tested is on the time or cost frontier.</p>
+      <p class="split-what"><strong>Same score, four times the wait.</strong> Kimi K3, an open-weight model, at max effort matches GPT-6 Astra at high effort on OSWorld (89.6%). For every open-weight model we tested, another model scored at least as high in less time, and another scored at least as high for less money.</p>
       <p class="split-times"><span>101 s</span><span>444 s</span></p>
       <p class="split-delta">×4.4</p>
     </li>
@@ -64,11 +64,11 @@
 cua-speedrun setup
 cua-speedrun benchmark</code></pre></div>
     <p class="code-caption"><code>setup</code> saves your Modal credentials and API keys. <code>benchmark</code> asks for an agent and a task set, then shows progress. Compute uses your Modal account and model calls use your API key.</p>
-    <p><a href="/docs.html#own-agent">Add your own agent</a> or <a href="https://github.com/{{ repository }}/tree/main/agents">browse the included agents</a>.</p>
+    <p>See the documentation to <a href="/docs.html#own-agent">add your own agent</a>, <a href="/docs.html#open-weights">serve an open-weight model</a>, or <a href="/docs.html#add-benchmark">add a benchmark</a>.</p>
   </section>
   <section aria-labelledby="results-heading" data-reveal>
-    <h2 id="results-heading">Every measured run</h2>
-    <p>The results explorer covers the four task subsets used in the paper. Compare configurations, filter models, and inspect the records behind each result. Configuration coverage is curated separately from the paper’s figures; execution settings and cost assumptions accompany each record.</p>
+    <h2 id="results-heading">Browse the leaderboard</h2>
+    <p>The leaderboard covers the four task sets used in the paper. Compare models, filter them, and see each result's settings and cost. It also includes some results that are not in the paper's figures.</p>
     <div class="benchmark-library">
       {% for dataset in datasets %}<a href="/{{ dataset.href }}"><span>{{ dataset.label }}</span><span>{{ dataset.records | length }} results</span></a>{% endfor %}
     </div>
