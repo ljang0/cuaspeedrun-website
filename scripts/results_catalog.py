@@ -82,7 +82,8 @@ def exclusion_reason(row: dict[str, str], *, combined: bool = False,
     return None
 
 
-def reviewed_subsets(rows: list[dict[str, str]], decisions: list[dict]) -> dict:
+def reviewed_subsets(rows: list[dict[str, str]], decisions: list[dict], *,
+                     component_runs: dict[str, str] | None = None) -> dict:
     """Publish pinned dataset slices without relabeling their parent contracts."""
     reviewed = {}
     for decision in decisions:
@@ -96,6 +97,7 @@ def reviewed_subsets(rows: list[dict[str, str]], decisions: list[dict]) -> dict:
         parents = [r for r in rows if r["row_type"] == "evaluation"
                    and r["run_id"] == row["run_id"] and r["archive_sha256"] == row["archive_sha256"]]
         anchors = [r for r in rows if r["row_type"] == "evaluation"
+                   and r["run_id"] not in (component_runs or {})
                    and r["split_dset_name"] == row["split_dset_name"] and not exclusion_reason(r)]
         if (row["archive_sha256"] != decision["archive_sha256"]
                 or row["selected_task_seed_set_sha256"] != decision["task_seed_sha256"]
@@ -163,7 +165,7 @@ def load_catalog(path: Path, metadata_path: Path, curation_path: Path | None = N
         rows = list(reader)
 
     replacements = combined_sources(rows, curation["runs"])
-    subsets = reviewed_subsets(rows, curation.get("subsets", []))
+    subsets = reviewed_subsets(rows, curation.get("subsets", []), component_runs=replacements)
     # A completed resume keeps its original run ID. Pin both snapshots so the
     # historical CSV bytes survive without showing an obsolete failure twice.
     for run_id, decision in curation["runs"].items():

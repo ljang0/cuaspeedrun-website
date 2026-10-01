@@ -3,6 +3,15 @@
   "release_date_definition": "First public availability of the identified model version, including API or app previews; not a checkpoint, upload, evaluation, or later weights-release date. Null means the archived model version cannot be identified.",
   "model_type_definition": "open means downloadable model weights under the publisher's license as of verified_on; it does not imply an OSI-approved license. closed means proprietary hosted access without published weights for this model version.",
   "models": {
+    "Claude Opus 5.5": {
+      "verified_on": "2026-10-01",
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-09-22",
+      "release_source": "https://www.anthropic.com/news",
+      "access_source": "https://www.anthropic.com/claude-opus-5-5",
+      "notes": "Anthropic's September 22 release; evaluated model ID claude-opus-5-5."
+    },
     "Claude Sonnet 5.5": {
       "verified_on": "2026-09-30",
       "aliases": [],
