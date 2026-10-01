@@ -16,6 +16,7 @@
   <script src="/assets/site.js?v={{ asset_version }}" defer></script>
   {% if page == 'home' %}<script src="/assets/overview.js?v={{ asset_version }}" defer></script>{% endif %}
   {% if page == 'home' %}<script src="/assets/race.js?v={{ asset_version }}" defer></script>{% endif %}
+  {% if site.goatcounter %}<script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>{% endif %}
 </head>
 <body class="page-{{ page }}">
 {% if logo_sprite %}{{ logo_sprite | safe }}<script type="application/json" data-provider-prefixes>{{ provider_prefixes | tojson }}</script>{% endif %}
