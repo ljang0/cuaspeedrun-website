@@ -26,7 +26,10 @@ def public_site(tmp_path_factory):
 def test_publication_preserves_catalog_and_links(public_site):
     catalog = json.loads((public_site / "results-catalog.json").read_text())
     home = BeautifulSoup((public_site / "index.html").read_text(), "html.parser")
-    assert 'sponsored by Modal' in home.get_text(' ', strip=True)
+    footer = home.select_one('.site-footer')
+    assert 'cua-speedrun' in footer.get_text(' ', strip=True)
+    assert 'sponsored by' not in footer.get_text(' ', strip=True)
+    assert not footer.select('a[href="https://modal.com"]')
     for dataset in catalog['datasets'].values():
         page = BeautifulSoup((public_site / dataset['href']).read_text(), 'html.parser')
         assert json.loads(page.select_one('[data-results-data]').string) == dataset['records']
@@ -57,7 +60,7 @@ def test_public_results_only_include_paper_subsets(public_site, tmp_path):
     config = json.loads((ROOT / 'website/config.json').read_text())
     subsets = config['paper_subsets']
     assert set(catalog['datasets']) == set(subsets)
-    assert catalog['included_rows'] == 91
+    assert catalog['included_rows'] == 95
     assert catalog['publication_scope']['omitted_reviewed_rows'] == 11
     # Every measurement and unrelated metadata value survives publication;
     # only references to the trajectory dataset are omitted.

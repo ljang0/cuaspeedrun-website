@@ -4,8 +4,8 @@ The public site publishes the repository's reviewed results catalog and an
 original article based on manuscript revision `128fef0`. The homepage introduces the
 software and the paper's measured results, with a runnable Modal example below.
 The research article uses the manuscript's original figures. It uses an Xbox 360–inspired green palette and self-hosted Barlow typography. It does not recreate a console dashboard or use Microsoft logos.
-Modal sponsorship appears in the header and footer, with independent execution
-instructions in the developer guide.
+The footer shows the project name, page-load time, code link, and theme switch,
+without sponsorship text. Modal execution instructions remain in the developer guide.
 The Modal logo in `assets/modal-logo.png` comes from the public modal.com homepage
 (`/_app/immutable/assets/logo.lottie.CgmMXf1s.png`, retrieved September 26, 2026).
 
