@@ -3,6 +3,10 @@
 {% block content %}
 <header class="document-heading"><h1>Run an evaluation</h1><p>Evaluate an included agent, or your own, on the benchmark tasks. The desktops and your agent run on Modal, a pay-per-second cloud service, and bill your account. Model calls use your API keys. You can also <a href="/docs.html#local">run on your own Linux machine</a>.</p></header>
 <section class="run-guide article-body" id="run-guide">
+<h2>Quickest: a notebook on Modal</h2>
+<p>Open the CUA-Speedrun notebook, fork it into your Modal account, and run its one cell. A dashboard opens where you pick an agent, choose a task set, and start. Nothing to install.</p>
+<p><a class="console-button" href="{{ site.notebook_url }}" target="_blank" rel="noopener">Open the notebook on Modal</a></p>
+<h2>Or use the command line</h2>
 <ol class="run-steps run-route"><li><strong>Install</strong>Install the toolkit and connect your Modal account.</li><li><strong>Pick an agent</strong>Start from an included agent, or write your own.</li><li><strong>Run</strong>Run a task set and read the scores, timings, and trajectories.</li></ol>
 <h2>Install</h2>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>pip install cua-speedrun
