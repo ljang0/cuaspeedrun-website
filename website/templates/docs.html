@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Documentation · cua-speedrun{% endblock %}
+{% block title %}How to use · cua-speedrun{% endblock %}
 {% block content %}
 {% set issues = "https://github.com/" ~ repository ~ "/issues" %}
 {% macro contact() -%}
 {% set emails = site.authors | selectattr('email') | map(attribute='email') | list %}{% if emails %}email one of us ({% for email in emails %}<a href="mailto:{{ email }}">{{ email }}</a>{% if not loop.last %}, {% endif %}{% endfor %}) or {% endif %}open an issue on <a href="{{ issues }}">GitHub</a>
 {%- endmacro %}
-<header class="document-heading"><h1>Documentation</h1><p>Pick what fits you. Each answer has the steps and commands you need.</p></header>
+<header class="document-heading"><h1>How to use</h1><p>Pick what fits you. Each answer has the steps and commands you need.</p></header>
 <nav class="faq-paths" aria-label="Start here">
   <a href="#evaluate-model"><strong>I want to evaluate my model</strong><span>Run it on the leaderboard's task sets</span></a>
   <a href="#open-weights"><strong>I have an open-weight model</strong><span>Serve it on a Modal GPU</span></a>
