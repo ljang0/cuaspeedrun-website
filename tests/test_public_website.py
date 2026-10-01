@@ -196,3 +196,24 @@ def test_announced_paper_url_updates_links_and_redirect(tmp_path):
         result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
         assert result.returncode != 0
         assert 'announced arXiv abstract URL' in result.stderr
+
+
+def test_goatcounter_tag_follows_the_site_code(public_site, tmp_path):
+    config = json.loads((ROOT / 'website/config.json').read_text())
+    page = BeautifulSoup((public_site / 'index.html').read_text(), 'html.parser')
+    assert bool(page.select('script[data-goatcounter]')) == bool(config['goatcounter'])
+    config['goatcounter'] = 'example'
+    config_path = tmp_path / 'config.json'
+    config_path.write_text(json.dumps(config))
+    output = tmp_path / 'public'
+    command = [sys.executable, str(ROOT / 'scripts/build_public_site.py'),
+               '--config', str(config_path), '--output', str(output)]
+    subprocess.run(command, cwd=ROOT, check=True)
+    for filename in ['index.html', 'docs.html', 'results.html', 'submit/index.html', '404.html']:
+        tag = BeautifulSoup((output / filename).read_text(), 'html.parser').select_one('script[data-goatcounter]')
+        assert tag['data-goatcounter'] == 'https://example.goatcounter.com/count', filename
+        assert tag['src'] == 'https://gc.zgo.at/count.js'
+    config['goatcounter'] = 'https://example.goatcounter.com'
+    config_path.write_text(json.dumps(config))
+    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+    assert result.returncode != 0 and 'GoatCounter site code' in result.stderr

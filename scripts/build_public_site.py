@@ -44,6 +44,9 @@ def configuration(path: Path) -> dict:
             raise ValueError("paper_url must be an announced arXiv abstract URL")
     if not config["site_url"]:
         raise ValueError("site_url is required")
+    # The GoatCounter site code, the subdomain of <code>.goatcounter.com.
+    if config.get("goatcounter") and not re.fullmatch(r"[a-z0-9-]+", config["goatcounter"]):
+        raise ValueError("goatcounter must be a GoatCounter site code, such as cuaspeedrun")
     return config
 
 
