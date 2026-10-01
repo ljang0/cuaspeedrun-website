@@ -133,6 +133,8 @@ def test_paper_figures_and_author_credit(public_site):
     assert [a.get_text() for a in page.select('.authors a')] == expected_names
     assert [a.get_text() for a in page.select('.authors > span') if a.sup] == [
         'Pranjal Aggarwal*', 'Lawrence Keunho Jang*', 'Jing Yu Koh*']
+    assert page.select_one('.author-contacts a')['href'] == (
+        'mailto:pranjala@cs.cmu.edu,ljang@cs.cmu.edu,jingyuk@cs.cmu.edu')
     for record in provenance['figures']:
         for format in ['pdf', 'svg']:
             artifact = figures / record[format]

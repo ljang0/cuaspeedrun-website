@@ -4,7 +4,7 @@
 {% set contacts = site.authors | selectattr('email') | list %}
 {% if contacts %}
 <div class="author-contacts" aria-label="Author email addresses">
-  {% if site.affiliation %}<span>{{ site.affiliation }}</span>{% endif %}<ahref="mailto:{{ contacts | map(attribute='email') | join(',') }}" aria-label="Email {{ contacts | map(attribute='name') | join(', ') }}">{{ '{' }}{% for author in contacts %}{{ author.email.split('@')[0] }}{% if not loop.last %}, {% endif %}{% endfor %}{{ '}' }}@{{ contacts[0].email.split('@')[1] }}</a>
+  {% if site.affiliation %}<span>{{ site.affiliation }}</span>{% endif %}<a href="mailto:{{ contacts | map(attribute='email') | join(',') }}" aria-label="Email {{ contacts | map(attribute='name') | join(', ') }}">{{ '{' }}{% for author in contacts %}{{ author.email.split('@')[0] }}{% if not loop.last %}, {% endif %}{% endfor %}{{ '}' }}@{{ contacts[0].email.split('@')[1] }}</a>
 </div>
 {% endif %}
 <p class="author-note">* Equal contribution</p>
