@@ -376,6 +376,12 @@
 .results-chart .result-point { stroke: #050608; stroke-width: 1.5; cursor: pointer; transition: r 120ms ease, opacity 120ms ease; }
 .results-chart .result-point:hover { r: 7; }
 .results-chart .point-label { font-size: 9px; font-weight: 600; pointer-events: none; }
+/* The frontier toggle fades every result and model line off the frontier. */
+.results-chart.frontier-only .off-frontier,
+.results-chart.frontier-only .family-path.off-frontier { opacity: .12; }
+.frontier-toggle { display: inline-flex; align-items: center; gap: 7px; margin: -4px 0; padding: 3px 8px; border: 1px solid var(--border); border-radius: 999px; background: none; color: inherit; font: inherit; cursor: pointer; }
+.frontier-toggle:hover { border-color: currentColor; }
+.frontier-toggle[aria-pressed="true"] { border-color: currentColor; color: var(--text); }
 .results-chart .empty-chart { fill: var(--text-muted); font-size: 12px; }
 .chart-tooltip {
   position: absolute;

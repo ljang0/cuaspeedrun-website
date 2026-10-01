@@ -79,6 +79,7 @@
     showAllEfforts: true,
     query: "",
     includeAblations: false,
+    frontierOnly: false,
     volumeYaw: -0.72,
     volumePitch: 0.55,
     surfaceMode: ["dominance", "smooth"].includes(initialParams.get("surface"))
@@ -559,7 +560,7 @@
         `${index ? "L" : "M"} ${x(entry[metric]).toFixed(1)} ${y(entry.performance).toFixed(1)}`
       ).join(" ");
       chart.append(svgElement("path", {
-        class: "family-path", d: path, stroke: colors.get(family), "data-series": family,
+        class: "family-path off-frontier", d: path, stroke: colors.get(family), "data-series": family,
       }));
     });
 
@@ -577,13 +578,15 @@
     points.forEach((entry, index) => {
       const px = x(entry[metric]);
       const py = y(entry.performance);
-      if (frontierCoordinates.has(`${entry[metric]}:${entry.performance}`)) {
+      const onFrontier = frontierCoordinates.has(`${entry[metric]}:${entry.performance}`);
+      const offFrontier = onFrontier ? "" : " off-frontier";
+      if (onFrontier) {
         chart.append(svgElement("circle", {
           class: "pareto-ring", cx: px, cy: py, r: 10,
         }));
       }
       const point = svgElement("circle", {
-        class: `result-point${logoPrefixes.length ? " has-logo" : ""}`, cx: px, cy: py,
+        class: `result-point${logoPrefixes.length ? " has-logo" : ""}${offFrontier}`, cx: px, cy: py,
         r: logoPrefixes.length ? 9.5 : 5.5, fill: colors.get(entry.model),
         tabindex: 0, role: "img", "aria-label": `${entry.model}, ${entry.effort}`,
       });
@@ -598,9 +601,9 @@
         point.addEventListener("click", () => { window.location.href = `/entries/${entry.entry_id}`; });
       }
       chart.append(point);
-      appendLogo(chart, entry, px, py, 11, index);
+      appendLogo(chart, entry, px, py, 11, index, offFrontier.trim());
       chart.append(svgElement("text", {
-        class: "point-label", x: px + 9, y: py + (index % 2 ? 13 : -9),
+        class: `point-label${offFrontier}`, x: px + 9, y: py + (index % 2 ? 13 : -9),
         fill: colors.get(entry.model),
       }, entry.effort));
     });
@@ -619,6 +622,7 @@
     }));
     const omitted = filtered.length - points.length;
     frontierSummary.hidden = !metricDefinition.lowerBetter;
+    chart.classList.toggle("frontier-only", state.frontierOnly && frontier.length > 0);
     // The public site does not report left-out results.
     const omittedText = omitted && !root.dataset.defaultView
       ? ` ${omitted} ${omitted === 1 ? "result" : "results"} without reported `
@@ -1139,6 +1143,11 @@
       });
       renderChart();
     });
+  });
+  frontierSummary.addEventListener("click", () => {
+    state.frontierOnly = !state.frontierOnly;
+    frontierSummary.setAttribute("aria-pressed", String(state.frontierOnly));
+    renderChart();
   });
   const cameraPresets = {
     perspective: [-0.72, 0.55],
