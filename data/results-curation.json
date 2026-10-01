@@ -163,6 +163,22 @@
     "svc_32_109178": {
       "archive_sha256": "4ca0550099cd1e27f54b595d845a2a4e69175d25308f74b216590183349503c6",
       "exclude_reason": "Rate-limited playground contrast; contributor-tier xhigh run svc_69_41f88a retained."
+    },
+    "m-8bf370e4104848c5": {
+      "archive_sha256": "083c5d7e1ba8e1a671cbebbaf65c8b55c7af7a5e2bd4265db82073c3edc39a4b",
+      "variant": "Claude Code"
+    },
+    "m-15e01b48555e4252": {
+      "archive_sha256": "8bb11ab74754cbf824dd53ed82ef9e1d7ec5a0780664cbb535582d5579b8d07e",
+      "variant": "Claude Code"
+    },
+    "m-25b0db66345a4718": {
+      "archive_sha256": "49c36a43c1f1bc01640618815892bfd79cc5e8bf80bc4baf6353b97a77a506a7",
+      "variant": "Claude Code"
+    },
+    "m-997eda6170804e08": {
+      "archive_sha256": "07074574f2362c79226da260b0e09bedf813c8147fadf9944f2a3937af421ba3",
+      "variant": "Claude Code"
     }
   }
 }
