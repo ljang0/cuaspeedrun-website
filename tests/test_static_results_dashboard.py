@@ -34,8 +34,8 @@ def test_catalog_has_one_complete_view_per_dataset(catalog_site):
         "osworld-unanimous-295", "osworld-pareto-48", "cua-world-long-k26",
         "mypcbench-energy38",
     }
-    assert catalog["source_rows"] == 146
-    assert catalog["included_rows"] == 96
+    assert catalog["source_rows"] == 150
+    assert catalog["included_rows"] == 100
     assert sum(catalog["excluded"].values()) == 50
     assert '[data-results-dashboard][data-static="true"] .results-table tbody tr { animation: none; }' in (output / "static/frontier.css").read_text()
     assert '[data-results-dashboard][data-static="true"] .results-volume .volume-point { animation: none; }' in (output / "static/frontier.css").read_text()
@@ -102,14 +102,14 @@ def test_catalog_has_one_complete_view_per_dataset(catalog_site):
                        if row["split_dset_name"] == name and row["row_type"] in {"evaluation", "published_subset"}}
         assert source_runs == ({source for r in records for source in r["source_run_ids"]}
                                | {r["run_id"] for r in dataset["excluded_evaluations"]})
-    assert len(seen) == 96
+    assert len(seen) == 100
 
 
 def test_all_datasets_include_reviewed_results_without_configuration_partitions(catalog_site):
     _, catalog = catalog_site
     datasets = catalog["datasets"]
     assert {name: len(dataset["records"]) for name, dataset in datasets.items()} == {
-        "osworld-energy50-representative": 58, "osworld2-k52": 21,
+        "osworld-energy50-representative": 62, "osworld2-k52": 21,
         "osworld": 3, "osworld-unanimous-295": 6, "cua-world-long-k26": 2,
         "osworld-pareto-48": 2,
         "mypcbench-energy38": 4,
@@ -224,10 +224,10 @@ def test_costs_use_source_evidence_and_label_every_estimate(catalog_site):
     output, catalog = catalog_site
     records = [r for d in catalog["datasets"].values() for r in d["records"]]
     assert Counter(r["cost_kind"] for r in records) == {
-        "recorded": 10, "source_estimate": 50, "reference_estimate": 21,
+        "recorded": 10, "source_estimate": 54, "reference_estimate": 21,
         "standard_rate_proxy": 7, "coverage_estimate": 2, "unavailable": 6,
     }
-    assert sum(r["cost_usd"] is not None for r in records) == 90
+    assert sum(r["cost_usd"] is not None for r in records) == 94
     with (output / "trajectory-metrics.csv").open(newline="") as handle:
         originals = {i: row for i, row in enumerate(csv.DictReader(handle), start=2)}
     registry = json.loads((output / "results-pricing.json").read_text())
@@ -278,7 +278,7 @@ def test_costs_use_source_evidence_and_label_every_estimate(catalog_site):
                 assert not cell.get_text().strip().startswith("$")
     with (output / "display-costs.csv").open(newline="") as handle:
         exported = {(r["dataset"], r["run_id"]): r for r in csv.DictReader(handle)}
-    assert len(exported) == 96
+    assert len(exported) == 100
     for record in records:
         for key, value in exported[(record["source_metadata"]["split_dset_name"], record["run_id"])].items():
             if key != "dataset":
@@ -293,6 +293,7 @@ def test_all_model_metadata_is_sourced_and_visible(catalog_site):
     expected = {
         "Claude Opus 5": ("closed", "2026-07-24"),
         "Claude Sonnet 5": ("closed", "2026-06-30"),
+        "Claude Sonnet 5.5": ("closed", "2026-09-28"),
         "GLM-5V Turbo": ("closed", "2026-04-01"),
         "GPT-5.6 Luna": ("closed", "2026-07-09"),
         "GPT-5.6 Sol": ("closed", "2026-07-09"),
@@ -428,7 +429,7 @@ def test_reviewed_variants_and_exclusions_preserve_source_identity(catalog_site)
         assert record["series"] == f"{record['model']} · {label}"
         row = soup.select_one(f'[data-entry-id="{record["entry_id"]}"]')
         assert row.select_one(".model-cell a").get_text() == record["series"]
-    assert len({(r["series"], r["effort"]) for r in energy["records"]}) == 58
+    assert len({(r["series"], r["effort"]) for r in energy["records"]}) == 62
     decisions = json.loads((REPOSITORY_ROOT / "data/results-curation.json").read_text())
     with (REPOSITORY_ROOT / "data/all-hf-model-trajectory-metrics-2026-09-13.csv").open(newline="") as handle:
         originals = {r["run_id"]: r for r in csv.DictReader(handle)
@@ -476,7 +477,7 @@ def test_jy_sol_luna_low_append_preserves_history_and_separates_retry(catalog_si
     with source.open(newline="") as handle:
         reader = csv.DictReader(handle)
         rows = list(reader)
-        assert len(reader.fieldnames) == 218 and len(rows) == 146
+        assert len(reader.fieldnames) == 218 and len(rows) == 150
     new = rows[124:127]
     assert Counter(r["row_type"] for r in new) == {"evaluation": 2, "retained_extra_attempts": 1}
     expected = {
@@ -768,6 +769,57 @@ def test_single_action_result_has_recomputable_public_task_evidence(catalog_site
     assert row["archive_sha256"] == row["source_hf_repo"] == ""
 
 
+def test_sonnet55_sweep_matches_task_evidence(catalog_site):
+    output, catalog = catalog_site
+    source = (output / "trajectory-metrics.csv").read_bytes()
+    assert hashlib.sha256(source[:1106674]).hexdigest() == "3647529945b8f6ec5575deae3e1dfc230128bc2a3a3b2ef81d62fcc93b554041"
+    evidence = json.loads((output / "results-evidence/sonnet55-osworld50.json").read_text())
+    expected = {
+        "low": (85.61904360085809, 141.78581320092, 0.1460096),
+        "medium": (89.61904360085809, 130.6193868735, 0.144660424),
+        "high": (93.61904360085809, 146.03512035474, 0.175385404),
+        "xhigh": (95.61904360085809, 164.31653733750002, 0.24230478),
+    }
+    records = catalog["datasets"]["osworld-energy50-representative"]["records"]
+    sonnet = {r["run_id"]: r for r in records if r["model"] == "Claude Sonnet 5.5"}
+    assert len(sonnet) == len(evidence["runs"]) == 4
+    with (output / "trajectory-metrics.csv").open(newline="") as handle:
+        rows = {r["run_id"]: r for r in csv.DictReader(handle)}
+    anchor = set(json.loads(rows["svc_121_b4bca3"]["task_ids"]))
+    price = evidence["usd_per_million_tokens"]
+    for run in evidence["runs"]:
+        row, record = rows[run["run_id"]], sonnet[run["run_id"]]
+        score, seconds, cost = expected[run["effort"]]
+        assert record["variant"] == "Claude Code"
+        assert record["performance"] == pytest.approx(score / 100)
+        assert record["time_per_task_sec"] == pytest.approx(seconds)
+        assert record["cost_usd"] == pytest.approx(cost)
+        assert record["source_metadata"]["backend"] == "modal-native"
+        assert record["release_date"] == "2026-09-28"
+        assert row["archive_sha256"] == run["archive_sha256"]
+        assert run["source_revision"] in row["source_archive_url"]
+        tasks = run["tasks"]
+        assert len(tasks) == 50 and {t["task_id"] for t in tasks} == anchor
+        for metric, key in {
+            "score_mean_pct": "score", "time_per_task_sec": "task_time_sec",
+            "cost_per_task_usd": "cost_usd", "generated_tokens_per_task": "generated_tokens",
+            "input_tokens_per_task": "input_tokens", "avg_steps_per_task": "num_steps",
+            "env_action_items_per_task": "environment_action_items",
+        }.items():
+            assert float(row[metric]) == pytest.approx(sum(t[key] for t in tasks) / 50)
+        for task in tasks:
+            expected_cost = (
+                task["uncached_input_tokens"] * price["input"]
+                + task["cached_input_tokens"] * price["cached_input"]
+                + task["cache_write_5m_input_tokens"] * price["cache_write_5m"]
+                + task["cache_write_1h_input_tokens"] * price["cache_write_1h"]
+                + task["generated_tokens"] * price["output"]
+            ) / 1e6
+            assert task["cost_usd"] == pytest.approx(expected_cost)
+            assert task["agent_time_sec"] + task["env_time_sec"] == pytest.approx(task["task_time_sec"])
+    assert any(r["model"] == "Claude Sonnet 5" for r in records)
+
+
 def test_catalog_build_is_deterministic(catalog_site, tmp_path):
     output, _ = catalog_site
     second = tmp_path / "second-build"
@@ -780,4 +832,3 @@ def test_catalog_build_is_deterministic(catalog_site, tmp_path):
     for path in output.iterdir():
         if path.is_file():
             assert path.read_bytes() == (second / path.name).read_bytes()
-
