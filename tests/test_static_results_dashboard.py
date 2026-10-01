@@ -34,9 +34,9 @@ def test_catalog_has_one_complete_view_per_dataset(catalog_site):
         "osworld-unanimous-295", "osworld-pareto-48", "cua-world-long-k26",
         "mypcbench-energy38",
     }
-    assert catalog["source_rows"] == 150
-    assert catalog["included_rows"] == 100
-    assert sum(catalog["excluded"].values()) == 50
+    assert catalog["source_rows"] == 153
+    assert catalog["included_rows"] == 102
+    assert sum(catalog["excluded"].values()) == 51
     assert '[data-results-dashboard][data-static="true"] .results-table tbody tr { animation: none; }' in (output / "static/frontier.css").read_text()
     assert '[data-results-dashboard][data-static="true"] .results-volume .volume-point { animation: none; }' in (output / "static/frontier.css").read_text()
     source = REPOSITORY_ROOT / "data/all-hf-model-trajectory-metrics-2026-09-13.csv"
@@ -102,7 +102,7 @@ def test_catalog_has_one_complete_view_per_dataset(catalog_site):
                        if row["split_dset_name"] == name and row["row_type"] in {"evaluation", "published_subset"}}
         assert source_runs == ({source for r in records for source in r["source_run_ids"]}
                                | {r["run_id"] for r in dataset["excluded_evaluations"]})
-    assert len(seen) == 100
+    assert len(seen) == 102
 
 
 def test_all_datasets_include_reviewed_results_without_configuration_partitions(catalog_site):
@@ -110,7 +110,7 @@ def test_all_datasets_include_reviewed_results_without_configuration_partitions(
     datasets = catalog["datasets"]
     assert {name: len(dataset["records"]) for name, dataset in datasets.items()} == {
         "osworld-energy50-representative": 62, "osworld2-k52": 21,
-        "osworld": 3, "osworld-unanimous-295": 6, "cua-world-long-k26": 2,
+        "osworld": 3, "osworld-unanimous-295": 6, "cua-world-long-k26": 4,
         "osworld-pareto-48": 2,
         "mypcbench-energy38": 4,
     }
@@ -224,10 +224,10 @@ def test_costs_use_source_evidence_and_label_every_estimate(catalog_site):
     output, catalog = catalog_site
     records = [r for d in catalog["datasets"].values() for r in d["records"]]
     assert Counter(r["cost_kind"] for r in records) == {
-        "recorded": 10, "source_estimate": 54, "reference_estimate": 21,
+        "recorded": 10, "source_estimate": 56, "reference_estimate": 21,
         "standard_rate_proxy": 7, "coverage_estimate": 2, "unavailable": 6,
     }
-    assert sum(r["cost_usd"] is not None for r in records) == 94
+    assert sum(r["cost_usd"] is not None for r in records) == 96
     with (output / "trajectory-metrics.csv").open(newline="") as handle:
         originals = {i: row for i, row in enumerate(csv.DictReader(handle), start=2)}
     registry = json.loads((output / "results-pricing.json").read_text())
@@ -278,7 +278,7 @@ def test_costs_use_source_evidence_and_label_every_estimate(catalog_site):
                 assert not cell.get_text().strip().startswith("$")
     with (output / "display-costs.csv").open(newline="") as handle:
         exported = {(r["dataset"], r["run_id"]): r for r in csv.DictReader(handle)}
-    assert len(exported) == 100
+    assert len(exported) == 102
     for record in records:
         for key, value in exported[(record["source_metadata"]["split_dset_name"], record["run_id"])].items():
             if key != "dataset":
@@ -477,7 +477,7 @@ def test_jy_sol_luna_low_append_preserves_history_and_separates_retry(catalog_si
     with source.open(newline="") as handle:
         reader = csv.DictReader(handle)
         rows = list(reader)
-        assert len(reader.fieldnames) == 218 and len(rows) == 150
+        assert len(reader.fieldnames) == 218 and len(rows) == 153
     new = rows[124:127]
     assert Counter(r["row_type"] for r in new) == {"evaluation": 2, "retained_extra_attempts": 1}
     expected = {
@@ -832,3 +832,62 @@ def test_catalog_build_is_deterministic(catalog_site, tmp_path):
     for path in output.iterdir():
         if path.is_file():
             assert path.read_bytes() == (second / path.name).read_bytes()
+
+def test_astra_k26_medium_high_preserve_history_and_separate_attempts(catalog_site):
+    output, catalog = catalog_site
+    source = output / "trajectory-metrics.csv"
+    assert hashlib.sha256(source.read_bytes()[:1135108]).hexdigest() == "d4e8c957ea940eea4be708512974cc79c0238f2598f3d219daa58f336a6345ef"
+    with source.open(newline="") as handle:
+        reader = csv.DictReader(handle)
+        rows = list(reader)
+        assert len(reader.fieldnames) == 218 and len(rows) == 153
+    new = rows[150:153]
+    assert Counter(r["row_type"] for r in new) == {"evaluation": 2, "retained_extra_attempts": 1}
+    dataset = catalog["datasets"]["cua-world-long-k26"]
+    assert len(dataset["records"]) == 4
+    assert {r["effort"] for r in dataset["records"]} == {"low", "medium", "high", "xhigh"}
+    records = {r["run_id"]: r for r in dataset["records"]}
+    expected = {
+        "svc_158_3a94e8": ("medium", 86.73076923076923, 810.4962436197309, 219.038606, 19, 5760),
+        "svc_159_9bd940": ("high", 94.23076923076923, 1107.9446157068462, 288.83592, 21, 8979),
+    }
+    for row in new:
+        if row["row_type"] == "retained_extra_attempts":
+            assert row["run_id"] == "svc_159_9bd940" and row["n_trajectories"] == "1"
+            assert row["score_mean_pct"] == row["time_per_task_sec"] == row["avg_steps_per_task"] == ""
+            assert float(row["cost_usd_observed_total"]) == pytest.approx(27.41442)
+            continue
+        run_id = row["run_id"]
+        effort, score, seconds, cost, passes, actions = expected[run_id]
+        evidence = json.loads((output / f"results-evidence/{run_id}.json").read_text())
+        tasks = evidence["tasks"]
+        assert len(tasks) == len({(t["task_id"], t["seed"]) for t in tasks}) == 26
+        assert row["source_revision"] == evidence["source_revision"]
+        assert row["source_archive_url"] == evidence["source_archive_url"]
+        assert row["archive_sha256"] == evidence["run"]["archive_sha256"]
+        assert row["on_current_main"] == "False"
+        assert row["reasoning_effort"] == effort and row["template_name"] == "codex_cli"
+        assert row["n_trajectories"] == row["expected_contract_tasks"] == "26"
+        assert int(row["perfect_pass_count"]) == sum(t["score"] == 100 for t in tasks) == passes
+        for metric, key in (("score_mean_pct", "score"), ("time_per_task_sec", "task_time_sec"),
+                            ("avg_steps_per_task", "num_steps"), ("env_action_items_per_task", "environment_action_items"),
+                            ("generated_tokens_per_task", "generated_tokens"), ("thinking_tokens_per_trajectory", "thinking_tokens"),
+                            ("cost_per_task_usd", "cost_usd")):
+            assert row[metric + "_n"] == "26"
+            assert float(row[metric]) == pytest.approx(sum(t[key] for t in tasks) / 26)
+        for t in tasks:
+            assert t["cost_usd"] == pytest.approx(((t["input_tokens"] - t["cached_input_tokens"] - t["cache_write_input_tokens"]) * 10
+                + t["cached_input_tokens"] + t["cache_write_input_tokens"] * 12.5 + t["generated_tokens"] * 50) / 1e6)
+            assert t["thinking_tokens"] <= t["generated_tokens"]
+        record = records[run_id]
+        assert record["performance"] == pytest.approx(score / 100)
+        assert record["time_per_task_sec"] == pytest.approx(seconds)
+        assert record["cost_usd"] == pytest.approx(cost / 26)
+        assert record["tool_calls_per_task"] == pytest.approx(actions / 26)
+        assert record["model_responses_per_task"] is None and record["average_output_tokens"] is None
+        if effort == "high":
+            assert json.loads(row["run_terminal_events"]) == ["run_failed", "run_done"]
+            assert row["extra_retained_attempts"] == "1" and row["metadata_only_infrastructure_attempts"] == "8"
+            openclinic, = [t for t in tasks if "openclinic" in t["task_id"]]
+            assert openclinic["score"] == 100 and openclinic["task_time_sec"] == pytest.approx(760.48, abs=.01)
+            assert len(evidence["retained_attempts"]) == 1 and len(evidence["metadata_only_attempts"]) == 8
