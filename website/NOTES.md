@@ -236,3 +236,10 @@ Keep Paper visible on every page, including while the public URL is pending.
 During that period, mark the tab "forthcoming" and leave it disabled. Once
 `paper_url` is supplied, the same tab becomes a direct arXiv link; it must not
 open a duplicate article on this site.
+
+
+## September 30, 2026: paper announced on arXiv
+
+The owner supplied the announced paper URL, https://arxiv.org/abs/2609.40284.
+It is set as `paper_url`, so the Paper tab, homepage links, citation, and the
+retired `/paper.html` route now lead to arXiv.
