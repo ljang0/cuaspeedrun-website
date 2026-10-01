@@ -1,0 +1,793 @@
+{
+  "schema_version": 1,
+  "run": {
+    "eval": 158,
+    "run_id": "svc_158_3a94e8",
+    "effort": "medium",
+    "archive": "pranjal-gpt6astra-cua-world-k26-medium-500steps-modal-v1-158.zip",
+    "archive_sha256": "4d0e4de37d8885e725d1e50c925fb769b350ba77967285f4c55b93b2ea6de6ce",
+    "archive_bytes": 1006733945,
+    "tasks": 26,
+    "mean_score": 86.73076923076923,
+    "strict_passes": 19,
+    "mean_task_sec": 810.4962436197309,
+    "mean_agent_sec": 652.8947970513077,
+    "mean_env_sec": 157.6014465684231,
+    "mean_steps": 66.6923076923077,
+    "cost_usd": 219.038606,
+    "mean_cost_usd": 8.424561769230769,
+    "retained_logged_attempts": 0,
+    "metadata_only_attempts": 0,
+    "extra_observed_cost_usd": 0.0,
+    "extra_usage_coverage": 0,
+    "files": 3814,
+    "finished_at_utc": "2026-09-21 02:06:31.951858",
+    "agent_sha256": "4a2be571c7f10603ec4bde7154dbf7de6b80eb44c490844893ab33bb07e3ddfc",
+    "init_sha256": "4da6ce26f66abdd04e4f0d8787f8eebf9be63998f3c93e1aeac1fa4b804a31b0",
+    "run_plan_hash": "fff8a9cc9aac40cca24b882e9d7c3b69e30e2eda863a809097b0ffb3fe58d9f1",
+    "run_terminal_events": [
+      "run_done"
+    ],
+    "verified_at_utc": "2026-09-21T06:13:23.750539+00:00"
+  },
+  "model_id": "gpt-6-astra",
+  "reasoning_effort": "medium",
+  "token_rates_usd_per_million": {
+    "input": 10,
+    "cached_input": 1,
+    "cache_write_input": 12.5,
+    "output": 50
+  },
+  "pricing_source_url": "https://huggingface.co/datasets/anonymousmypcbench/cua-speedrun-trajectories/resolve/447ff4cd77230ee06ee5b0e864873c43ceb0138c/COST-pranjal-eval137.json",
+  "cost_basis": "Historical standard short-context API-equivalent from final CLI session usage, not subscription charges. Output includes reasoning; do not add reasoning twice. Excludes per-request long-context/Fast-mode adjustments, startup probes, infrastructure, separate grading, and unlogged usage.",
+  "usage_totals": {
+    "input_tokens": 165689186,
+    "cached_input_tokens": 161206656,
+    "cache_write_input_tokens": 0,
+    "generated_tokens": 260133,
+    "thinking_tokens": 23156
+  },
+  "tasks": [
+    {
+      "task_id": "cua_world_long_nextgen_connect_integration_engine_env__adt_census_lab_validation_pipeline",
+      "seed": 280685143,
+      "task_source_path": "tasks/cua_world_long_nextgen_connect_integration_engine_env__adt_census_lab_validation_pipeline/seed_280685143",
+      "score": 0.0,
+      "passed": false,
+      "reason": "done",
+      "task_time_sec": 358.03534492700004,
+      "agent_time_sec": 283.6637071079998,
+      "env_time_sec": 74.3716378190002,
+      "num_steps": 24,
+      "environment_action_items": 60,
+      "input_tokens": 1880400,
+      "cached_input_tokens": 1801088,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 3392,
+      "thinking_tokens": 273,
+      "cost_usd": 2.763808,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "1192fafaa974d794320d9087982d826fe70ccfdea4b44c9873bf38384b77bc17",
+        "agent.stdout": "91f274b8dc2da1864508a7cbb6841edc6014ec39920650e3c825f837918b9c6b"
+      }
+    },
+    {
+      "task_id": "cua_world_long_odoo_inventory_env__pharma_lot_recall_quarantine",
+      "seed": 1904711124,
+      "task_source_path": "tasks/cua_world_long_odoo_inventory_env__pharma_lot_recall_quarantine/seed_1904711124",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 487.985862019,
+      "agent_time_sec": 401.9409008589996,
+      "env_time_sec": 86.04496116000041,
+      "num_steps": 51,
+      "environment_action_items": 126,
+      "input_tokens": 3002939,
+      "cached_input_tokens": 2871040,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 5744,
+      "thinking_tokens": 17,
+      "cost_usd": 4.47723,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "43c6c094a446b3a2104c19f8f17bcadd989699b4d66d14cc2bf6bbf92c209b47",
+        "agent.stdout": "07b8763679ae95f226102beabe1b56a5b493eba22e9aca479a2a9439813decbe"
+      }
+    },
+    {
+      "task_id": "cua_world_long_gpredict_env__poes_downlink_schedule_setup",
+      "seed": 937430214,
+      "task_source_path": "tasks/cua_world_long_gpredict_env__poes_downlink_schedule_setup/seed_937430214",
+      "score": 0.0,
+      "passed": false,
+      "reason": "done",
+      "task_time_sec": 693.211810845,
+      "agent_time_sec": 566.5717930609998,
+      "env_time_sec": 126.64001778400014,
+      "num_steps": 65,
+      "environment_action_items": 193,
+      "input_tokens": 4745980,
+      "cached_input_tokens": 4592256,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 9011,
+      "thinking_tokens": 1385,
+      "cost_usd": 6.580046,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "7a7ae1d49ca1af21fea91264f3be1d9f235e4d49b074ed8eb11ea3a359d426a4",
+        "agent.stdout": "41238abc3aa8f725b9b64465b406fd1035b8409b62d7dc341f2f9bb87e60d447"
+      }
+    },
+    {
+      "task_id": "cua_world_long_docker_desktop_env__diagnose_broken_microservices_stack",
+      "seed": 142229582,
+      "task_source_path": "tasks/cua_world_long_docker_desktop_env__diagnose_broken_microservices_stack/seed_142229582",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 1808.0830570130001,
+      "agent_time_sec": 1413.882467016998,
+      "env_time_sec": 394.2005899960021,
+      "num_steps": 99,
+      "environment_action_items": 238,
+      "input_tokens": 22325220,
+      "cached_input_tokens": 21797504,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 15064,
+      "thinking_tokens": 2584,
+      "cost_usd": 27.827864,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "b49d200ce26fa6a31a6328828731048e793fd7975c55cd50418e44308f98391b",
+        "agent.stdout": "b3ecf0867a33afc81cc9b0bbc7391476f32c5555f1f3799b51142675855e57c6"
+      }
+    },
+    {
+      "task_id": "cua_world_long_openclinic_ga_env__insured_consultation_billing",
+      "seed": 298198289,
+      "task_source_path": "tasks/cua_world_long_openclinic_ga_env__insured_consultation_billing/seed_298198289",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 857.999461251,
+      "agent_time_sec": 719.1851352340007,
+      "env_time_sec": 138.81432601699927,
+      "num_steps": 83,
+      "environment_action_items": 178,
+      "input_tokens": 6682948,
+      "cached_input_tokens": 6505344,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 8760,
+      "thinking_tokens": 170,
+      "cost_usd": 8.719384,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "374e090e4f6406d061a6ee3ca07022324fff07047d7bc6d1811b44b1c044e83a",
+        "agent.stdout": "2cd1d19eacdcdf09c371a55432e986f71a871840f629d58d386f6a238e5ce254"
+      }
+    },
+    {
+      "task_id": "cua_world_long_nosh_env__care_quality_remediation",
+      "seed": 2072417311,
+      "task_source_path": "tasks/cua_world_long_nosh_env__care_quality_remediation/seed_2072417311",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 1189.0350643049997,
+      "agent_time_sec": 982.8757230559993,
+      "env_time_sec": 206.15934124900036,
+      "num_steps": 119,
+      "environment_action_items": 261,
+      "input_tokens": 14652055,
+      "cached_input_tokens": 14371072,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 14271,
+      "thinking_tokens": 464,
+      "cost_usd": 17.894452,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "e2e6c19aeffb3125ec77b1ec41872ad2fb80411d37606af505e16875795495b8",
+        "agent.stdout": "9a6e195d1a85de301d2361952d4e3020fac2702a4a42c89fd8acf7c588fb6235"
+      }
+    },
+    {
+      "task_id": "cua_world_long_moodle_env__configure_tiered_assessment_pathway",
+      "seed": 1825914984,
+      "task_source_path": "tasks/cua_world_long_moodle_env__configure_tiered_assessment_pathway/seed_1825914984",
+      "score": 87.5,
+      "passed": false,
+      "reason": "done",
+      "task_time_sec": 960.433443702,
+      "agent_time_sec": 794.9022855630011,
+      "env_time_sec": 165.53115813899885,
+      "num_steps": 102,
+      "environment_action_items": 239,
+      "input_tokens": 12267582,
+      "cached_input_tokens": 11988608,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 10478,
+      "thinking_tokens": 304,
+      "cost_usd": 15.302248,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "d83a30198429951af1e434f803af8a3b28b91b59cb81b34c1bbc5a72e4d75435",
+        "agent.stdout": "3d198091647cef6fb3ca61afe8eb53bc62d81743ee43791075424c5a16c0fcaa"
+      }
+    },
+    {
+      "task_id": "cua_world_long_librehealth_ehr_env__implement_lab_workflow_and_process_patient",
+      "seed": 1891279879,
+      "task_source_path": "tasks/cua_world_long_librehealth_ehr_env__implement_lab_workflow_and_process_patient/seed_1891279879",
+      "score": 85.0,
+      "passed": false,
+      "reason": "done",
+      "task_time_sec": 1738.66585075,
+      "agent_time_sec": 1444.976817875,
+      "env_time_sec": 293.68903287499984,
+      "num_steps": 162,
+      "environment_action_items": 518,
+      "input_tokens": 20435997,
+      "cached_input_tokens": 20095232,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 20508,
+      "thinking_tokens": 2324,
+      "cost_usd": 24.528282,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "ff52e196fb0e2e7d34635bf274473694f98abccee5c6e3bd69e0188fd90a81aa",
+        "agent.stdout": "ee3894d038f18cd29afe2b7a7f81767e84b9b8587334233e196d9fe7e5e0f94a"
+      }
+    },
+    {
+      "task_id": "cua_world_long_sumo_env__optimize_network_signal_timing",
+      "seed": 1763424463,
+      "task_source_path": "tasks/cua_world_long_sumo_env__optimize_network_signal_timing/seed_1763424463",
+      "score": 0.0,
+      "passed": false,
+      "reason": "done",
+      "task_time_sec": 235.58711473000002,
+      "agent_time_sec": 190.57081529400014,
+      "env_time_sec": 45.01629943599988,
+      "num_steps": 17,
+      "environment_action_items": 56,
+      "input_tokens": 703907,
+      "cached_input_tokens": 648192,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 4023,
+      "thinking_tokens": 896,
+      "cost_usd": 1.406492,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "9ca5cba98dfb9e1697bbc1b16ea7f0df3ba0662ba735907de08f565339744a05",
+        "agent.stdout": "57837f33a8aa5b8cb9f502c7622a65c51b8e84b71eeca00e002ef48633caeeb9"
+      }
+    },
+    {
+      "task_id": "cua_world_long_splunk_env__threat_intel_enrichment_pipeline",
+      "seed": 1828786389,
+      "task_source_path": "tasks/cua_world_long_splunk_env__threat_intel_enrichment_pipeline/seed_1828786389",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 496.599978293,
+      "agent_time_sec": 351.92665283300005,
+      "env_time_sec": 144.67332545999994,
+      "num_steps": 42,
+      "environment_action_items": 142,
+      "input_tokens": 2930992,
+      "cached_input_tokens": 2819584,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 6524,
+      "thinking_tokens": 242,
+      "cost_usd": 4.259864,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "b316dd346b012fc02cf217c3902ee0661f72205e5a857ff4e4c255f8f7b4e6fd",
+        "agent.stdout": "cb2d95ad31ff1f3c7952394cb8f6e6e24d684c159e2c32f986128654caacb0f5"
+      }
+    },
+    {
+      "task_id": "cua_world_long_thunderbird_env__litigation_email_triage",
+      "seed": 28424052,
+      "task_source_path": "tasks/cua_world_long_thunderbird_env__litigation_email_triage/seed_28424052",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 519.6231333850001,
+      "agent_time_sec": 436.55668983600026,
+      "env_time_sec": 83.06644354899979,
+      "num_steps": 52,
+      "environment_action_items": 110,
+      "input_tokens": 2859699,
+      "cached_input_tokens": 2769152,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 5108,
+      "thinking_tokens": 90,
+      "cost_usd": 3.930022,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "05cf2b1869337ed5cadf002ebbc67155cc5ab6c46fcace72808ed8f44b6ec478",
+        "agent.stdout": "7365ad28b66580dea7256d006e2ff2dcb7bce429ac6be35aa194510a86157201"
+      }
+    },
+    {
+      "task_id": "cua_world_long_wireshark_env__web_app_breach_investigation",
+      "seed": 1488096232,
+      "task_source_path": "tasks/cua_world_long_wireshark_env__web_app_breach_investigation/seed_1488096232",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 288.94451194300007,
+      "agent_time_sec": 256.8519922570001,
+      "env_time_sec": 32.092519685999946,
+      "num_steps": 18,
+      "environment_action_items": 41,
+      "input_tokens": 1372482,
+      "cached_input_tokens": 1294976,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 3052,
+      "thinking_tokens": 125,
+      "cost_usd": 2.222636,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "22b35671d5f61def943842f86a8de48fcc1122111999842af2f4ed4c83014593",
+        "agent.stdout": "9797ee08c3f0104636c441a9a8919252445a9d73456747a822574b88f15d11cb"
+      }
+    },
+    {
+      "task_id": "cua_world_long_jstock_env__quarterly_portfolio_rebalance",
+      "seed": 2028307634,
+      "task_source_path": "tasks/cua_world_long_jstock_env__quarterly_portfolio_rebalance/seed_2028307634",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 443.124090243,
+      "agent_time_sec": 356.64050225399995,
+      "env_time_sec": 86.48358798900007,
+      "num_steps": 44,
+      "environment_action_items": 226,
+      "input_tokens": 2079944,
+      "cached_input_tokens": 1992064,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 5521,
+      "thinking_tokens": 88,
+      "cost_usd": 3.146914,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "3f62e7367bd4c175b0d88534239bbde912104fcc794982d41988066b1bf5e498",
+        "agent.stdout": "27fe02a28027c6824065fa926a6037a9f89d35f8db73e5656d9fedca82eaef42"
+      }
+    },
+    {
+      "task_id": "cua_world_long_gvsig_desktop_env__vulnerability_map_remote_communities",
+      "seed": 425537227,
+      "task_source_path": "tasks/cua_world_long_gvsig_desktop_env__vulnerability_map_remote_communities/seed_425537227",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 2908.196219922,
+      "agent_time_sec": 2508.048084500998,
+      "env_time_sec": 400.1481354210024,
+      "num_steps": 188,
+      "environment_action_items": 733,
+      "input_tokens": 21643143,
+      "cached_input_tokens": 21131520,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 44349,
+      "thinking_tokens": 2749,
+      "cost_usd": 28.4652,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "ee9584425527eb1b639fddfa145f8080b44d8c3257526d8d86795d95d27e1c41",
+        "agent.stdout": "4e64441e391203a58a3bc773962d5003c8329a1cd530d5a70c88fd0aeeab2874"
+      }
+    },
+    {
+      "task_id": "cua_world_long_snap_env__multicriteria_suitability_mapping",
+      "seed": 1595850725,
+      "task_source_path": "tasks/cua_world_long_snap_env__multicriteria_suitability_mapping/seed_1595850725",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 686.100628199,
+      "agent_time_sec": 553.5512274589997,
+      "env_time_sec": 132.54940074000024,
+      "num_steps": 74,
+      "environment_action_items": 256,
+      "input_tokens": 4593147,
+      "cached_input_tokens": 4436864,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 8144,
+      "thinking_tokens": 312,
+      "cost_usd": 6.406894,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "1b2f60898e26501412ab3a6745f59a86dda6b912a4e77dd95c77925ab56f5baf",
+        "agent.stdout": "6dab00cc74edf303434930e5ec362613e486f680ac4cdec1d39ae729894743c0"
+      }
+    },
+    {
+      "task_id": "cua_world_long_rocket_chat_env__compliance_audit_remediation",
+      "seed": 1379129715,
+      "task_source_path": "tasks/cua_world_long_rocket_chat_env__compliance_audit_remediation/seed_1379129715",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 714.814922477,
+      "agent_time_sec": 520.259931056,
+      "env_time_sec": 194.55499142099995,
+      "num_steps": 62,
+      "environment_action_items": 145,
+      "input_tokens": 4755254,
+      "cached_input_tokens": 4623616,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 7703,
+      "thinking_tokens": 367,
+      "cost_usd": 6.325146,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "19fe378788637586b12e87fce55e6143151b28aadedebb8f983b2628501ab291",
+        "agent.stdout": "e63aecdc78cf3b85baa04635ffd65d4cbf81e605b40798975081cc8fe09e30ca"
+      }
+    },
+    {
+      "task_id": "cua_world_long_pymol_env__kinase_selectivity_comparison",
+      "seed": 1287677347,
+      "task_source_path": "tasks/cua_world_long_pymol_env__kinase_selectivity_comparison/seed_1287677347",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 983.2224859160001,
+      "agent_time_sec": 812.1059097710005,
+      "env_time_sec": 171.11657614499964,
+      "num_steps": 27,
+      "environment_action_items": 94,
+      "input_tokens": 2152393,
+      "cached_input_tokens": 2054528,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 19306,
+      "thinking_tokens": 4522,
+      "cost_usd": 3.998478,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "758f95ad41feef2ddda02bd02fc2374cb54015bdf62fc28eab12a874fa1e4975",
+        "agent.stdout": "d7c54489bb8f825bb0947e05eb7071a1cf56a41abfbcde1c95d8b66ef6222fec"
+      }
+    },
+    {
+      "task_id": "cua_world_long_redmine_env__q1_milestone_reconciliation",
+      "seed": 1505805104,
+      "task_source_path": "tasks/cua_world_long_redmine_env__q1_milestone_reconciliation/seed_1505805104",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 307.23206144899996,
+      "agent_time_sec": 242.60115007000036,
+      "env_time_sec": 64.6309113789996,
+      "num_steps": 31,
+      "environment_action_items": 61,
+      "input_tokens": 1659549,
+      "cached_input_tokens": 1582592,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 3760,
+      "thinking_tokens": 10,
+      "cost_usd": 2.540162,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "008a1fdcb1cd5ef503f1a406afe46f7a6d97a2ba6af17fe2be36df3e6f354c73",
+        "agent.stdout": "e69f656b8f173e22e700724f3f1dde737bd8ad0759208aecb6d654e61b3c802a"
+      }
+    },
+    {
+      "task_id": "cua_world_long_woo_commerce_env__launch_coffee_product_line",
+      "seed": 1319929756,
+      "task_source_path": "tasks/cua_world_long_woo_commerce_env__launch_coffee_product_line/seed_1319929756",
+      "score": 87.5,
+      "passed": false,
+      "reason": "done",
+      "task_time_sec": 735.496370208,
+      "agent_time_sec": 593.829297082,
+      "env_time_sec": 141.66707312600002,
+      "num_steps": 70,
+      "environment_action_items": 234,
+      "input_tokens": 5922123,
+      "cached_input_tokens": 5748096,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 7820,
+      "thinking_tokens": 40,
+      "cost_usd": 7.879366,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "76e39961a2d064ebddfcb9ad6da5d0fe29bd756ba1da6120b9d2cc1998a0367d",
+        "agent.stdout": "e44391bb710e55d1cffae346a70d5e8110f7a833d2faa01dde89533f9cbec880"
+      }
+    },
+    {
+      "task_id": "cua_world_long_wondershare_edrawmax_env__healthcare_it_architecture_review",
+      "seed": 170991778,
+      "task_source_path": "tasks/cua_world_long_wondershare_edrawmax_env__healthcare_it_architecture_review/seed_170991778",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 883.681493179,
+      "agent_time_sec": 690.7921215269984,
+      "env_time_sec": 192.8893716520016,
+      "num_steps": 61,
+      "environment_action_items": 615,
+      "input_tokens": 4487508,
+      "cached_input_tokens": 4350720,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 12465,
+      "thinking_tokens": 2895,
+      "cost_usd": 6.34185,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "42bbcbe15783c3e5bfab2dcab6e921f5504e948d61edd7acc591548a9a55092a",
+        "agent.stdout": "b59aa594af73aba86bba992e8dbed5ac9881d49f021c78f956ce6d318d2d04fd"
+      }
+    },
+    {
+      "task_id": "cua_world_long_ardour_env__broadcast_podcast_stem_delivery",
+      "seed": 910323334,
+      "task_source_path": "tasks/cua_world_long_ardour_env__broadcast_podcast_stem_delivery/seed_910323334",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 829.994340967,
+      "agent_time_sec": 659.832167747,
+      "env_time_sec": 170.16217321999997,
+      "num_steps": 82,
+      "environment_action_items": 356,
+      "input_tokens": 6008018,
+      "cached_input_tokens": 5854336,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 9985,
+      "thinking_tokens": 1042,
+      "cost_usd": 7.890406,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "0d1b65b298d134e50483ead15dd45e3bb2322f3dd398100db4808a3ef8d79d99",
+        "agent.stdout": "2077c7f7f8c8d5681a86fa6d53ddfb23c8f1a7e81e5479ae742fafe2f06b6093"
+      }
+    },
+    {
+      "task_id": "cua_world_long_dhis2_env__rmncah_scorecard_dashboard",
+      "seed": 1750306204,
+      "task_source_path": "tasks/cua_world_long_dhis2_env__rmncah_scorecard_dashboard/seed_1750306204",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 660.3103817670001,
+      "agent_time_sec": 518.2158270550009,
+      "env_time_sec": 142.0945547119992,
+      "num_steps": 57,
+      "environment_action_items": 222,
+      "input_tokens": 4244155,
+      "cached_input_tokens": 4118144,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 7156,
+      "thinking_tokens": 59,
+      "cost_usd": 5.736054,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "74ae829f6a0022deac41a8f622b053cf1ae4e865bff3356056f028fabfbc0cea",
+        "agent.stdout": "bf14ea9a5bffee855fb7e4adf8d0ed8118a018962201c20b3e328780040b6f82"
+      }
+    },
+    {
+      "task_id": "cua_world_long_wps_presentation_env__rebrand_restructure_pitch_deck",
+      "seed": 594430815,
+      "task_source_path": "tasks/cua_world_long_wps_presentation_env__rebrand_restructure_pitch_deck/seed_594430815",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 304.021263579,
+      "agent_time_sec": 237.57240493799992,
+      "env_time_sec": 66.44885864100007,
+      "num_steps": 28,
+      "environment_action_items": 156,
+      "input_tokens": 1247698,
+      "cached_input_tokens": 1182976,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 4175,
+      "thinking_tokens": 346,
+      "cost_usd": 2.038946,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "1dfba7d07edecae73be077c03a5738e804eecc3bc4fddabe55396632371d1565",
+        "agent.stdout": "18573254caaf1ddd622497c9b62f81d04e4475c077667560826254900e09f729"
+      }
+    },
+    {
+      "task_id": "cua_world_long_wordpress_env__launch_woocommerce_coffee_roastery",
+      "seed": 1076456243,
+      "task_source_path": "tasks/cua_world_long_wordpress_env__launch_woocommerce_coffee_roastery/seed_1076456243",
+      "score": 95.0,
+      "passed": false,
+      "reason": "done",
+      "task_time_sec": 643.262656125,
+      "agent_time_sec": 501.79266610800056,
+      "env_time_sec": 141.46999001699947,
+      "num_steps": 63,
+      "environment_action_items": 191,
+      "input_tokens": 4875410,
+      "cached_input_tokens": 4664448,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 7521,
+      "thinking_tokens": 559,
+      "cost_usd": 7.150118,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "dd1e540b2c408673aa21b75586838be32c5f389ce0dbd17f2cc2ab09c69ab596",
+        "agent.stdout": "059725f7fbbb1d98ccacc1b6eb591130421b4fbdbb60a6c089ad496d7e6a4627"
+      }
+    },
+    {
+      "task_id": "cua_world_long_project_libre_env__schedule_recovery_rebaseline",
+      "seed": 270667769,
+      "task_source_path": "tasks/cua_world_long_project_libre_env__schedule_recovery_rebaseline/seed_270667769",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 323.27097569500006,
+      "agent_time_sec": 264.8137062930001,
+      "env_time_sec": 58.45726940199992,
+      "num_steps": 33,
+      "environment_action_items": 96,
+      "input_tokens": 1498983,
+      "cached_input_tokens": 1426944,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 4267,
+      "thinking_tokens": 189,
+      "cost_usd": 2.360684,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "84b64f1e7f5f213ced3c23307f16d5674a93f3568992e6d014e06b0efd759fa2",
+        "agent.stdout": "51cce9a86dd8b4ab6b09af4711e454fc3f488be6b61f712f3f0d7238dbf2d15b"
+      }
+    },
+    {
+      "task_id": "cua_world_long_oracle_database_env__claims_pipeline_reconciliation",
+      "seed": 1572076528,
+      "task_source_path": "tasks/cua_world_long_oracle_database_env__claims_pipeline_reconciliation/seed_1572076528",
+      "score": 100.0,
+      "passed": true,
+      "reason": "done",
+      "task_time_sec": 1015.9698112240001,
+      "agent_time_sec": 671.3047474800017,
+      "env_time_sec": 344.6650637439984,
+      "num_steps": 80,
+      "environment_action_items": 213,
+      "input_tokens": 6661660,
+      "cached_input_tokens": 6485760,
+      "cache_write_input_tokens": 0,
+      "generated_tokens": 12026,
+      "thinking_tokens": 1104,
+      "cost_usd": 8.84606,
+      "completed_codex_turns": 1,
+      "flags": [
+        "codex_model_response_count_and_full_tool_calls_unavailable",
+        "Astra_cost_excludes_per_request_long_context_fast_mode_and_tool_adjustments"
+      ],
+      "source_sha256": {
+        "runlog.jsonl": "9aa3d7ca801542ed902a59394e60266105b5eb5734dcfb641f71988cf5f4357b",
+        "agent.stdout": "9d7e33d8d29d368b122e494dbdea82351323d2c107daae197877b6f0d31ae1f1"
+      }
+    }
+  ],
+  "retained_attempts": [],
+  "metadata_only_attempts": [],
+  "retained_attempt_note": "No retained extra attempts.",
+  "source_archive_url": "https://huggingface.co/datasets/anonymousmypcbench/cua-speedrun-trajectories/resolve/b99eceee43e7dd620ce58617db9890975fb9a044/pranjal-gpt6astra-cua-world-k26-medium-500steps-modal-v1-158.zip",
+  "source_revision": "b99eceee43e7dd620ce58617db9890975fb9a044",
+  "hf_pr_url": "https://huggingface.co/datasets/anonymousmypcbench/cua-speedrun-trajectories/discussions/26",
+  "source_result_sha256": "0e014787130429857a3cb3762462ed06a60c4aa0f4a9cfd3008d3bf7f554112e",
+  "verified_configuration": {
+    "CODEX_CLI_TIMEOUT_SEC": "21600",
+    "CODEX_MAX_STEPS": "500",
+    "CODEX_MODEL": "gpt-6-astra",
+    "CODEX_REASONING_EFFORT": "medium"
+  }
+}

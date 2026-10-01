@@ -57,7 +57,7 @@ def test_public_results_only_include_paper_subsets(public_site, tmp_path):
     config = json.loads((ROOT / 'website/config.json').read_text())
     subsets = config['paper_subsets']
     assert set(catalog['datasets']) == set(subsets)
-    assert catalog['included_rows'] == 89
+    assert catalog['included_rows'] == 91
     assert catalog['publication_scope']['omitted_reviewed_rows'] == 11
     # Every measurement and unrelated metadata value survives publication;
     # only references to the trajectory dataset are omitted.
