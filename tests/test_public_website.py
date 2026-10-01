@@ -127,6 +127,9 @@ def test_homepage_race_replays_published_records(public_site):
         assert float(lane['data-time']) == record['time_per_task_sec']
         assert float(lane['data-score']) == record['performance']
         assert lane.select_one('.lane-name strong').get_text() == record['model']
+        assert lane.select_one('.lane-name span').get_text() == record['effort']
+    race_text = home.select_one('[data-race]').get_text(' ', strip=True)
+    assert 'Claude Code' not in race_text and 'Direct API' not in race_text
 
 
 def test_paper_figures_and_author_credit(public_site):

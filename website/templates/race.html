@@ -9,7 +9,7 @@
   </header>
   <ol class="race-lanes" data-race-lanes>
     {% for r in race.runners %}<li class="race-lane is-done{% if r.fastest %} is-fastest{% endif %}" data-time="{{ r.time }}" data-score="{{ r.score }}" data-steps="{{ r.steps }}" style="--p: 1">
-      <p class="lane-name"><svg class="lane-logo" aria-hidden="true"><use href="#logo-{{ r.provider }}"/></svg><strong>{{ r.model }}</strong><span>{{ r.effort }}{% if r.variant %} · {{ r.variant }}{% endif %}</span></p>
+      <p class="lane-name"><svg class="lane-logo" aria-hidden="true"><use href="#logo-{{ r.provider }}"/></svg><strong>{{ r.model }}</strong><span>{{ r.effort }}</span></p>
       <div class="lane-track" aria-hidden="true"><span class="lane-trail"></span><span class="lane-marks"></span><svg class="lane-cursor" viewBox="0 0 13 19" width="13" height="19"><path d="M1 1v15.5l4.2-4 3 6.6 2.6-1.2-3-6.4H13z"/></svg></div>
       <p class="lane-result"><span class="lane-place">#{{ r.place }}</span><span class="lane-time">{{ r.clock }}</span><span class="lane-score">{{ '%.1f' % (r.score * 100) }}%</span></p>
     </li>{% endfor %}
@@ -25,5 +25,5 @@
       <button type="button" data-race-sort="score" aria-pressed="false">Score</button>
     </div>
   </div>
-  <figcaption>Each lane is one model at one reasoning-effort setting, run by its included agent. "Direct API" means the model was called directly instead of through Codex CLI. Ticks mark its average number of steps. At the finish, each shows its average task time and score. Lanes are ranked by time only. {% set first = race.runners | selectattr("fastest") | first %}{% if first.score < race.runners | map(attribute="score") | max %}The first to finish scores {{ '%.1f' % (first.score * 100) }}%. {% endif %}<a href="/{{ race.href }}">See the full {{ race.label }} leaderboard</a></figcaption>
+  <figcaption>Each lane is one model at one reasoning-effort setting, run by its included agent. Ticks mark its average number of steps. At the finish, each shows its average task time and score. Lanes are ranked by time only. {% set first = race.runners | selectattr("fastest") | first %}{% if first.score < race.runners | map(attribute="score") | max %}The first to finish scores {{ '%.1f' % (first.score * 100) }}%. {% endif %}<a href="/{{ race.href }}">See the full {{ race.label }} leaderboard</a></figcaption>
 </figure>
