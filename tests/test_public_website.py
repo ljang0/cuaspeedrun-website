@@ -119,6 +119,8 @@ def test_homepage_race_replays_published_records(public_site):
     home = BeautifulSoup((public_site / 'index.html').read_text(), 'html.parser')
     lanes = home.select('[data-race] .race-lane')
     assert len(lanes) == len(race['runners'])
+    assert {'model': 'Claude Opus 5.5', 'effort': 'xhigh', 'variant': 'Claude Code'} in race['runners']
+    assert all(runner['model'] != 'Claude Opus 5' for runner in race['runners'])
     for lane, want in zip(lanes, race['runners'], strict=True):
         record = next(r for r in records if all(
             (r[k] or '') == want[k] for k in ('model', 'effort', 'variant')))
