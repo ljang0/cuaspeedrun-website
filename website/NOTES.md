@@ -251,3 +251,10 @@ The owner decided the website should never handle sign-in or run agents for
 users. The hosted-run form and its "will open later" notice were removed from
 the Run page. The page now has the fewest words possible: a button that opens
 the Modal notebook, and the three command-line commands.
+
+
+## September 30, 2026: leaderboard submissions handled case by case
+
+The owner decided not to ask submitters for download links to their exported
+zips or agent files. What a submission must include is decided case by case
+after the submitter makes contact.

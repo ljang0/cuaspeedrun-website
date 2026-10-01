@@ -4,7 +4,7 @@
 <header class="release-heading">
   <h1>cua-<strong>speedrun</strong><span class="title-caret" aria-hidden="true"></span></h1>
   <p class="release-purpose">How fast can a computer-use agent finish the job?</p>
-  <p class="release-description">Most benchmarks only record whether an agent succeeded. cua-speedrun is an evaluation system that also measures how long each task takes and what its model calls cost. Every leaderboard run uses the same pipeline and virtual machine setup on <a href="https://modal.com">Modal</a>, a pay-per-second cloud service, and one agent interface works across OSWorld, OSWorld 2.0, CUA-World, and MyPCBench. Smaller task sets, chosen so model rankings match the full benchmarks, keep repeated runs affordable.</p>
+  <p class="release-description">Most benchmarks only record whether an agent succeeded. cua-speedrun is an evaluation system that also measures how long each task takes and what its model calls cost. Every leaderboard run uses the same pipeline and virtual machine setup on Modal, a pay-per-second cloud service, and one agent interface works across OSWorld, OSWorld 2.0, CUA-World, and MyPCBench. Smaller task sets, chosen so model rankings match the full benchmarks, keep repeated runs affordable.</p>
   {% include "authors.html" %}
   <nav class="release-links" aria-label="Project resources">
     <a class="console-button" href="{{ site.notebook_url }}" target="_blank" rel="noopener">Test your agents through Modal</a>
@@ -20,7 +20,7 @@
   <p class="infra-lede">cua-speedrun is the software that runs these comparisons. It holds the hardware, desktops, tasks, and timing fixed, so differences in time and cost come from the agent.</p>
   {% include "clock-line.html" %}
   <dl class="infra-list">
-    <div><dt>Identical hardware for every run</dt><dd>Agents and desktops run in separate <a href="https://modal.com">Modal</a> sandboxes, built from the same pinned images for every run. Open-weight models are served with vLLM on fixed L40S GPUs. Results do not depend on whose computer launched the run.</dd></div>
+    <div><dt>Identical hardware for every run</dt><dd>Agents and desktops run in separate Modal sandboxes, built from the same pinned images for every run. Open-weight models are served with vLLM on fixed L40S GPUs. Results do not depend on whose computer launched the run.</dd></div>
     <div><dt>One agent, four benchmarks</dt><dd>An agent is a folder with an <code>agent.py</code> that receives 1920×1080 screenshots and sends keyboard and mouse actions, and an <code>init.py</code> that sets it up. The same folder runs on OSWorld, OSWorld 2.0, CUA-World, and MyPCBench.</dd></div>
     <div><dt>A clock that measures the agent</dt><dd>Setup and scoring happen off the clock. If a desktop or sandbox fails, the task is retried. If the agent crashes, the task counts as failed. Each agent reports its model cost after every request.</dd></div>
     <div><dt>Inputs that do what they say</dt><dd>Our test tool, CUA-AutoDebug, sends 94 keyboard and mouse inputs to an app that records what arrives. PyAutoGUI over SSH, a common setup, got 11 wrong, such as typing &gt; when &lt; was requested. Our runtime got all 94 right, five times each.</dd></div>
