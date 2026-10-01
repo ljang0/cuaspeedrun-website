@@ -142,12 +142,11 @@ def test_paper_figures_and_author_credit(public_site):
     assert page.select_one('[data-cite-open]')['href'] == '#cite'
 
 
-def test_submission_page_starts_disabled(public_site):
+def test_run_page_opens_the_modal_notebook(public_site):
     page = BeautifulSoup((public_site / 'submit/index.html').read_text(), 'html.parser')
-    assert all('disabled' in field.attrs for field in page.select('[data-auth-field]'))
-    assert page.select_one('#modal-secret')['type'] == 'password'
-    assert page.select_one('#agent-file')['name'] == 'agent_file'
-    assert page.select_one('#billing-consent').has_attr('required')
+    config = json.loads((ROOT / 'website/config.json').read_text())
+    assert page.select_one('.console-button')['href'] == config['notebook_url']
+    assert not page.select('form')
 
 
 def test_paper_destination_replaces_duplicate_article(public_site):
