@@ -13,7 +13,7 @@
         <p class="selection-count"><strong data-selected-count>50</strong> of <span data-eligible-count>295</span></p>
         <svg class="task-matrix" viewBox="0 0 240 180" role="img" aria-label="Selected and remaining task counts" data-task-matrix></svg>
         <p class="matrix-key"><span>Selected</span><span>Remaining</span></p>
-        <p>We choose tasks whose historical agent scores reflect the larger benchmark.</p>
+        <p>We choose tasks so model rankings match the full benchmark.</p>
         {% if site.paper_url %}<a href="{{ site.paper_url }}">How tasks are selected</a>{% endif %}
       </section>
       <section class="explainer-results" aria-label="Measured agent results">
@@ -35,7 +35,7 @@
     <div class="explainer-method"><p>The clock runs from the task instruction to completion or timeout. Setup and final verification are excluded.</p><a data-overview-link href="/results.html">Open leaderboard</a></div>
   </div>
   <noscript><style>.explainer-interactive { display: none; }</style><img class="explainer-fallback" src="/assets/figures/overview.svg" alt="Paper results comparing agent task score against time and model cost on OSWorld and OSWorld 2.0."><p><a href="/results.html">Explore the results</a></p></noscript>
-  <figcaption>Interactive overview. Squares show task counts; each plotted point is a measured configuration, marked with its developer's logo. The explorer covers the paper’s four task subsets, with configuration coverage curated separately from its figures. Logos identify developers and are trademarks of their owners.</figcaption>
+  <figcaption>Interactive overview. Squares show task counts; each plotted point is a measured configuration, marked with its developer's logo. It covers the four task sets from our paper, and also includes results that are not in the paper's figures. Logos identify developers and are trademarks of their owners.</figcaption>
   <script type="application/json" data-overview-data>{{ overview_data | tojson }}</script>
   <script type="application/json" data-providers>{{ providers | tojson }}</script>
 </figure>

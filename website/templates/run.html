@@ -1,28 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Run an evaluation · CUA-Speedrun{% endblock %}
 {% block content %}
-<header class="document-heading"><h1>Run an evaluation</h1><p>Evaluate an included agent, or your own, on the benchmark tasks. Everything runs on your Modal account with your model API keys, and the results are saved to your machine.</p></header>
+<header class="document-heading"><h1>Run an evaluation</h1><p>Evaluate an included agent, or your own, on the benchmark tasks. The desktops and your agent run on Modal, a pay-per-second cloud service, and bill your account. Model calls use your API keys. You can also <a href="/docs.html#local">run on your own Linux machine</a>.</p></header>
 <section class="run-guide article-body" id="run-guide">
-<ol class="run-steps run-route"><li><strong>Install</strong>Install the toolkit and connect your Modal account.</li><li><strong>Pick an agent</strong>Start from a template, or edit it to use your own model.</li><li><strong>Run</strong>Run a task set and read the scores, timings, and trajectories.</li></ol>
+<ol class="run-steps run-route"><li><strong>Install</strong>Install the toolkit and connect your Modal account.</li><li><strong>Pick an agent</strong>Start from an included agent, or write your own.</li><li><strong>Run</strong>Run a task set and read the scores, timings, and trajectories.</li></ol>
 <h2>Install</h2>
-<div class="code-block"><button type="button" data-copy>Copy</button><pre><code>git clone --recurse-submodules https://github.com/{{ repository }}.git
-cd cua-speed-run
-uv venv --python 3.11
-source .venv/bin/activate
-uv pip install -e .
-cua-speedrun install
-modal token new</code></pre></div>
+<div class="code-block"><button type="button" data-copy>Copy</button><pre><code>pip install cua-speedrun
+cua-speedrun setup</code></pre></div>
+<p><code>setup</code> saves your Modal credentials and model API keys.</p>
 <h2>Pick an agent</h2>
-<p>The <code>codex_cli</code> template calls OpenAI models and reads <code>OPENAI_API_KEY</code> from your shell or a local <code>.env</code>. Other templates cover Claude, Gemini, Kimi, GLM, MiniMax, and Meta models, and Qwen models served on a Modal GPU. To test your own model, copy a template and change its two files: <code>agent.py</code> for the action loop and <code>init.py</code> for setup. <a href="/docs.html#agent-contract">How agents work</a></p>
+<p>Included agents include <code>claude</code>, <code>gpt54</code>, <code>gemini_new</code>, and <code>kimi_k3</code>, which call their providers' APIs, and <code>qwen3vl</code>, which serves open-weight models with vLLM on a Modal GPU. <code>cua-speedrun catalog</code> lists them all. To test your own model, write <code>agent.py</code> and <code>init.py</code>, or adapt an included agent. <a href="/docs.html#own-agent">How agents work</a></p>
 <h2>Run</h2>
-<div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun run --remote \
-  --submission templates/codex_cli \
-  --benchmark benchmarks/osworld-mini \
-  --agents-per-evaluation 2</code></pre></div>
-<p>The command starts the desktops, runs the tasks, and prints a score summary with the location of the saved run. Compute is billed to your Modal account and model calls to your API key.</p>
+<div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun benchmark --agent claude --dataset osworld-50</code></pre></div>
+<p>It starts the desktops, runs the tasks, and shows progress. Add <code>--host modal</code> to keep it running after you close your laptop. Compute is billed to your Modal account and model calls to your API key.</p>
 <p><a class="console-button" href="/docs.html">Read the full guide</a></p>
 </section>
-<div class="connection-notice" role="status" id="connection-status"><p>Checking whether hosted runs are open…</p></div>
+<div class="connection-notice" role="status" id="connection-status"><p>Checking whether hosted runs, where we run your agent for you, are open…</p></div>
 <noscript><p>Hosted runs need JavaScript. The steps above work without it.</p></noscript>
 <div class="submit-layout" id="submit-layout" hidden>
 <form id="evaluation-form" autocomplete="off">
@@ -34,7 +27,7 @@ modal token new</code></pre></div>
 </fieldset>
 <fieldset data-auth-field disabled><legend>Agent implementation</legend>
 <label for="source">Agent source</label><select id="source" name="source"><option value="upload">Upload Python files</option></select><p id="template-description" class="form-help"></p>
-<div id="upload-fields"><label for="agent-file">agent.py · required</label><input type="file" id="agent-file" name="agent_file" accept=".py" required><label for="init-file">init.py · optional setup</label><input type="file" id="init-file" name="init_file" accept=".py"><p>Your agent runs once per task. Setup runs before the task clock starts. If you omit init.py, we supply an empty initializer. Up to 1 MiB combined. <a href="/docs.html#agent-contract">See the agent interface</a></p></div>
+<div id="upload-fields"><label for="agent-file">agent.py · required</label><input type="file" id="agent-file" name="agent_file" accept=".py" required><label for="init-file">init.py · optional setup</label><input type="file" id="init-file" name="init_file" accept=".py"><p>Your agent runs once per task. Setup runs before the task clock starts. If you omit init.py, we supply an empty initializer. Up to 1 MiB combined. <a href="/docs.html#own-agent">See the agent interface</a></p></div>
 <label class="check-label"><input type="checkbox" id="allocate-gpu" name="allocate_gpu"><span>Allocate the track's GPU for my model.<br><small>Leave off for agents that only call external model APIs.</small></span></label>
 </fieldset>
 <fieldset data-auth-field disabled><legend>Modal credentials and model keys</legend>
@@ -48,7 +41,7 @@ modal token new</code></pre></div>
 <fieldset data-auth-field disabled class="launch-review"><legend>Review and launch</legend><p id="run-summary">Select a benchmark and track above.</p><label class="check-label"><input type="checkbox" id="billing-consent" required><span>I understand this launches paid compute in my Modal account and may make paid calls using my model API keys.</span></label><p>Results start unlisted. A result-card link can be shared; publishing to a leaderboard is a separate action after evaluation.</p><button class="console-button" type="submit" id="launch">Launch evaluation</button></fieldset>
 <p id="form-message" class="form-message" role="alert"></p>
 </form>
-<aside class="submit-note"><h2>Submission format</h2><p><code>agent.py</code> contains your action loop.<br><code>init.py</code> prepares dependencies or a model server.</p><h3>What happens next</h3><p>The evaluator queues your run, starts environments on Modal, and records each task. Follow progress, inspect trajectories, and download the evidence from your run page.</p><h3>Command-line usage</h3><p><a href="/docs.html#modal">Run the benchmark on Modal</a></p><h3>Agent templates</h3><p><a href="https://github.com/{{ repository }}/tree/main/templates">Browse agent templates</a></p></aside>
+<aside class="submit-note"><h2>Submission format</h2><p><code>agent.py</code> contains your action loop.<br><code>init.py</code> prepares dependencies or a model server.</p><h3>What happens next</h3><p>The evaluator queues your run, starts environments on Modal, and records each task. Follow progress, inspect trajectories, and download the evidence from your run page.</p><h3>Command-line usage</h3><p><a href="/docs.html#start">Run the benchmark on Modal</a></p><h3>Agent templates</h3><p><a href="https://github.com/{{ repository }}/tree/main/agents">Browse included agents</a></p></aside>
 </div>
 <script src="/assets/submit.js?v={{ asset_version }}" defer></script>
 {% endblock %}
