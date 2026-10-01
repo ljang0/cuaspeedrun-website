@@ -26,7 +26,7 @@ def public_site(tmp_path_factory):
 def test_publication_preserves_catalog_and_links(public_site):
     catalog = json.loads((public_site / "results-catalog.json").read_text())
     home = BeautifulSoup((public_site / "index.html").read_text(), "html.parser")
-    assert 'powered by Modal' in home.get_text(' ', strip=True)
+    assert 'sponsored by Modal' in home.get_text(' ', strip=True)
     for dataset in catalog['datasets'].values():
         page = BeautifulSoup((public_site / dataset['href']).read_text(), 'html.parser')
         assert json.loads(page.select_one('[data-results-data]').string) == dataset['records']
