@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Documentation · CUA-Speedrun{% endblock %}
+{% block title %}Documentation · cua-speedrun{% endblock %}
 {% block content %}
 {% set issues = "https://github.com/" ~ repository ~ "/issues" %}
 {% macro contact() -%}
@@ -21,7 +21,7 @@
 <section id="start" data-reveal>
 <h2>Getting started</h2>
 <h3>What is the quickest way to try it?</h3>
-<p>Open the <a href="{{ site.notebook_url }}" target="_blank" rel="noopener">CUA-Speedrun notebook on Modal</a>. Fork it into your Modal account and run its one cell. A dashboard opens where you pick an agent or upload your own, choose a task set, add your API keys, and start. Nothing to install, and runs keep going after you close the notebook.</p>
+<p>Open the <a href="{{ site.notebook_url }}" target="_blank" rel="noopener">cua-speedrun notebook on Modal</a>. Fork it into your Modal account and run its one cell. A dashboard opens where you pick an agent or upload your own, choose a task set, add your API keys, and start. Nothing to install, and runs keep going after you close the notebook.</p>
 <p>The rest of this page uses the command line, which also runs on your own Linux machine.</p>
 <h3>What do I need?</h3>
 <p>Python 3.10 or newer, a <a href="#no-modal">Modal</a> account, and an API key for your model, or its weights on Hugging Face. Modal is a pay-per-second cloud service that runs the desktops and your agent. CUA-World and MyPCBench also need a Gemini API key for grading. Without Modal, you can <a href="#local">run on your own Linux machine</a>.</p>
@@ -146,7 +146,7 @@ cua-speedrun benchmark --dataset ./my-benchmark --agent claude</code></pre></div
 <section id="no-modal" data-reveal>
 <h2>Other ways to run</h2>
 <h3>What is Modal, and do I need it?</h3>
-<p><a href="https://modal.com">Modal</a> is a cloud service that runs code on computers you rent by the second. CUA-Speedrun uses it for the desktops and your agent. Create an account at modal.com, then run <code>cua-speedrun setup</code>. The only way to skip Modal is to run on your own Linux machine.</p>
+<p><a href="https://modal.com">Modal</a> is a cloud service that runs code on computers you rent by the second. cua-speedrun uses it for the desktops and your agent. Create an account at modal.com, then run <code>cua-speedrun setup</code>. The only way to skip Modal is to run on your own Linux machine.</p>
 <h3 id="local">Can I run on my own machine?</h3>
 <p>Yes, on Linux with KVM, which lets Linux run virtual machines at full speed. Check that <code>/dev/kvm</code> exists. Mac and Windows need Modal.</p>
 <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>cua-speedrun benchmark --agent claude --dataset osworld-50 \

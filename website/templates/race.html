@@ -1,7 +1,8 @@
 <figure class="race" aria-labelledby="race-title" data-race data-speed="{{ race.speed }}">
   <header class="race-head">
     <div>
-      <h2 id="race-title">Seven agents, one average {{ race.label }} task</h2>
+      {% set count = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"][race.runners | length] if race.runners | length <= 10 else race.runners | length %}
+      <h2 id="race-title">{{ count }} agents, one average {{ race.label }} task</h2>
       <p>Average time per task on the {{ race.tasks }}-task set, sped up <span data-race-speed-label>{{ race.speed }}×</span>.</p>
     </div>
     <p class="race-clock" aria-hidden="true" data-race-clock>0:00.00</p>

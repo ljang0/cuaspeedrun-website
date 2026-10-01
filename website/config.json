@@ -73,13 +73,28 @@
     "speed": 40,
     "runners": [
       {
-        "model": "Gemini 3 Flash Preview",
+        "model": "GPT-6 Astra",
+        "effort": "medium",
+        "variant": ""
+      },
+      {
+        "model": "Gemini 3.8 Flash",
         "effort": "low",
         "variant": ""
       },
       {
-        "model": "GPT-6 Astra",
+        "model": "Claude Opus 5",
+        "effort": "high",
+        "variant": ""
+      },
+      {
+        "model": "Gemini 3.8 Flash",
         "effort": "medium",
+        "variant": ""
+      },
+      {
+        "model": "Claude Sonnet 5",
+        "effort": "high",
         "variant": ""
       },
       {
@@ -89,22 +104,12 @@
       },
       {
         "model": "GPT-5.6 Luna",
-        "effort": "low",
+        "effort": "medium",
         "variant": "Direct API"
       },
       {
-        "model": "Gemini 3.8 Flash",
-        "effort": "low",
-        "variant": ""
-      },
-      {
-        "model": "Gemini 3 Flash Preview",
-        "effort": "medium",
-        "variant": ""
-      },
-      {
-        "model": "Claude Opus 5",
-        "effort": "low",
+        "model": "GPT-5.6 Sol",
+        "effort": "xhigh",
         "variant": ""
       }
     ]
