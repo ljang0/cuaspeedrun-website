@@ -2,12 +2,12 @@
 {% block main_class %}home-content{% endblock %}
 {% block content %}
 <header class="release-heading">
-  <h1>CUA-<strong>Speedrun</strong><span class="title-caret" aria-hidden="true"></span></h1>
+  <h1>cua-<strong>speedrun</strong><span class="title-caret" aria-hidden="true"></span></h1>
   <p class="release-purpose">How fast can a computer-use agent finish the job?</p>
-  <p class="release-description">Most benchmarks only record whether an agent succeeded. CUA-Speedrun is an evaluation system that also measures how long each task takes and what its model calls cost. Every leaderboard run uses the same pipeline and virtual machine setup on <a href="https://modal.com">Modal</a>, a pay-per-second cloud service, and one agent interface works across OSWorld, OSWorld 2.0, CUA-World, and MyPCBench. Smaller task sets, chosen so model rankings match the full benchmarks, keep repeated runs affordable.</p>
+  <p class="release-description">Most benchmarks only record whether an agent succeeded. cua-speedrun is an evaluation system that also measures how long each task takes and what its model calls cost. Every leaderboard run uses the same pipeline and virtual machine setup on <a href="https://modal.com">Modal</a>, a pay-per-second cloud service, and one agent interface works across OSWorld, OSWorld 2.0, CUA-World, and MyPCBench. Smaller task sets, chosen so model rankings match the full benchmarks, keep repeated runs affordable.</p>
   {% include "authors.html" %}
   <nav class="release-links" aria-label="Project resources">
-    <a class="console-button" href="{{ site.notebook_url }}" target="_blank" rel="noopener">Run on Modal</a>
+    <a class="console-button" href="{{ site.notebook_url }}" target="_blank" rel="noopener">Test your agents through Modal</a>
     <a href="/results.html">Explore leaderboard</a>
     {% if site.paper_url %}<a href="{{ site.paper_url }}">Paper on arXiv</a>{% else %}<span>Paper forthcoming</span>{% endif %}
     <a href="https://github.com/{{ repository }}">Code</a>
@@ -17,7 +17,7 @@
 {% include "race.html" %}
 <section class="infra" aria-labelledby="infra-heading" data-reveal>
   <h2 id="infra-heading">Same machine, same clock, any agent</h2>
-  <p class="infra-lede">CUA-Speedrun is the software that runs these comparisons. It holds the hardware, desktops, tasks, and timing fixed, so differences in time and cost come from the agent.</p>
+  <p class="infra-lede">cua-speedrun is the software that runs these comparisons. It holds the hardware, desktops, tasks, and timing fixed, so differences in time and cost come from the agent.</p>
   {% include "clock-line.html" %}
   <dl class="infra-list">
     <div><dt>Identical hardware for every run</dt><dd>Agents and desktops run in separate <a href="https://modal.com">Modal</a> sandboxes, built from the same pinned images for every run. Open-weight models are served with vLLM on fixed L40S GPUs. Results do not depend on whose computer launched the run.</dd></div>
@@ -60,7 +60,7 @@
   <section aria-labelledby="software-heading" data-reveal>
     <h2 id="software-heading">Evaluate your own agent</h2>
     <p>Start with an included agent or bring your own Python implementation. The toolkit prepares the desktops, runs benchmark tasks, and saves scores, timings, screenshots, and action logs. It supports OSWorld, OSWorld 2.0, CUA-World, and MyPCBench.</p>
-    <p>The quickest way is the <a href="{{ site.notebook_url }}" target="_blank" rel="noopener">CUA-Speedrun notebook on Modal</a>. Fork it into your Modal account and run its one cell, and a dashboard opens. To use the command line instead:</p>
+    <p>To start right away, <a href="{{ site.notebook_url }}" target="_blank" rel="noopener">open the notebook on Modal</a>, fork it, and run its one cell. Or use the command line:</p>
     <div class="code-block"><button type="button" data-copy>Copy</button><pre><code>pip install cua-speedrun
 cua-speedrun setup
 cua-speedrun benchmark</code></pre></div>

@@ -12,7 +12,7 @@
     <small class="cost-basis">per 1M tokens{% if result.cost_unit_prices.unit_note %} · {{ result.cost_unit_prices.unit_note }}{% endif %}</small>
   {% else %}<span class="missing-value">—</span>{% endif %}
 {% endmacro %}
-{% block title %}{{ 'Leaderboard · CUA-Speedrun' if public_layout else 'Results · cua-speedrun' }}{% endblock %}
+{% block title %}{{ 'Leaderboard · cua-speedrun' if public_layout else 'Results · cua-speedrun' }}{% endblock %}
 {% block content %}
 <header class="results-header">
   <div>
