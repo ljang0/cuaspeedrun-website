@@ -373,29 +373,32 @@
     return frontier;
   }
 
-  function showTooltip(event, entry) {
+  // Results drawn at nearly the same spot are listed together, so a point
+  // covered by another one is never hidden from the reader.
+  function showTooltip(event, entries) {
     const frame = chart.closest(".chart-frame");
     const frameBox = frame.getBoundingClientRect();
     const targetBox = event.target.getBoundingClientRect();
     const clientX = Number.isFinite(event.clientX) ? event.clientX : targetBox.right;
     const clientY = Number.isFinite(event.clientY) ? event.clientY : targetBox.bottom;
     chartTooltip.innerHTML = "";
-    const title = document.createElement("strong");
-    title.textContent = entry.model;
-    const details = document.createElement("span");
     const metric = curveMetrics[state.curve];
-    const xText = metric.formatValue(entry[metric.field]);
-    const effort = document.createElement("b");
-    effort.textContent = entry.effort;
-    details.append(
-      effort,
-      document.createElement("br"),
-      document.createTextNode(`${(entry.performance * 100).toFixed(2)}% performance`),
-      document.createElement("br"),
-      document.createTextNode(xText),
-    );
-    if (metric.field === "cost_usd") appendCostDetails(details, entry);
-    chartTooltip.append(title, details);
+    entries.forEach((entry) => {
+      const title = document.createElement("strong");
+      title.textContent = entry.model;
+      const details = document.createElement("span");
+      const effort = document.createElement("b");
+      effort.textContent = entry.effort;
+      details.append(
+        effort,
+        document.createElement("br"),
+        document.createTextNode(`${(entry.performance * 100).toFixed(2)}% performance`),
+        document.createElement("br"),
+        document.createTextNode(metric.formatValue(entry[metric.field])),
+      );
+      if (metric.field === "cost_usd") appendCostDetails(details, entry);
+      chartTooltip.append(title, details);
+    });
     chartTooltip.hidden = false;
     chartTooltip.style.left = `${Math.max(8, Math.min(clientX - frameBox.left + frame.scrollLeft + 12, frame.clientWidth - chartTooltip.offsetWidth - 8))}px`;
     chartTooltip.style.top = `${clientY - frameBox.top + 12}px`;
@@ -575,28 +578,35 @@
       frontier.map((entry) => `${entry[metric]}:${entry.performance}`)
     );
 
-    points.forEach((entry, index) => {
+    const onFrontier = (entry) => frontierCoordinates.has(`${entry[metric]}:${entry.performance}`);
+    const radius = logoPrefixes.length ? 9.5 : 5.5;
+    // Frontier results are drawn last so another result never covers them.
+    const drawOrder = points.map((entry, index) => ({ entry, index }))
+      .sort((a, b) => onFrontier(a.entry) - onFrontier(b.entry));
+    drawOrder.forEach(({ entry, index }) => {
       const px = x(entry[metric]);
       const py = y(entry.performance);
-      const onFrontier = frontierCoordinates.has(`${entry[metric]}:${entry.performance}`);
-      const offFrontier = onFrontier ? "" : " off-frontier";
-      if (onFrontier) {
+      const stacked = points.filter((other) => other !== entry
+        && Math.hypot(x(other[metric]) - px, y(other.performance) - py) < radius);
+      const tooltipEntries = [entry, ...stacked];
+      const offFrontier = onFrontier(entry) ? "" : " off-frontier";
+      if (onFrontier(entry)) {
         chart.append(svgElement("circle", {
           class: "pareto-ring", cx: px, cy: py, r: 10,
         }));
       }
       const point = svgElement("circle", {
         class: `result-point${logoPrefixes.length ? " has-logo" : ""}${offFrontier}`, cx: px, cy: py,
-        r: logoPrefixes.length ? 9.5 : 5.5, fill: colors.get(entry.model),
+        r: radius, fill: colors.get(entry.model),
         tabindex: 0, role: "img", "aria-label": `${entry.model}, ${entry.effort}`,
       });
       point.style.animationDelay = `${Math.min(index * 18, 260)}ms`;
-      point.addEventListener("pointerenter", (event) => showTooltip(event, entry));
-      point.addEventListener("pointermove", (event) => showTooltip(event, entry));
+      point.addEventListener("pointerenter", (event) => showTooltip(event, tooltipEntries));
+      point.addEventListener("pointermove", (event) => showTooltip(event, tooltipEntries));
       point.addEventListener("pointerleave", () => { chartTooltip.hidden = true; });
-      point.addEventListener("focus", (event) => showTooltip(event, entry));
+      point.addEventListener("focus", (event) => showTooltip(event, tooltipEntries));
       point.addEventListener("blur", () => { chartTooltip.hidden = true; });
-      if (root.dataset.defaultView) point.addEventListener("click", (event) => showTooltip(event, entry));
+      if (root.dataset.defaultView) point.addEventListener("click", (event) => showTooltip(event, tooltipEntries));
       if (!staticMode) {
         point.addEventListener("click", () => { window.location.href = `/entries/${entry.entry_id}`; });
       }
