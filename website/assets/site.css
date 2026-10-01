@@ -743,6 +743,11 @@ summary:focus-visible,
 .results-content .volume-frontier-key {
   border-color: var(--accent);
 }
+.results-content .frontier-toggle[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--surface-3);
+  color: var(--accent);
+}
 .results-content .switch input:checked + span {
   border-color: var(--accent);
   background: var(--accent-bg);
