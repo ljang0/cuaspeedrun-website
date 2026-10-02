@@ -163,54 +163,6 @@
     "svc_32_109178": {
       "archive_sha256": "4ca0550099cd1e27f54b595d845a2a4e69175d25308f74b216590183349503c6",
       "exclude_reason": "Rate-limited playground contrast; contributor-tier xhigh run svc_69_41f88a retained."
-    },
-    "m-8bf370e4104848c5": {
-      "archive_sha256": "083c5d7e1ba8e1a671cbebbaf65c8b55c7af7a5e2bd4265db82073c3edc39a4b",
-      "variant": "Claude Code"
-    },
-    "m-15e01b48555e4252": {
-      "archive_sha256": "8bb11ab74754cbf824dd53ed82ef9e1d7ec5a0780664cbb535582d5579b8d07e",
-      "variant": "Claude Code"
-    },
-    "m-25b0db66345a4718": {
-      "archive_sha256": "49c36a43c1f1bc01640618815892bfd79cc5e8bf80bc4baf6353b97a77a506a7",
-      "variant": "Claude Code"
-    },
-    "m-997eda6170804e08": {
-      "archive_sha256": "07074574f2362c79226da260b0e09bedf813c8147fadf9944f2a3937af421ba3",
-      "variant": "Claude Code"
-    },
-    "m-18a600f39e5d41d4 + m-1749f2b0cee242a3": {
-      "archive_sha256": "0f3635bb29943014bdb3633f996c88d358204e28c1e57217456c54d4cec74911 | 17c4d5d4b8caef682a595012183485b7f81e16cdbfc96526178aa25c9df8c69f",
-      "variant": "Claude Code",
-      "replaces": [
-        "m-18a600f39e5d41d4",
-        "m-1749f2b0cee242a3"
-      ]
-    },
-    "m-f5587d5a819442ea + m-64d3152265fd428b": {
-      "archive_sha256": "53618358dad766b5530d3959829cefba1ac7fb85fbc0f37ea19375d78304d60e | 9927bff382d36925e723b9da0a465bdf3f5984507fc5c61f0263ff2c8459e909",
-      "variant": "Claude Code",
-      "replaces": [
-        "m-f5587d5a819442ea",
-        "m-64d3152265fd428b"
-      ]
-    },
-    "m-e1b88cf39e414aa6 + m-3b110735886040cb": {
-      "archive_sha256": "a582af0dc6d751732a94364096f44bffcb496bd22b8269487ca89c5b4e12e7fc | 6edfe586edca5da93e9847629545851938fcc4c884208494dc13cf988e3f2d16",
-      "variant": "Claude Code",
-      "replaces": [
-        "m-e1b88cf39e414aa6",
-        "m-3b110735886040cb"
-      ]
-    },
-    "m-26691f53039e40f9 + m-e2948768a5864638": {
-      "archive_sha256": "380fd5b23762faba10fb80e889e0dd78a147d253565eb80d51b99858b46d7b03 | 5293c3e1fde90d29a5a6fd914e2ee4bd9813f54a897a9bf2f702b4484b44b0af",
-      "variant": "Claude Code",
-      "replaces": [
-        "m-26691f53039e40f9",
-        "m-e2948768a5864638"
-      ]
     }
   }
 }
