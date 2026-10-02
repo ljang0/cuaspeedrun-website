@@ -60,7 +60,7 @@ def test_public_results_only_include_paper_subsets(public_site, tmp_path):
     config = json.loads((ROOT / 'website/config.json').read_text())
     subsets = config['paper_subsets']
     assert set(catalog['datasets']) == set(subsets)
-    assert catalog['included_rows'] == 95
+    assert catalog['included_rows'] == 87
     assert catalog['publication_scope']['omitted_reviewed_rows'] == 11
     # Every measurement and unrelated metadata value survives publication;
     # only references to the trajectory dataset are omitted.
@@ -119,8 +119,6 @@ def test_homepage_race_replays_published_records(public_site):
     home = BeautifulSoup((public_site / 'index.html').read_text(), 'html.parser')
     lanes = home.select('[data-race] .race-lane')
     assert len(lanes) == len(race['runners'])
-    assert {'model': 'Claude Opus 5.5', 'effort': 'xhigh', 'variant': 'Claude Code'} in race['runners']
-    assert all(runner['model'] != 'Claude Opus 5' for runner in race['runners'])
     for lane, want in zip(lanes, race['runners'], strict=True):
         record = next(r for r in records if all(
             (r[k] or '') == want[k] for k in ('model', 'effort', 'variant')))

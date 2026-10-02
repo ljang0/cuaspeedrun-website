@@ -34,9 +34,9 @@ def test_catalog_has_one_complete_view_per_dataset(catalog_site):
         "osworld-unanimous-295", "osworld-pareto-48", "cua-world-long-k26",
         "mypcbench-energy38",
     }
-    assert catalog["source_rows"] == 165
-    assert catalog["included_rows"] == 106
-    assert sum(catalog["excluded"].values()) == 59
+    assert catalog["source_rows"] == 149
+    assert catalog["included_rows"] == 98
+    assert sum(catalog["excluded"].values()) == 51
     assert '[data-results-dashboard][data-static="true"] .results-table tbody tr { animation: none; }' in (output / "static/frontier.css").read_text()
     assert '[data-results-dashboard][data-static="true"] .results-volume .volume-point { animation: none; }' in (output / "static/frontier.css").read_text()
     source = REPOSITORY_ROOT / "data/all-hf-model-trajectory-metrics-2026-09-13.csv"
@@ -102,14 +102,14 @@ def test_catalog_has_one_complete_view_per_dataset(catalog_site):
                        if row["split_dset_name"] == name and row["row_type"] in {"evaluation", "published_subset"}}
         assert source_runs == ({source for r in records for source in r["source_run_ids"]}
                                | {r["run_id"] for r in dataset["excluded_evaluations"]})
-    assert len(seen) == 106
+    assert len(seen) == 98
 
 
 def test_all_datasets_include_reviewed_results_without_configuration_partitions(catalog_site):
     _, catalog = catalog_site
     datasets = catalog["datasets"]
     assert {name: len(dataset["records"]) for name, dataset in datasets.items()} == {
-        "osworld-energy50-representative": 66, "osworld2-k52": 21,
+        "osworld-energy50-representative": 58, "osworld2-k52": 21,
         "osworld": 3, "osworld-unanimous-295": 6, "cua-world-long-k26": 4,
         "osworld-pareto-48": 2,
         "mypcbench-energy38": 4,
@@ -224,10 +224,10 @@ def test_costs_use_source_evidence_and_label_every_estimate(catalog_site):
     output, catalog = catalog_site
     records = [r for d in catalog["datasets"].values() for r in d["records"]]
     assert Counter(r["cost_kind"] for r in records) == {
-        "recorded": 10, "source_estimate": 60, "reference_estimate": 21,
+        "recorded": 10, "source_estimate": 52, "reference_estimate": 21,
         "standard_rate_proxy": 7, "coverage_estimate": 2, "unavailable": 6,
     }
-    assert sum(r["cost_usd"] is not None for r in records) == 100
+    assert sum(r["cost_usd"] is not None for r in records) == 92
     with (output / "trajectory-metrics.csv").open(newline="") as handle:
         originals = {i: row for i, row in enumerate(csv.DictReader(handle), start=2)}
     registry = json.loads((output / "results-pricing.json").read_text())
@@ -278,7 +278,7 @@ def test_costs_use_source_evidence_and_label_every_estimate(catalog_site):
                 assert not cell.get_text().strip().startswith("$")
     with (output / "display-costs.csv").open(newline="") as handle:
         exported = {(r["dataset"], r["run_id"]): r for r in csv.DictReader(handle)}
-    assert len(exported) == 106
+    assert len(exported) == 98
     for record in records:
         for key, value in exported[(record["source_metadata"]["split_dset_name"], record["run_id"])].items():
             if key != "dataset":
@@ -291,10 +291,8 @@ def test_all_model_metadata_is_sourced_and_visible(catalog_site):
     assert (output / "model-metadata.json").read_bytes() == metadata_path.read_bytes()
     registry = json.loads(metadata_path.read_text())
     expected = {
-        "Claude Opus 5.5": ("closed", "2026-09-22"),
         "Claude Opus 5": ("closed", "2026-07-24"),
         "Claude Sonnet 5": ("closed", "2026-06-30"),
-        "Claude Sonnet 5.5": ("closed", "2026-09-28"),
         "GLM-5V Turbo": ("closed", "2026-04-01"),
         "GPT-5.6 Luna": ("closed", "2026-07-09"),
         "GPT-5.6 Sol": ("closed", "2026-07-09"),
@@ -430,7 +428,7 @@ def test_reviewed_variants_and_exclusions_preserve_source_identity(catalog_site)
         assert record["series"] == f"{record['model']} · {label}"
         row = soup.select_one(f'[data-entry-id="{record["entry_id"]}"]')
         assert row.select_one(".model-cell a").get_text() == record["series"]
-    assert len({(r["series"], r["effort"]) for r in energy["records"]}) == 66
+    assert len({(r["series"], r["effort"]) for r in energy["records"]}) == 58
     decisions = json.loads((REPOSITORY_ROOT / "data/results-curation.json").read_text())
     with (REPOSITORY_ROOT / "data/all-hf-model-trajectory-metrics-2026-09-13.csv").open(newline="") as handle:
         originals = {r["run_id"]: r for r in csv.DictReader(handle)
@@ -466,7 +464,7 @@ def test_recovery_replaces_three_tasks_in_one_combined_result(catalog_site):
     assert [a["href"] for a in row.select(".row-provenance a")] == record["source_archive_urls"]
     for source in record["source_run_ids"]:
         assert not soup.select(f'[data-excluded-run="{source}"]')
-    assert catalog["excluded"]["combined source"] == 10
+    assert catalog["excluded"]["combined source"] == 2
 
 
 def test_jy_sol_luna_low_append_preserves_history_and_separates_retry(catalog_site):
@@ -478,7 +476,7 @@ def test_jy_sol_luna_low_append_preserves_history_and_separates_retry(catalog_si
     with source.open(newline="") as handle:
         reader = csv.DictReader(handle)
         rows = list(reader)
-        assert len(reader.fieldnames) == 218 and len(rows) == 165
+        assert len(reader.fieldnames) == 218 and len(rows) == 149
     new = rows[124:127]
     assert Counter(r["row_type"] for r in new) == {"evaluation": 2, "retained_extra_attempts": 1}
     expected = {
@@ -742,19 +740,6 @@ def test_reviewed_subsets_require_pinned_identity_and_complete_coverage(field, v
         reviewed_subsets(rows, decisions, component_runs=components)
 
 
-def test_retry_components_are_not_full_dataset_anchors():
-    sys.path.insert(0, str(REPOSITORY_ROOT / "scripts"))
-    from results_catalog import combined_sources, reviewed_subsets
-    with (REPOSITORY_ROOT / "data/all-hf-model-trajectory-metrics-2026-09-13.csv").open(newline="") as handle:
-        rows = list(csv.DictReader(handle))
-    curation = json.loads((REPOSITORY_ROOT / "data/results-curation.json").read_text())
-    components = combined_sources(rows, curation["runs"])
-    assert len(reviewed_subsets(rows, curation["subsets"], component_runs=components)) == 4
-    # A partial task set cannot be an independent full-dataset reference.
-    del components["m-1749f2b0cee242a3"]
-    with pytest.raises(ValueError, match="invalid reviewed subset"):
-        reviewed_subsets(rows, curation["subsets"], component_runs=components)
-
 
 def test_single_action_result_has_recomputable_public_task_evidence(catalog_site):
     output, catalog = catalog_site
@@ -787,124 +772,6 @@ def test_single_action_result_has_recomputable_public_task_evidence(catalog_site
     assert row["archive_sha256"] == row["source_hf_repo"] == ""
 
 
-def test_sonnet55_sweep_matches_task_evidence(catalog_site):
-    output, catalog = catalog_site
-    source = (output / "trajectory-metrics.csv").read_bytes()
-    assert hashlib.sha256(source[:1106674]).hexdigest() == "3647529945b8f6ec5575deae3e1dfc230128bc2a3a3b2ef81d62fcc93b554041"
-    evidence = json.loads((output / "results-evidence/sonnet55-osworld50.json").read_text())
-    expected = {
-        "low": (85.61904360085809, 141.78581320092, 0.1460096),
-        "medium": (89.61904360085809, 130.6193868735, 0.144660424),
-        "high": (93.61904360085809, 146.03512035474, 0.175385404),
-        "xhigh": (95.61904360085809, 164.31653733750002, 0.24230478),
-    }
-    records = catalog["datasets"]["osworld-energy50-representative"]["records"]
-    sonnet = {r["run_id"]: r for r in records if r["model"] == "Claude Sonnet 5.5"}
-    assert len(sonnet) == len(evidence["runs"]) == 4
-    with (output / "trajectory-metrics.csv").open(newline="") as handle:
-        rows = {r["run_id"]: r for r in csv.DictReader(handle)}
-    anchor = set(json.loads(rows["svc_121_b4bca3"]["task_ids"]))
-    price = evidence["usd_per_million_tokens"]
-    for run in evidence["runs"]:
-        row, record = rows[run["run_id"]], sonnet[run["run_id"]]
-        score, seconds, cost = expected[run["effort"]]
-        assert record["variant"] == "Claude Code"
-        assert record["performance"] == pytest.approx(score / 100)
-        assert record["time_per_task_sec"] == pytest.approx(seconds)
-        assert record["cost_usd"] == pytest.approx(cost)
-        assert record["source_metadata"]["backend"] == "modal-native"
-        assert record["release_date"] == "2026-09-28"
-        assert row["archive_sha256"] == run["archive_sha256"]
-        assert run["source_revision"] in row["source_archive_url"]
-        tasks = run["tasks"]
-        assert len(tasks) == 50 and {t["task_id"] for t in tasks} == anchor
-        for metric, key in {
-            "score_mean_pct": "score", "time_per_task_sec": "task_time_sec",
-            "cost_per_task_usd": "cost_usd", "generated_tokens_per_task": "generated_tokens",
-            "input_tokens_per_task": "input_tokens", "avg_steps_per_task": "num_steps",
-            "env_action_items_per_task": "environment_action_items",
-        }.items():
-            assert float(row[metric]) == pytest.approx(sum(t[key] for t in tasks) / 50)
-        for task in tasks:
-            expected_cost = (
-                task["uncached_input_tokens"] * price["input"]
-                + task["cached_input_tokens"] * price["cached_input"]
-                + task["cache_write_5m_input_tokens"] * price["cache_write_5m"]
-                + task["cache_write_1h_input_tokens"] * price["cache_write_1h"]
-                + task["generated_tokens"] * price["output"]
-            ) / 1e6
-            assert task["cost_usd"] == pytest.approx(expected_cost)
-            assert task["agent_time_sec"] + task["env_time_sec"] == pytest.approx(task["task_time_sec"])
-    assert any(r["model"] == "Claude Sonnet 5" for r in records)
-
-
-def test_opus55_sweep_preserves_original_tasks_and_replaces_quota_attempts(catalog_site):
-    output, catalog = catalog_site
-    source = output / "trajectory-metrics.csv"
-    assert hashlib.sha256(source.read_bytes()[:1152871]).hexdigest() == "cbe7dfb23349e3b5eb96c524797c4bcc8461d12932b0d8fc10a7f23998bf9eff"
-    with source.open(newline="") as handle:
-        rows = {r["run_id"]: r for r in csv.DictReader(handle)}
-    evidence = json.loads((output / "results-evidence/opus55-osworld50.json").read_text())
-    expected = {
-        "low": (87.61904360085809, 106.35738228296, 0.140486348, 15),
-        "medium": (93.61904360085809, 124.8975667068, 0.174482404, 22),
-        "high": (93.61904360085809, 120.53232095984, 0.198285756, 18),
-        "xhigh": (97.61904360085809, 152.40723347836, 0.288456996, 23),
-    }
-    energy = catalog["datasets"]["osworld-energy50-representative"]
-    opus = {r["run_id"]: r for r in energy["records"] if r["model"] == "Claude Opus 5.5"}
-    assert len(opus) == len(evidence["runs"]) == 4
-    anchor = set(json.loads(rows["svc_121_b4bca3"]["task_ids"]))
-    price = evidence["usd_per_million_tokens"]
-    for run in evidence["runs"]:
-        score, seconds, cost, replaced_count = expected[run["effort"]]
-        row, record = rows[run["run_id"]], opus[run["run_id"]]
-        original, retry = run["sources"]
-        key = lambda t: f"{t['task_id']}/seed_{t['seed']}"
-        originals = {key(t): t for t in original["tasks"]}
-        replacements = {key(t): t for t in retry["tasks"]}
-        tasks = {key(t): t for t in run["tasks"]}
-        assert len(originals) == len(tasks) == len({t["task_id"] for t in tasks.values()}) == 50
-        assert {t["task_id"] for t in tasks.values()} == anchor
-        assert len(replacements) == len(run["replaced_task_keys"]) == replaced_count
-        assert set(replacements) == set(run["replaced_task_keys"])
-        assert set(tasks) == set(originals)
-        assert record["source_run_ids"] == [original["hosted_run_id"], retry["hosted_run_id"]]
-        assert record["row_type"] == "published_stitch" and record["variant"] == "Claude Code"
-        assert row["archive_sha256"] == " | ".join(s["archive_sha256"] for s in run["sources"])
-        assert record["source_metadata"]["backend"] == "modal-native"
-        assert record["release_date"] == "2026-09-22"
-        assert record["performance"] == pytest.approx(score / 100)
-        assert record["time_per_task_sec"] == pytest.approx(seconds)
-        assert record["cost_usd"] == pytest.approx(cost)
-        assert row["billing_error_trajectories"] == "0"
-        assert rows[original["hosted_run_id"]]["billing_error_trajectories"] == str(replaced_count)
-        assert rows[retry["hosted_run_id"]]["expected_contract_tasks"] == str(replaced_count)
-        assert row["selected_task_seed_set_sha256"] == rows[original["hosted_run_id"]]["selected_task_seed_set_sha256"]
-        for metric, field in {
-            "score_mean_pct": "score", "time_per_task_sec": "task_time_sec",
-            "cost_per_task_usd": "cost_usd", "generated_tokens_per_task": "generated_tokens",
-            "input_tokens_per_task": "input_tokens", "avg_steps_per_task": "num_steps",
-            "env_action_items_per_task": "environment_action_items",
-        }.items():
-            assert float(row[metric]) == pytest.approx(sum(t[field] for t in tasks.values()) / 50)
-        for task_key, task in tasks.items():
-            selected = replacements[task_key] if task_key in replacements else originals[task_key]
-            assert {k: task[k] for k in selected} == selected
-            source_id = retry["hosted_run_id"] if task_key in replacements else original["hosted_run_id"]
-            assert task["source_hosted_run_id"] == source_id
-            assert all(len(digest) == 64 for digest in task["source_sha256"].values())
-            expected_cost = (
-                task["uncached_input_tokens"] * price["input"]
-                + task["cached_input_tokens"] * price["cached_input"]
-                + task["cache_write_5m_input_tokens"] * price["cache_write_5m"]
-                + task["cache_write_1h_input_tokens"] * price["cache_write_1h"]
-                + task["generated_tokens"] * price["output"]
-            ) / 1e6
-            assert task["cost_usd"] == pytest.approx(expected_cost)
-            assert task["agent_time_sec"] + task["env_time_sec"] == pytest.approx(task["task_time_sec"])
-    assert any(r["model"] == "Claude Opus 5" for r in energy["records"])
-    assert not any(r["model"] == "Claude Sonnet 5.5" for r in catalog["datasets"]["osworld2-k52"]["records"])
 
 
 def test_catalog_build_is_deterministic(catalog_site, tmp_path):
@@ -923,12 +790,12 @@ def test_catalog_build_is_deterministic(catalog_site, tmp_path):
 def test_astra_k26_medium_high_preserve_history_and_separate_attempts(catalog_site):
     output, catalog = catalog_site
     source = output / "trajectory-metrics.csv"
-    assert hashlib.sha256(source.read_bytes()[:1135108]).hexdigest() == "d4e8c957ea940eea4be708512974cc79c0238f2598f3d219daa58f336a6345ef"
+    assert hashlib.sha256(source.read_bytes()[:1106674]).hexdigest() == "3647529945b8f6ec5575deae3e1dfc230128bc2a3a3b2ef81d62fcc93b554041"
     with source.open(newline="") as handle:
         reader = csv.DictReader(handle)
         rows = list(reader)
-        assert len(reader.fieldnames) == 218 and len(rows) == 165
-    new = rows[150:153]
+        assert len(reader.fieldnames) == 218 and len(rows) == 149
+    new = rows[146:149]
     assert Counter(r["row_type"] for r in new) == {"evaluation": 2, "retained_extra_attempts": 1}
     dataset = catalog["datasets"]["cua-world-long-k26"]
     assert len(dataset["records"]) == 4

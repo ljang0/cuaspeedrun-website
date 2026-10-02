@@ -2,28 +2,6 @@
   "verified_on": "2026-09-16",
   "unit": "USD per million tokens",
   "models": {
-    "Claude Opus 5.5": {
-      "model_id": "claude-opus-5-5",
-      "input": 4,
-      "cached_input": 0.2,
-      "cache_write_5m": 5,
-      "cache_write_1h": 8,
-      "output": 20,
-      "estimate_from_usage": false,
-      "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
-      "note": "Standard API pricing verified October 1, 2026; per-task costs use the logged cache-read and cache-write counts."
-    },
-    "Claude Sonnet 5.5": {
-      "model_id": "claude-sonnet-5-5",
-      "input": 2,
-      "cached_input": 0.2,
-      "cache_write_5m": 2.5,
-      "cache_write_1h": 4,
-      "output": 10,
-      "estimate_from_usage": false,
-      "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
-      "note": "Standard API pricing verified September 30, 2026; per-task costs use the logged cache-read and cache-write counts."
-    },
     "Meta Muse Spark 1.1": {
       "model_id": "meta/muse-spark-1.1",
       "input": 1.25,

@@ -85,9 +85,9 @@
         "variant": ""
       },
       {
-        "model": "Claude Opus 5.5",
-        "effort": "xhigh",
-        "variant": "Claude Code"
+        "model": "Claude Opus 5",
+        "effort": "high",
+        "variant": ""
       },
       {
         "model": "Gemini 3.8 Flash",
