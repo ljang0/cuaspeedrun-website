@@ -20,7 +20,7 @@ import build_results_dashboard as renderer
 from build_results_dashboard import build_site, REPOSITORY
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_INPUT = ROOT / "data/all-hf-model-trajectory-metrics-2026-09-13.csv"
+DEFAULT_INPUT = ROOT / "data/public-catalog.json"
 NAV = [("home", "Overview", "index.html"), ("paper", "Paper", "paper.html"),
        ("results", "Leaderboard", "results.html"), ("docs", "How to use", "docs.html"),
        ("run", "Run", "submit")]

@@ -31,8 +31,23 @@ Open <http://localhost:8787>. Rebuild after every edit; the preview serves
 | Leaderboard behavior (sorting, plots, 3D) | `results/static/leaderboard.js`; public-only extras in `website/assets/leaderboard-plus.js` |
 | Colors, fonts, layout, animation | `website/assets/site.css` |
 | Authors, code repository link, task sets, race lineup, developer logos | `website/config.json` |
-| Results data | `data/all-hf-model-trajectory-metrics-2026-09-13.csv` with `data/results-curation.json`, `results-pricing.json`, `model-metadata.json` |
+| Results data | `data/public-catalog.json`, exported from the private results sheet (see below), with `data/results-pricing.json` and `model-metadata.json` |
 | Paper figures and provenance | `website/assets/figures/` |
+
+## Results data
+
+The full results sheet, its curation decisions and per-task evidence are
+private and live in the private code repository. This repository holds only
+`data/public-catalog.json`: the published datasets and the fields their pages
+display. After changing the private sheet, export it again:
+
+```sh
+python3 scripts/export_public_catalog.py \
+    --sheet PRIVATE/all-hf-model-trajectory-metrics-2026-09-13.csv \
+    --curation PRIVATE/results-curation.json
+```
+
+The site never publishes a CSV or per-task evidence file.
 
 `website/config.json` sets `repository`, the GitHub repository behind every
 "Code" link. Point it at the public code repository once it exists.

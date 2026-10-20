@@ -90,8 +90,6 @@
   <details class="snapshot-details">
     <summary>Data sources &amp; metric definitions</summary>
     <p>Latest source inventory: {{ static_catalog.inventory_utc }}.
-      <a href="trajectory-metrics.csv" download>Download all {{ static_catalog.source_rows }} source rows</a> ·
-      <a href="display-costs.csv" download>Download displayed costs &amp; assumptions</a> ·
       <a href="results-catalog.json">View dataset catalog</a></p>
     <p>Times use the task clock, excluding setup and final verification. Costs are recorded usage or labeled estimates, not invoices.
       API estimates identify their pricing and cache assumptions in each result's source details. Where shown, the cache range runs from all input cached to none.
@@ -99,7 +97,7 @@
       <a href="results-pricing.json">Additional pricing sources &amp; assumptions</a> are preserved alongside the original CSV references.
       Runs without token usage show unit prices but stay out of per-task cost plots.
       The full-OSWorld human baseline is not transferred to these dataset views.</p>
-    <p>{{ selected_dataset.supporting_rows }} retry-attempt or overlapping summary rows for this dataset remain in the CSV, not counted as independent evaluations. Excluded evaluations are listed below the results.</p>
+    {% if selected_dataset.supporting_rows %}<p>{{ selected_dataset.supporting_rows }} retry-attempt or overlapping summary rows for this dataset remain in the CSV, not counted as independent evaluations. Excluded evaluations are listed below the results.</p>{% endif %}
     <p>Model labels use <a href="model-metadata.json">publisher-sourced model metadata and explicit aliases</a>, verified {{ static_catalog.model_metadata_verified_on }}.
       Open means downloadable weights, not necessarily an open-source license. Release dates mean first public availability of the identified model version.
       Unversioned archives with an unverified release date are labeled explicitly and omitted only from the release-date curve.</p>

@@ -75,15 +75,6 @@ def without_trajectory_links(value):
     return value
 
 
-def write_public_metrics(input_path: Path, output_path: Path) -> None:
-    with input_path.open(newline='', encoding='utf-8') as source, \
-            output_path.open('w', newline='', encoding='utf-8') as output:
-        reader = csv.DictReader(source)
-        writer = csv.DictWriter(output, fieldnames=reader.fieldnames)
-        writer.writeheader()
-        writer.writerows(without_trajectory_links(row) for row in reader)
-
-
 def _number(value: str, *, field: str, row_number: int) -> float:
     try:
         return float(value)
@@ -170,8 +161,12 @@ def build_site(input_path: Path, output_dir: Path, *, public_context: dict | Non
     """Render a deterministic site directory ready for static hosting."""
     repository_root = Path(__file__).resolve().parents[1]
     service_root = repository_root / "results"
-    with input_path.open(newline="", encoding="utf-8") as handle:
-        is_catalog = "row_type" in next(csv.reader(handle), [])
+    # The public build reads the exported catalog (JSON). The private results
+    # sheet (CSV) is accepted only for validation builds next to its curation.
+    is_catalog = input_path.suffix == ".json"
+    if not is_catalog:
+        with input_path.open(newline="", encoding="utf-8") as handle:
+            is_catalog = "row_type" in next(csv.reader(handle), [])
     if is_catalog:
         return build_catalog_site(input_path, output_dir, service_root,
                                   public_context=public_context, dataset_scope=dataset_scope,
@@ -225,8 +220,10 @@ def build_catalog_site(input_path: Path, output_dir: Path, service_root: Path,
                        default_variants: tuple = (),
                        ablation_variants: tuple = ()) -> Path:
     repository_root = service_root.parent
-    catalog = load_catalog(input_path, METADATA_PATH,
-                           repository_root / "data/results-curation.json")
+    if input_path.suffix == ".json":
+        catalog = json.loads(input_path.read_text(encoding="utf-8"))
+    else:
+        catalog = load_catalog(input_path, METADATA_PATH, input_path.parent / "results-curation.json")
     datasets = catalog["datasets"]
     if dataset_scope is not None:
         if not dataset_scope or set(dataset_scope) - datasets.keys():
@@ -253,7 +250,7 @@ def build_catalog_site(input_path: Path, output_dir: Path, service_root: Path,
     # A variant that names the default setting adds no information, so the
     # published record uses the plain model name.
     for dataset in datasets.values():
-        for record in (*dataset["records"], *dataset["excluded_evaluations"]):
+        for record in (*dataset["records"], *dataset.get("excluded_evaluations", [])):
             if record["variant"] in default_variants:
                 record["variant"] = ""
                 record["series"] = record["model"]
@@ -290,31 +287,8 @@ def build_catalog_site(input_path: Path, output_dir: Path, service_root: Path,
     asset_output.mkdir(exist_ok=True)
     for asset_name in STATIC_ASSETS:
         shutil.copy2(service_root / "static" / asset_name, asset_output / asset_name)
-    if public_context:
-        write_public_metrics(input_path, output_dir / "trajectory-metrics.csv")
-    else:
-        shutil.copy2(input_path, output_dir / "trajectory-metrics.csv")
     shutil.copy2(METADATA_PATH, output_dir / "model-metadata.json")
     shutil.copy2(PRICING_PATH, output_dir / "results-pricing.json")
-    evidence_root = repository_root / "data" / "results-evidence"
-    if evidence_root.is_dir():
-        shutil.copytree(evidence_root, output_dir / "results-evidence", dirs_exist_ok=True)
-        if public_context:
-            for evidence in (output_dir / "results-evidence").glob("*.json"):
-                evidence.write_text(json.dumps(without_trajectory_links(
-                    json.loads(evidence.read_text())), indent=2) + "\n")
-    cost_fields = (
-        "run_id", "model", "effort", "source_cost_usd", "cost_usd", "cost_kind",
-        "cost_label", "cost_note", "cost_range_min_usd", "cost_range_max_usd",
-        "cost_coverage_tasks", "cost_total_tasks", "cost_source", "cost_source_url",
-        "cost_pricing_model", "source_archive_url",
-    )
-    with (output_dir / "display-costs.csv").open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=("dataset", *cost_fields))
-        writer.writeheader()
-        for name, dataset in datasets.items():
-            for record in dataset["records"]:
-                writer.writerow({"dataset": name, **{key: record[key] for key in cost_fields}})
     (output_dir / "results-catalog.json").write_text(
         json.dumps(catalog, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
         encoding="utf-8",

@@ -20,6 +20,15 @@
       "access_source": "https://www.anthropic.com/news/claude-opus-5",
       "notes": "Proprietary Claude model, available through Anthropic and hosted partners."
     },
+    "Claude Opus 5.5": {
+      "verified_on": "2026-10-20",
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-09-22",
+      "release_source": "https://www.anthropic.com/claude-opus-5-5",
+      "access_source": "https://www.anthropic.com/claude-opus-5-5",
+      "notes": "Proprietary Claude model, available through Anthropic and hosted partners."
+    },
     "Claude Sonnet 5": {
       "aliases": [],
       "model_type": "closed",
