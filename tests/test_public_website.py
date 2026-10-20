@@ -1,7 +1,6 @@
 """Publication and upload checks using the real catalog and shipped scripts."""
 from __future__ import annotations
 
-import csv
 import hashlib
 import json
 import subprocess
@@ -13,6 +12,8 @@ from bs4 import BeautifulSoup
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'scripts'))
+from export_public_catalog import RECORD_FIELDS  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -48,67 +49,51 @@ def test_publication_preserves_catalog_and_links(public_site):
     assert not (public_site / 'paper.pdf').exists()
 
 
-def test_public_results_only_include_paper_subsets(public_site, tmp_path):
-    # Build the unchanged archive exporter first, then publish into the same
-    # directory to check that old dataset URLs cannot leak into a later release.
-    subprocess.run([sys.executable, str(ROOT / 'scripts/build_results_dashboard.py'),
-                    '--output', str(tmp_path)], cwd=ROOT, check=True)
-    archive = json.loads((tmp_path / 'results-catalog.json').read_text())
-    subprocess.run([sys.executable, str(ROOT / 'scripts/build_public_site.py'),
-                    '--output', str(tmp_path)], cwd=ROOT, check=True)
-    catalog = json.loads((tmp_path / 'results-catalog.json').read_text())
+def test_public_results_only_include_paper_subsets(public_site):
+    # The public repository and site carry only the exported display catalog,
+    # never the private results sheet, its curation, or per-task evidence.
+    assert not list((ROOT / 'data').rglob('*.csv'))
+    assert not (ROOT / 'data/results-curation.json').exists()
+    assert not (ROOT / 'data/results-evidence').exists()
+    assert not list(public_site.rglob('*.csv'))
+    assert not (public_site / 'results-evidence').exists()
+    exported = json.loads((ROOT / 'data/public-catalog.json').read_text())
+    catalog = json.loads((public_site / 'results-catalog.json').read_text())
     config = json.loads((ROOT / 'website/config.json').read_text())
     subsets = config['paper_subsets']
+    assert list(exported['datasets']) == list(subsets)
     assert set(catalog['datasets']) == set(subsets)
-    assert catalog['included_rows'] == 87
-    assert catalog['publication_scope']['omitted_reviewed_rows'] == 11
-    # Every measurement and unrelated metadata value survives publication;
-    # only references to the trajectory dataset are omitted.
-    with (ROOT / 'data/all-hf-model-trajectory-metrics-2026-09-13.csv').open() as handle:
-        source_rows = list(csv.DictReader(handle))
-    with (tmp_path / 'trajectory-metrics.csv').open() as handle:
-        public_rows = list(csv.DictReader(handle))
-    assert len(public_rows) == len(source_rows)
-    for source, public in zip(source_rows, public_rows, strict=True):
-        assert public.keys() == source.keys()
-        for key, value in source.items():
-            if 'anonymousmypcbench/cua-speedrun-trajectories' not in value:
-                assert public[key] == value, key
-    for filename in tmp_path.rglob('*'):
-        if filename.suffix in {'.html', '.json', '.csv', '.js', '.xml'}:
-            assert 'anonymousmypcbench/cua-speedrun-trajectories' not in filename.read_text(), filename
-    home = BeautifulSoup((tmp_path / 'index.html').read_text(), 'html.parser')
+    assert catalog['included_rows'] == exported['included_rows'] == sum(
+        len(dataset['records']) for dataset in exported['datasets'].values())
+    allowed = set(RECORD_FIELDS)
+    for dataset in exported['datasets'].values():
+        assert set(dataset) == {'name', 'label', 'href', 'task_counts', 'records'}
+        for record in dataset['records']:
+            assert set(record) <= allowed
+    for filename in [ROOT / 'data/public-catalog.json', *public_site.rglob('*')]:
+        if filename.suffix in {'.html', '.json', '.js', '.xml'}:
+            text = filename.read_text()
+            assert 'anonymousmypcbench/cua-speedrun-trajectories' not in text, filename
+            assert '.csv' not in text, filename
+    home = BeautifulSoup((public_site / 'index.html').read_text(), 'html.parser')
     overview = json.loads(home.select_one('[data-overview-data]').string)
     assert [d['name'] for d in overview] == list(subsets)
-    for name, dataset in archive['datasets'].items():
-        if name not in subsets:
-            assert not (tmp_path / dataset['href']).exists()
-            assert dataset['href'] not in (tmp_path / 'sitemap.xml').read_text()
-            continue
-        # Default-setting labels and trajectory source links are omitted;
-        # all other catalog fields, including every plotted value, are exact.
+    providers = {p['prefix']: p['slug'] for p in config['providers']}
+    for name, dataset in exported['datasets'].items():
+        # The build only clears default-setting labels and marks ablations.
         for record in dataset['records']:
             if record['variant'] in config['default_variants']:
                 record['variant'], record['series'] = '', record['model']
             record['ablation'] = record['variant'] in config['ablation_variants']
-        link_fields = {'source_archive_url', 'source_archive_urls',
-                       'cost_source_url', 'cost_source'}
-        for public, source in zip(catalog['datasets'][name]['records'],
-                                  dataset['records'], strict=True):
-            assert public.keys() == source.keys()
-            for key, value in source.items():
-                if key not in link_fields or 'cua-speedrun-trajectories' not in str(value):
-                    assert public[key] == value, key
+        assert catalog['datasets'][name]['records'] == dataset['records']
         interactive = next(d for d in overview if d['name'] == name)
         assert interactive['selected_tasks'] == dataset['task_counts'][0]
-        providers = {p['prefix']: p['slug'] for p in json.loads(
-            (ROOT / 'website/config.json').read_text())['providers']}
         for shown, source in zip(interactive['records'], dataset['records'], strict=True):
             shown = dict(shown)
             assert shown.pop('provider') == next(
                 slug for prefix, slug in providers.items() if source['model'].startswith(prefix))
             assert shown == {key: source[key] for key in shown}
-        page = BeautifulSoup((tmp_path / dataset['href']).read_text(), 'html.parser')
+        page = BeautifulSoup((public_site / dataset['href']).read_text(), 'html.parser')
         assert len(page.select('.dataset-switcher .dataset-tab')) == 4
 
 
