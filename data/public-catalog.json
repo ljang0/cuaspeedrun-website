@@ -3568,6 +3568,49 @@
         },
         {
           "average_output_tokens": null,
+          "average_time_per_task_sec": 3096.5965823686347,
+          "cost_label": "Logged estimate",
+          "cost_range_max_usd": null,
+          "cost_range_min_usd": null,
+          "cost_source_url": "",
+          "cost_unit_prices": null,
+          "cost_usd": 6.7417285019230775,
+          "effort": "medium",
+          "effort_rank": 2,
+          "entry_id": 187,
+          "entry_name": "Meta Muse Wonder 1.0 · medium · m-73140dd288574f17",
+          "frontier": false,
+          "median_time_per_task_sec": 2063.6895677015,
+          "model": "Meta Muse Wonder 1.0",
+          "model_metadata": {
+            "verified_on": "2026-11-03",
+            "model_type": "closed",
+            "release_date": "2026-10-12",
+            "release_source": "https://about.fb.com/news/2026/10/introducing-muse-wonder-models/",
+            "access_source": "https://developer.meta.com/ai/models/muse-wonder/",
+            "notes": "Proprietary Meta model, available through the Meta Model API (muse-wonder-1.0) and Muse Code.",
+            "model": "Meta Muse Wonder 1.0"
+          },
+          "model_type": "closed",
+          "performance": 0.6859129213322557,
+          "provisional": false,
+          "qualification_known": false,
+          "qualifying": false,
+          "reference": false,
+          "release_date": "2026-10-12",
+          "row_type": "evaluation",
+          "run_id": "m-73140dd288574f17",
+          "series": "Meta Muse Wonder 1.0 · Muse Code",
+          "source_archive_url": "",
+          "source_archive_urls": [],
+          "steps_per_task": 116.86538461538461,
+          "time_per_task_sec": 3096.5965823686347,
+          "tool_calls_per_task": 468.1923076923077,
+          "turns_per_task": null,
+          "variant": "Muse Code"
+        },
+        {
+          "average_output_tokens": null,
           "average_time_per_task_sec": 1479.4424594212885,
           "cost_label": "Logged estimate",
           "cost_range_max_usd": null,
@@ -4803,7 +4846,7 @@
       ]
     }
   },
-  "included_rows": 109,
+  "included_rows": 110,
   "model_metadata_verified_on": "2026-11-03",
   "inventory_utc": "2026-11-02T16:00:00+00:00"
 }
