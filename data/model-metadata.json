@@ -29,6 +29,24 @@
       "access_source": "https://www.anthropic.com/claude-opus-5-5",
       "notes": "Proprietary Claude model, available through Anthropic and hosted partners."
     },
+    "GPT-6.1 Terra": {
+      "verified_on": "2026-11-03",
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-10-26",
+      "release_source": "https://developers.openai.com/api/docs/changelog",
+      "access_source": "https://developers.openai.com/api/docs/models/gpt-6.1-terra",
+      "notes": "Proprietary hosted OpenAI model, available through the OpenAI API and Codex. The OpenAI API changelog lists its release on October 26, 2026."
+    },
+    "Meta Muse Wonder 1.0": {
+      "verified_on": "2026-11-03",
+      "aliases": [],
+      "model_type": "closed",
+      "release_date": "2026-10-12",
+      "release_source": "https://about.fb.com/news/2026/10/introducing-muse-wonder-models/",
+      "access_source": "https://developer.meta.com/ai/models/muse-wonder/",
+      "notes": "Proprietary Meta model, available through the Meta Model API (muse-wonder-1.0) and Muse Code."
+    },
     "Claude Sonnet 5": {
       "aliases": [],
       "model_type": "closed",
